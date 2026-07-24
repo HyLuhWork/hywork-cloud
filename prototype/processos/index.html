@@ -168,6 +168,34 @@
   .new-process-card:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
   .new-process-card .np-plus{width:36px;height:36px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
 
+  .btn-dark{background:var(--ink);color:var(--surface)}
+  .btn-dark:hover{background:var(--navy-900)}
+
+  .hya-box{background:var(--muted);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:26px}
+  .hya-label{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:12px}
+  .hya-input-wrap{position:relative;border-radius:var(--radius-md);padding:1.5px;background:linear-gradient(120deg,#8B7CF6,#4E9BEA,#8B7CF6);background-size:200% 200%}
+  .hya-input-wrap input{width:100%;border:none;border-radius:calc(var(--radius-md) - 1.5px);padding:13px 46px 13px 16px;font-size:13.5px;color:var(--ink);background:var(--surface);outline:none;display:block}
+  .hya-input-wrap input::placeholder{font-style:italic;color:var(--ink-faint)}
+  .hya-send-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:29px;height:29px;border-radius:50%;border:none;background:linear-gradient(120deg,#8B7CF6,#4E9BEA);color:#fff;display:flex;align-items:center;justify-content:center}
+  .hya-send-btn:hover{opacity:.88}
+
+  .section-divider{height:1px;background:var(--border);margin:28px 0 24px}
+
+  .template-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:8px;max-width:640px}
+  .template-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 14px;display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center}
+  .template-card:hover{border-color:var(--navy-400);box-shadow:var(--shadow-sm)}
+  .template-card .tpl-ic{width:38px;height:38px;border-radius:50%;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center}
+  .template-card .tpl-label{font-size:12.5px;font-weight:600;color:var(--ink)}
+
+  .process-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+  .process-row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer}
+  .process-row:last-child{border-bottom:none}
+  .process-row:hover{background:var(--muted)}
+  .pr-badge{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:11px;flex:none}
+  .pr-name{font-size:13.5px;font-weight:700;flex:1;color:var(--ink)}
+  .pr-status{display:flex;align-items:center;gap:11px;flex:none}
+  .pr-status-text{font-size:12px;color:var(--ink-muted);font-weight:600}
+
   /* ---------- modal ---------- */
   .overlay{position:fixed;inset:0;background:rgba(15,15,17,.46);display:flex;align-items:center;justify-content:center;z-index:60;animation:fadeIn .15s ease}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -481,6 +509,7 @@ function ic(name, size){
     task:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="m8.5 12 2.2 2.2L16 9.5"/>',
     play:'<path d="M6 4.5v15l14-7.5Z"/>',
     flag:'<path d="M5 21V4"/><path d="M5 4h13l-3 4.5L18 13H5"/>',
+    send:'<path d="M4 12 20 4 13 20l-2-7-7-1Z"/>',
   };
   var body = p[name] || p.info;
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+body+'</svg>';
@@ -745,59 +774,79 @@ function renderScreen(){
   else root.innerHTML = editorHTML();
 }
 
+var PROCESS_TEMPLATES = [
+  {label:'Solicitações de Férias', icon:'calendar', emoji:'🏖️', desc:'Peça e acompanhe períodos de férias com aprovação do gestor.', category:'Recursos Humanos', color:'#1E72A1'},
+  {label:'Solicitações de Reembolso', icon:'money', emoji:'💰', desc:'Solicite reembolso de despesas com anexo de notas fiscais.', category:'Financeiro', color:'#D74326'},
+  {label:'Chamados', icon:'clock', emoji:'🖥️', desc:'Abra chamados para times internos com fila e SLA.', category:'Tecnologia', color:'#104A74'}
+];
+function monogram(name){
+  var words = (name||'').trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return '?';
+  if (words.length===1) return words[0].slice(0,2).toUpperCase();
+  return (words[0][0]+words[1][0]).toUpperCase();
+}
 function homeHTML(){
   var filtered = filteredProcesses();
-  var totalOpen = state.processes.reduce(function(a,p){return a+p.openCount;},0);
-  var published = state.processes.filter(function(p){return p.status==='published';}).length;
-
   return '<div class="screen-inner">'+
     '<div class="page-head">'+
-      '<div><h1>Processos</h1><p class="page-sub">Monte fluxos internos com formulário, workflow, indicadores e permissões — sem escrever código.</p></div>'+
-      '<button class="btn btn-primary" data-action="open-wizard">'+ic('plus',16)+'Novo Processo</button>'+
+      '<div><h1>Central de Processos</h1><p class="page-sub">Construa novos processos aqui</p></div>'+
+      '<button class="btn btn-dark" data-action="open-wizard">Criar do 0</button>'+
     '</div>'+
-    '<div class="stats-row">'+
-      statCard('Processos publicados', published, '')+
-      statCard('Solicitações em aberto', totalOpen, '+8 esta semana')+
-      statCard('SLA médio geral', '1,9 dias', '-0,2 dia no mês')+
-      statCard('Rascunhos', state.processes.filter(function(p){return p.status==='draft';}).length, '')+
+    hyaBuilderHTML()+
+    templatesHTML()+
+    '<div class="section-divider"></div>'+
+    '<div class="section-head"><h3>Seus Processos</h3>'+
+      '<div class="topbar-search" style="max-width:260px">'+ic('search',14)+'<input id="home-search" type="text" placeholder="Pesquise por aqui..." value="'+esc(state.search)+'"/></div>'+
     '</div>'+
-    '<div class="toolbar">'+
-      '<div class="chip-row">'+chip('all','Todos')+chip('published','Publicados')+chip('draft','Rascunhos')+'</div>'+
-      '<div class="topbar-search" style="max-width:260px"><span></span>'+ic('search',14)+'<input id="home-search" type="text" placeholder="Buscar processo..." value="'+esc(state.search)+'"/></div>'+
-    '</div>'+
-    '<div id="process-grid-area">'+homeGridAreaHTML(filtered)+'</div>'+
+    '<div id="process-grid-area">'+processListAreaHTML(filtered)+'</div>'+
   '</div>';
+}
+function hyaBuilderHTML(){
+  return '<div class="hya-box">'+
+    '<div class="hya-label">Inicie por aqui com o HyA Builder</div>'+
+    '<div class="hya-input-wrap">'+
+      '<input type="text" id="hya-input" placeholder="Diga o que você precisa" autocomplete="off"/>'+
+      '<button class="hya-send-btn" data-action="hya-mock-submit" title="Enviar">'+ic('send',15)+'</button>'+
+    '</div>'+
+  '</div>';
+}
+function templatesHTML(){
+  return '<div class="fb-group-label" style="margin-top:0">Comece a partir de modelos</div>'+
+    '<div class="template-row">'+PROCESS_TEMPLATES.map(function(t,i){
+      return '<button class="template-card" data-action="use-template" data-idx="'+i+'"><div class="tpl-ic">'+ic(t.icon,19)+'</div><div class="tpl-label">'+esc(t.label)+'</div></button>';
+    }).join('')+'</div>';
 }
 function filteredProcesses(){
   return state.processes.filter(function(p){
-    if (state.filter==='published' && p.status!=='published') return false;
-    if (state.filter==='draft' && p.status!=='draft') return false;
     if (state.search && p.name.toLowerCase().indexOf(state.search.toLowerCase())===-1) return false;
     return true;
   });
 }
-function statCard(label,value,trend){
-  return '<div class="stat-card"><div class="stat-label">'+esc(label)+'</div><div class="stat-value">'+esc(value)+'</div>'+(trend?'<div class="stat-trend">'+esc(trend)+'</div>':'')+'</div>';
-}
-function chip(key,label){
-  return '<button class="chip'+(state.filter===key?' active':'')+'" data-action="set-filter" data-filter="'+key+'">'+esc(label)+'</button>';
-}
-function homeGridAreaHTML(filtered){
-  var cards = filtered.map(processCardHTML).join('');
-  var newCard = '<button class="new-process-card" data-action="open-wizard"><div class="np-plus">'+ic('plus',18)+'</div>Novo processo</button>';
+function processListAreaHTML(filtered){
   if (!filtered.length){
     return '<div class="empty-state">'+
         '<div class="es-ic">'+ic('search',22)+'</div>'+
         '<div class="es-title">Nenhum processo encontrado</div>'+
-        '<div class="es-sub">Ajuste a busca ou os filtros, ou crie um novo processo do zero.</div>'+
-        '<button class="btn btn-primary" data-action="open-wizard" style="margin-top:6px">'+ic('plus',15)+'Novo Processo</button>'+
+        '<div class="es-sub">Ajuste a busca, ou crie um novo processo do zero.</div>'+
+        '<button class="btn btn-dark" data-action="open-wizard" style="margin-top:6px">Criar do 0</button>'+
       '</div>';
   }
-  return '<div class="process-grid">'+cards+newCard+'</div>';
+  return '<div class="process-list">'+filtered.map(processRowHTML).join('')+'</div>';
 }
 function refreshHomeGridArea(){
   var area = qs('#process-grid-area'); if (!area) return;
-  area.innerHTML = homeGridAreaHTML(filteredProcesses());
+  area.innerHTML = processListAreaHTML(filteredProcesses());
+}
+function processRowHTML(p){
+  var isDraft = p.status==='draft';
+  var statusArea = isDraft
+    ? '<span class="badge badge-muted">Rascunho</span>'
+    : '<span class="pr-status-text">Ativo</span><label class="switch" data-action="toggle-active" data-id="'+p.id+'"><input type="checkbox" '+(p.active!==false?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>';
+  return '<div class="process-row" data-action="open-editor" data-id="'+p.id+'">'+
+    '<div class="pr-badge" style="background:'+p.color+'">'+esc(monogram(p.name))+'</div>'+
+    '<div class="pr-name">'+esc(p.name)+'</div>'+
+    '<div class="pr-status">'+statusArea+'</div>'+
+  '</div>';
 }
 function processCardHTML(p){
   var statusBadge = p.status==='published' ? '<span class="badge badge-success">'+ic('check',10)+' Publicado</span>' : '<span class="badge badge-muted">Rascunho</span>';
@@ -1346,7 +1395,21 @@ document.addEventListener('click', function(e){
     case 'open-editor':
       state.currentProcessId = t.dataset.id; state.screen='editor'; state.editorTab='workflow'; state.selectedStepId=null;
       break;
-    case 'set-filter': state.filter = t.dataset.filter; break;
+    case 'use-template': {
+      var tpl = PROCESS_TEMPLATES[+t.dataset.idx];
+      state.wizardOpen = true;
+      state.wizardDraft = {name:tpl.label, description:tpl.desc, category:tpl.category, icon:tpl.emoji, color:tpl.color};
+      break;
+    }
+    case 'toggle-active': {
+      var proc = state.processes.find(function(p){return p.id===t.dataset.id;});
+      proc.active = !(proc.active!==false);
+      break;
+    }
+    case 'hya-mock-submit': {
+      showToast('HyA Builder (IA) chega em breve — isso aqui é só uma prévia visual.');
+      break;
+    }
     case 'set-etab': state.editorTab = t.dataset.tab; state.selectedFieldId=null; break;
     case 'open-edit-general': state.editGeneralOpen=true; break;
     case 'close-editgeneral': case 'close-editgeneral-overlay': state.editGeneralOpen=false; break;
@@ -1575,6 +1638,15 @@ document.addEventListener('click', function(e){
   state.theme = choice;
   document.documentElement.setAttribute('data-theme', choice);
   updateThemeToggle();
+});
+
+/* HyA Builder — mocked entry point, no real AI behind it yet */
+document.addEventListener('keydown', function(e){
+  if (e.target && e.target.id==='hya-input' && e.key==='Enter'){
+    e.preventDefault();
+    showToast('HyA Builder (IA) chega em breve — isso aqui é só uma prévia visual.');
+    render();
+  }
 });
 
 render();

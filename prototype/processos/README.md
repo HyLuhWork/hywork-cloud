@@ -8,6 +8,13 @@ Responsável pela etapa ficam para uma segunda fase, conforme escopo do briefing
 **v2** — revisado a partir de um vídeo de referência do produto real e de feedback
 direto sobre a lógica de construção do workflow. Ver "O que mudou na v2" abaixo.
 
+**v3** — Home reconstruída como "Central de Processos", seguindo um mock específico
+enviado: botão "Criar do 0", seção de entrada via **HyA Builder** (IA, mockada —
+não há geração real por trás, é só a interface e um retorno em toast) e "Comece a
+partir de modelos" com 3 templates clicáveis que pré-preenchem o wizard. A lista de
+processos virou uma lista vertical (não grade de cards) com badge colorido em
+monograma, nome e um toggle "Ativo" por processo. Ver "O que mudou na v3" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -69,11 +76,37 @@ ao lado do nome do processo, em vez de uma aba inteira — e adicionei **Testar 
 um drawer com 1-2 cenários de exemplo que simula o caminho percorrido pela solicitação
 etapa a etapa, sem publicar nada.
 
+## O que mudou na v3
+
+A Home foi refeita para seguir um mock específico enviado ("Central de Processos"),
+substituindo o grid de cards + KPIs + filtros da v2 por:
+
+- **Botão "Criar do 0"** (dark) no lugar de "Novo Processo" — abre o mesmo wizard de
+  sempre.
+- **Caixa "Inicie por aqui com o HyA Builder"** — um campo de texto com borda em
+  gradiente (estética de IA) e botão de enviar. **É mockado de propósito**: digitar e
+  apertar Enter (ou clicar no botão) só mostra um toast avisando que o HyA Builder
+  ainda não está implementado neste protótipo — não há geração real de processo por
+  trás. O gancho de UI existe para quando a geração via IA for construída de verdade.
+- **"Comece a partir de modelos"** — 3 templates (Solicitações de Férias, Solicitações
+  de Reembolso, Chamados) que, ao serem clicados, abrem o wizard de criação já
+  pré-preenchido com nome, descrição, categoria, ícone e cor sugeridos — economiza a
+  etapa de preencher do zero para os casos mais comuns.
+- **"Seus Processos" como lista**, não mais grade de cards: cada linha tem um badge
+  colorido com as iniciais do processo (mesmo padrão visual do "SF" roxo da tela de
+  workflow do produto real), nome, e um toggle **Ativo** por processo (independente do
+  status rascunho/publicado — pausa um processo publicado sem editar nada nele).
+  Rascunhos mostram um badge "Rascunho" no lugar do toggle.
+
+Os KPIs agregados e os filtros por status da v2 foram removidos para bater com o mock
+exatamente como enviado; posso trazê-los de volta como um bloco opcional se fizerem
+falta na prática.
+
 ## O que está implementado
 
-**Home do módulo** — lista enxuta de processos em cards (ícone, badge de status,
-título, descrição, CTA), filtros (Todos/Publicados/Rascunhos), busca e KPIs gerais do
-módulo. CTA "Novo Processo" sempre visível.
+**Central de Processos (Home)** — botão "Criar do 0", caixa do HyA Builder (mockada),
+atalhos de modelos prontos, e a lista "Seus Processos" com busca, badge em monograma e
+toggle de ativo/inativo por linha.
 
 **Wizard de criação** — modal com Nome, Descrição, Categoria, Ícone e Cor, com
 pré-visualização ao vivo do card final. Ao continuar, o processo nasce como rascunho e

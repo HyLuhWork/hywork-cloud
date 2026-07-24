@@ -1,0 +1,1464 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<title>Processos — Hywork Cloud (Protótipo Admin)</title>
+
+</head>
+<body>
+<style>
+  :root{
+    --primary:#EA7623; --primary-dark:#D44D1C; --primary-light:#F3B16F; --primary-50:#FDF1E7;
+    --navy-900:#0B2233; --navy-800:#104A74; --navy-600:#1E72A1; --navy-400:#6492B7; --navy-200:#8EA1C7;
+    --success:#1E9E5A; --success-50:#E9F7EF; --warning:#B8860B; --warning-50:#FBF3E1; --error:#E5484D; --error-50:#FDECEC; --info:#1E72A1; --info-50:#EAF3F8;
+    --bg:#F6F7F9; --surface:#FFFFFF; --surface-raised:#FFFFFF; --muted:#F1F3F6; --muted-strong:#E7EAEE;
+    --border:#E4E7EC; --border-strong:#D3D9E0;
+    --ink:#0F2233; --ink-muted:#5B6B7C; --ink-faint:#8B98A6;
+    --radius-sm:6px; --radius-md:10px; --radius-lg:14px; --radius-xl:20px; --radius-full:999px;
+    --shadow-sm:0 1px 2px rgba(15,34,51,.06); --shadow-md:0 4px 16px rgba(15,34,51,.08); --shadow-lg:0 12px 32px rgba(15,34,51,.14);
+    --font-ui:-apple-system,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --sidebar-w:236px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0C1620; --surface:#121D29; --surface-raised:#16222F; --muted:#182430; --muted-strong:#1E2C3A;
+    --border:#233241; --border-strong:#2C3E4F;
+    --ink:#EAF0F5; --ink-muted:#9FB0C0; --ink-faint:#6D8296;
+    --primary-50:#2A2013; --success-50:#122A1D; --warning-50:#2A2312; --error-50:#2E1518; --info-50:#12242E;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow-md:0 4px 20px rgba(0,0,0,.35); --shadow-lg:0 16px 40px rgba(0,0,0,.5);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0C1620; --surface:#121D29; --surface-raised:#16222F; --muted:#182430; --muted-strong:#1E2C3A;
+      --border:#233241; --border-strong:#2C3E4F;
+      --ink:#EAF0F5; --ink-muted:#9FB0C0; --ink-faint:#6D8296;
+      --primary-50:#2A2013; --success-50:#122A1D; --warning-50:#2A2312; --error-50:#2E1518; --info-50:#12242E;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow-md:0 4px 20px rgba(0,0,0,.35); --shadow-lg:0 16px 40px rgba(0,0,0,.5);
+    }
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:var(--font-ui);color:var(--ink);background:var(--bg);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{margin:0;text-wrap:balance;font-weight:700;letter-spacing:-.01em}
+  p{margin:0}
+  button{font-family:inherit;cursor:pointer}
+  input,textarea,select{font-family:inherit;font-size:13px;color:var(--ink)}
+  ::selection{background:var(--primary-light);color:var(--navy-900)}
+  a{color:inherit}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  :focus-visible{outline:2px solid var(--navy-600);outline-offset:2px;border-radius:4px}
+
+  /* ---------- app shell ---------- */
+  .app{display:flex;min-height:100vh;width:100%;overflow-x:hidden}
+  .sidebar{width:var(--sidebar-w);flex:0 0 auto;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px;gap:4px}
+  .brand{display:flex;align-items:center;gap:9px;padding:6px 8px 14px}
+  .brand-mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex:none}
+  .brand-name{font-weight:800;font-size:16px;letter-spacing:-.01em}
+  .brand-name b{color:var(--primary)}
+  .workspace-switcher{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--radius-md);border:1px solid var(--border);margin-bottom:14px;background:var(--muted)}
+  .workspace-switcher .ws-icon{width:28px;height:28px;border-radius:7px;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex:none}
+  .workspace-switcher .ws-text{flex:1;min-width:0}
+  .workspace-switcher .ws-title{font-size:12.5px;font-weight:600}
+  .workspace-switcher .ws-sub{font-size:11px;color:var(--ink-faint)}
+  .nav-group-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint);font-weight:700;padding:14px 10px 6px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);color:var(--ink-muted);font-size:13px;font-weight:500;text-decoration:none;position:relative}
+  .nav-item svg{flex:none;opacity:.85}
+  .nav-item:hover{background:var(--muted);color:var(--ink)}
+  .nav-item.active{background:var(--primary-50);color:var(--primary-dark);font-weight:700}
+  :root[data-theme="dark"] .nav-item.active,@media (prefers-color-scheme:dark){.nav-item.active{color:var(--primary)}}
+  .nav-item.active svg{opacity:1}
+  .nav-item .nav-dot{margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--primary)}
+  .sidebar-foot{margin-top:auto;padding-top:10px}
+
+  .app-main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  .topbar{height:58px;flex:none;display:flex;align-items:center;gap:14px;padding:0 22px;border-bottom:1px solid var(--border);background:var(--surface)}
+  .topbar-search{flex:1;max-width:360px;display:flex;align-items:center;gap:8px;background:var(--muted);border:1px solid transparent;border-radius:var(--radius-md);padding:7px 11px;color:var(--ink-faint)}
+  .topbar-search input{background:none;border:none;outline:none;width:100%;color:var(--ink);font-size:13px}
+  .topbar-search svg{flex:none}
+  .topbar-spacer{flex:1}
+  .theme-toggle{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius-full);padding:5px;}
+  .theme-toggle button{border:none;background:none;padding:5px 7px;border-radius:var(--radius-full);color:var(--ink-faint);display:flex}
+  .theme-toggle button.active{background:var(--navy-900);color:#fff}
+  .user-chip{display:flex;align-items:center;gap:9px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--navy-600),var(--navy-900));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex:none}
+  .user-chip .u-name{font-size:12.5px;font-weight:600}
+  .user-chip .u-mail{font-size:11px;color:var(--ink-faint)}
+
+  .screen-root{flex:1;min-height:0;overflow-y:auto}
+  .screen-inner{max-width:1180px;margin:0 auto;padding:32px 28px 64px}
+
+  /* ---------- buttons / inputs ---------- */
+  .btn{display:inline-flex;align-items:center;gap:7px;border-radius:var(--radius-md);padding:9px 15px;font-size:13.5px;font-weight:600;border:1px solid transparent;transition:background .12s,border-color .12s,color .12s;white-space:nowrap}
+  .btn svg{flex:none}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-primary:hover{background:var(--primary-dark)}
+  .btn-outline{background:var(--surface);border-color:var(--border-strong);color:var(--ink)}
+  .btn-outline:hover{background:var(--muted)}
+  .btn-ghost{background:none;color:var(--ink-muted)}
+  .btn-ghost:hover{background:var(--muted);color:var(--ink)}
+  .btn-danger-ghost{background:none;color:var(--error)}
+  .btn-danger-ghost:hover{background:var(--error-50)}
+  .btn-sm{padding:6px 11px;font-size:12.5px;border-radius:var(--radius-sm)}
+  .btn-block{width:100%;justify-content:center}
+  .btn[disabled]{opacity:.45;pointer-events:none}
+  .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:var(--radius-sm);border:1px solid transparent;background:none;color:var(--ink-muted)}
+  .icon-btn:hover{background:var(--muted);color:var(--ink)}
+
+  label.field-label{display:block;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:6px}
+  .field-hint{font-size:11.5px;color:var(--ink-faint);margin-top:5px}
+  .input,.textarea,.select{width:100%;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:9px 11px;font-size:13px;color:var(--ink);outline:none}
+  .input:focus,.textarea:focus,.select:focus{border-color:var(--navy-600);box-shadow:0 0 0 3px var(--info-50)}
+  .textarea{resize:vertical;min-height:64px}
+  .select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235B6B7C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:30px}
+  .field-row{margin-bottom:16px}
+  .field-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+
+  .switch{position:relative;display:inline-block;width:36px;height:21px;flex:none}
+  .switch input{opacity:0;width:0;height:0}
+  .switch .track{position:absolute;inset:0;background:var(--border-strong);border-radius:var(--radius-full);transition:background .15s}
+  .switch .thumb{position:absolute;top:2px;left:2px;width:17px;height:17px;background:#fff;border-radius:50%;transition:transform .15s;box-shadow:var(--shadow-sm)}
+  .switch input:checked + .track{background:var(--primary)}
+  .switch input:checked + .track .thumb{transform:translateX(15px)}
+  .switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+  .switch-row:last-child{border-bottom:none}
+  .switch-row .sr-text .sr-title{font-size:13px;font-weight:600}
+  .switch-row .sr-text .sr-sub{font-size:11.5px;color:var(--ink-faint);margin-top:2px}
+
+  .checkbox{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border-strong);accent-color:var(--primary)}
+
+  /* ---------- badges / chips ---------- */
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:var(--radius-full);letter-spacing:.01em}
+  .badge-success{background:var(--success-50);color:var(--success)}
+  .badge-muted{background:var(--muted-strong);color:var(--ink-muted)}
+  .badge-warning{background:var(--warning-50);color:var(--warning)}
+  .badge-info{background:var(--info-50);color:var(--info)}
+  .badge-primary{background:var(--primary-50);color:var(--primary-dark)}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius-full);border:1px solid var(--border-strong);background:var(--surface);font-size:12.5px;font-weight:600;color:var(--ink-muted)}
+  .chip.active{background:var(--navy-900);border-color:var(--navy-900);color:#fff}
+  .chip-row{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* ---------- home ---------- */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:26px}
+  .page-head h1{font-size:26px}
+  .page-head .page-sub{color:var(--ink-muted);font-size:13.5px;margin-top:6px;max-width:520px}
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px}
+  .stat-card .stat-label{font-size:11.5px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  .stat-card .stat-value{font-size:24px;font-weight:800;margin-top:8px;font-variant-numeric:tabular-nums}
+  .stat-card .stat-trend{font-size:11.5px;margin-top:5px;color:var(--success);font-weight:600}
+
+  .process-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:16px}
+  .process-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;display:flex;flex-direction:column;gap:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s,transform .15s;text-align:left}
+  .process-card:hover{box-shadow:var(--shadow-md);border-color:var(--border-strong);transform:translateY(-1px)}
+  .process-card .pc-top{display:flex;align-items:flex-start;justify-content:space-between}
+  .pc-icon{width:42px;height:42px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+  .pc-name{font-size:15px;font-weight:700;margin-top:2px}
+  .pc-desc{font-size:12.5px;color:var(--ink-muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px}
+  .pc-meta{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:11px;margin-top:2px}
+  .pc-meta .pc-open{font-weight:700;color:var(--ink)}
+  .new-process-card{border:1.5px dashed var(--border-strong);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--ink-muted);min-height:172px;background:none;font-weight:600;font-size:13px}
+  .new-process-card:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
+  .new-process-card .np-plus{width:38px;height:38px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
+
+  /* ---------- modal ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(11,34,51,.44);display:flex;align-items:center;justify-content:center;z-index:60;animation:fadeIn .15s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal{background:var(--surface);border-radius:var(--radius-xl);width:100%;box-shadow:var(--shadow-lg);animation:popIn .16s ease;max-height:88vh;display:flex;flex-direction:column}
+  @keyframes popIn{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-sm{max-width:420px}
+  .modal-md{max-width:560px}
+  .modal-lg{max-width:900px}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--border);flex:none}
+  .modal-head h3{font-size:16px}
+  .modal-head p{font-size:12px;color:var(--ink-faint);margin-top:3px}
+  .modal-body{padding:22px;overflow-y:auto}
+  .modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--border);flex:none}
+
+  /* ---------- wizard step1 preview ---------- */
+  .wizard-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:26px}
+  .icon-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .icon-swatch{aspect-ratio:1;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--muted);display:flex;align-items:center;justify-content:center;font-size:17px}
+  .icon-swatch.selected{border-color:var(--navy-900);box-shadow:0 0 0 2px var(--info-50)}
+  .color-grid{display:flex;gap:8px;flex-wrap:wrap}
+  .color-swatch{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .color-swatch.selected{border-color:var(--ink)}
+  .preview-panel{background:var(--muted);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+  .preview-panel .pp-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);align-self:flex-start}
+
+  /* ---------- editor shell ---------- */
+  .editor-topbar{padding:16px 28px 0}
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink-muted);margin-bottom:14px}
+  .back-link:hover{color:var(--ink)}
+  .editor-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:16px}
+  .editor-header-left{display:flex;gap:14px;align-items:flex-start}
+  .editor-icon{width:46px;height:46px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:21px;flex:none}
+  .editor-title-row{display:flex;align-items:center;gap:9px}
+  .editor-title-row h2{font-size:19px}
+  .editor-desc{font-size:12.5px;color:var(--ink-muted);margin-top:4px;max-width:460px}
+  .editor-actions{display:flex;align-items:center;gap:10px;flex:none}
+  .editor-tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);padding:0 28px}
+  .etab{padding:11px 16px;font-size:13px;font-weight:600;color:var(--ink-faint);border-bottom:2px solid transparent;display:flex;align-items:center;gap:7px}
+  .etab:hover{color:var(--ink)}
+  .etab.active{color:var(--primary-dark);border-bottom-color:var(--primary)}
+  .etab-body{padding:26px 28px 60px}
+  .etab-body-flush{padding:0}
+
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .section-head h3{font-size:15px}
+  .section-head p{font-size:12px;color:var(--ink-faint);margin-top:3px}
+
+  /* ---------- form builder ---------- */
+  .fb-layout{display:grid;grid-template-columns:230px 1fr 300px;min-height:560px;border-top:1px solid var(--border)}
+  .fb-col{padding:20px}
+  .fb-palette{border-right:1px solid var(--border);background:var(--surface)}
+  .fb-canvas-col{background:var(--bg);border-right:1px solid var(--border)}
+  .fb-inspector{background:var(--surface)}
+  .fb-group-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin:16px 0 8px}
+  .fb-group-label:first-child{margin-top:0}
+  .palette-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);font-size:12.5px;font-weight:600;margin-bottom:7px;cursor:grab;color:var(--ink)}
+  .palette-item:hover{border-color:var(--navy-400);background:var(--info-50)}
+  .palette-item .pi-ic{width:24px;height:24px;border-radius:6px;background:var(--muted);display:flex;align-items:center;justify-content:center;flex:none;font-size:13px}
+  .fb-canvas{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);min-height:500px;padding:18px;display:flex;flex-direction:column;gap:10px}
+  .fb-canvas.drag-over{border-color:var(--primary);background:var(--primary-50)}
+  .fb-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--ink-faint);text-align:center;padding:40px}
+  .fb-empty .fe-ic{width:48px;height:48px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
+  .field-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 13px;background:var(--surface);cursor:pointer;display:flex;align-items:center;gap:10px}
+  .field-card:hover{border-color:var(--navy-400)}
+  .field-card.selected{border-color:var(--navy-900);box-shadow:0 0 0 2px var(--info-50)}
+  .field-card .fc-drag{color:var(--ink-faint);cursor:grab;flex:none}
+  .field-card .fc-ic{width:30px;height:30px;border-radius:7px;background:var(--muted);display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
+  .field-card .fc-text{flex:1;min-width:0}
+  .field-card .fc-label{font-size:13px;font-weight:600}
+  .field-card .fc-type{font-size:11px;color:var(--ink-faint);margin-top:1px}
+  .field-card .fc-actions{display:flex;gap:2px;flex:none}
+  .fb-inspector-empty{color:var(--ink-faint);font-size:12.5px;padding-top:8px}
+
+  /* ---------- workflow canvas ---------- */
+  .wf-layout{display:flex;min-height:600px;border-top:1px solid var(--border)}
+  .wf-canvas-wrap{flex:1;min-width:0;position:relative;background:
+    radial-gradient(var(--border-strong) 1px, transparent 1px);
+    background-size:16px 16px;background-position:-7px -7px;padding:40px 0;overflow:auto}
+  .wf-flow{display:flex;flex-direction:column;align-items:center;gap:0;width:340px;margin:0 auto}
+  .wf-node{width:100%;background:var(--surface);border:1.5px solid var(--border-strong);border-radius:var(--radius-lg);padding:13px 15px;display:flex;align-items:center;gap:11px;box-shadow:var(--shadow-sm);position:relative;cursor:pointer;z-index:1}
+  .wf-node:hover{border-color:var(--navy-400)}
+  .wf-node.selected{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-50)}
+  .wf-node.system{background:var(--muted)}
+  .wf-node .wf-ic{width:34px;height:34px;border-radius:9px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+  .wf-node.final .wf-ic{background:var(--success-50);color:var(--success)}
+  .wf-node .wf-text{flex:1;min-width:0}
+  .wf-node .wf-name{font-size:13.5px;font-weight:700}
+  .wf-node .wf-sub{font-size:11px;color:var(--ink-faint);margin-top:1px}
+  .wf-node .wf-tag{position:absolute;top:-9px;right:12px;background:var(--primary);color:#fff;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:var(--radius-full)}
+  .wf-connector{width:2px;height:30px;background:var(--border-strong);position:relative}
+  .wf-connector::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--border-strong)}
+  .wf-add{width:100%;display:flex;align-items:center;justify-content:center;gap:7px;border:1.5px dashed var(--border-strong);border-radius:var(--radius-lg);padding:12px;color:var(--ink-muted);font-weight:600;font-size:12.5px;background:var(--surface)}
+  .wf-add:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
+  .wf-add-gap{height:30px;display:flex;align-items:center;justify-content:center;width:100%}
+  .wf-add-gap .wf-connector{height:100%}
+
+  /* ---------- config panel (right side of workflow) ---------- */
+  .wf-panel{width:380px;flex:none;border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column}
+  .wf-panel-head{padding:18px 20px 0}
+  .wf-panel-head .wf-panel-title{font-size:15px;font-weight:700}
+  .wf-panel-head .wf-panel-sub{font-size:11.5px;color:var(--ink-faint);margin-top:3px}
+  .subtabs{display:flex;gap:9px;padding:14px 16px 0;border-bottom:1px solid var(--border);margin-top:14px;overflow-x:auto}
+  .subtab{font-size:10px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-faint);padding-bottom:10px;border-bottom:2px solid transparent;white-space:nowrap;flex:none}
+  .subtab.active{color:var(--primary-dark);border-bottom-color:var(--primary)}
+  .subtab:hover{color:var(--ink)}
+  .wf-panel-body{flex:1;overflow-y:auto;padding:18px 20px 30px}
+  .wf-panel-empty{padding:50px 26px;text-align:center;color:var(--ink-faint);font-size:12.5px;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .wf-panel-empty .we-ic{width:44px;height:44px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
+
+  .action-list-note{font-size:12px;color:var(--ink-muted);margin-bottom:14px}
+  .action-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:13px 14px;margin-bottom:10px;cursor:pointer;background:var(--surface)}
+  .action-card:hover{border-color:var(--navy-400);box-shadow:var(--shadow-sm)}
+  .action-card .ac-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .action-card .ac-name{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700}
+  .action-card .ac-ic{width:22px;height:22px;border-radius:6px;background:var(--muted);display:flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+  .action-card .ac-desc{font-size:11.5px;color:var(--ink-muted);margin:6px 0 8px}
+  .action-card .ac-dest{font-size:10.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .action-card .ac-dest span{color:var(--navy-800);text-transform:none;font-weight:700}
+  .action-card .ac-cond{font-size:11px;color:var(--warning);margin-top:5px;background:var(--warning-50);padding:5px 8px;border-radius:6px}
+  .add-action-btn{width:100%;border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);padding:11px;text-align:center;color:var(--ink-muted);font-weight:600;font-size:12.5px}
+  .add-action-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
+
+  .field-mini-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+  .field-mini-row:last-child{border-bottom:none}
+  .field-mini-row .fmr-name{font-size:12.5px;font-weight:600}
+  .field-mini-row .fmr-type{font-size:10.5px;color:var(--ink-faint)}
+  .seg{display:flex;border:1px solid var(--border-strong);border-radius:var(--radius-sm);overflow:hidden}
+  .seg button{flex:1;border:none;background:var(--surface);padding:5px 8px;font-size:11px;font-weight:600;color:var(--ink-faint);border-left:1px solid var(--border-strong)}
+  .seg button:first-child{border-left:none}
+  .seg button.active{background:var(--navy-900);color:#fff}
+
+  /* ---------- action deep-config drawer ---------- */
+  .drawer-overlay{position:fixed;inset:0;background:rgba(11,34,51,.4);z-index:70;display:flex;justify-content:flex-end}
+  .drawer{width:min(460px,92vw);height:100%;background:var(--surface);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;animation:slideIn .18s ease}
+  @keyframes slideIn{from{transform:translateX(24px);opacity:.6}to{transform:none;opacity:1}}
+  .drawer-head{padding:20px 22px;border-bottom:1px solid var(--border);flex:none}
+  .drawer-head .dh-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px}
+  .drawer-head h3{font-size:17px}
+  .drawer-close{position:absolute;top:18px;right:20px}
+  .drawer-body{flex:1;overflow-y:auto;padding:20px 22px}
+  .drawer-foot{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;flex:none}
+
+  .rule-row{display:flex;gap:8px;align-items:center;margin-bottom:9px;background:var(--muted);padding:9px;border-radius:var(--radius-sm)}
+  .rule-row select,.rule-row input{flex:1;min-width:0}
+  .rule-connector{font-size:10.5px;font-weight:800;color:var(--ink-faint);text-align:center;margin:6px 0}
+  .add-line-btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--navy-800)}
+  .add-line-btn:hover{color:var(--primary-dark)}
+
+  .automation-row{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;margin-bottom:8px}
+  .automation-row .au-ic{width:30px;height:30px;border-radius:8px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;flex:none}
+  .automation-row .au-text{flex:1;min-width:0}
+  .automation-row .au-title{font-size:12.5px;font-weight:700}
+  .automation-row .au-sub{font-size:11px;color:var(--ink-faint)}
+  .automation-gallery{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .automation-opt{border:1px solid var(--border);border-radius:var(--radius-md);padding:11px;display:flex;flex-direction:column;gap:6px;text-align:left}
+  .automation-opt:hover{border-color:var(--navy-400);background:var(--info-50)}
+  .automation-opt .ao-ic{width:26px;height:26px;border-radius:7px;background:var(--muted);display:flex;align-items:center;justify-content:center}
+  .automation-opt .ao-title{font-size:12px;font-weight:700}
+
+  /* ---------- dashboard tab ---------- */
+  .widget-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .kpi-card{grid-column:span 1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px}
+  .kpi-card .kc-label{font-size:11px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em}
+  .kpi-card .kc-value{font-size:25px;font-weight:800;margin-top:9px;font-variant-numeric:tabular-nums}
+  .kpi-card .kc-trend{font-size:11.5px;margin-top:5px;font-weight:600;color:var(--success)}
+  .chart-card{grid-column:span 2;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px}
+  .chart-card .cc-label{font-size:12.5px;font-weight:700;margin-bottom:14px}
+  .funnel-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+  .funnel-row .fr-name{width:118px;font-size:11.5px;color:var(--ink-muted);flex:none}
+  .funnel-row .fr-bar-wrap{flex:1;background:var(--muted);border-radius:var(--radius-full);height:14px;overflow:hidden}
+  .funnel-row .fr-bar{height:100%;background:linear-gradient(90deg,var(--navy-600),var(--navy-800));border-radius:var(--radius-full)}
+  .funnel-row .fr-val{width:34px;text-align:right;font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+  .bar-chart{display:flex;align-items:flex-end;gap:16px;height:130px;padding-top:10px}
+  .bar-chart .bc-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;height:100%}
+  .bar-chart .bc-bar{width:100%;max-width:44px;background:linear-gradient(180deg,var(--primary-light),var(--primary));border-radius:6px 6px 0 0}
+  .bar-chart .bc-label{font-size:10.5px;color:var(--ink-faint);text-align:center}
+  .bar-chart .bc-val{font-size:11px;font-weight:700}
+  .widget-remove{position:absolute;top:10px;right:10px}
+  .widget-shell{position:relative}
+  .add-widget-card{grid-column:span 1;border:1.5px dashed var(--border-strong);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:120px;color:var(--ink-muted);font-weight:600;font-size:12px}
+  .add-widget-card:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
+
+  /* ---------- permissions tab ---------- */
+  .perm-table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+  .perm-table thead th{background:var(--muted);font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);padding:11px 10px;text-align:center;border-bottom:1px solid var(--border)}
+  .perm-table thead th:first-child{text-align:left;padding-left:16px}
+  .perm-table tbody td{padding:12px 10px;text-align:center;border-bottom:1px solid var(--border);font-size:12.5px}
+  .perm-table tbody tr:last-child td{border-bottom:none}
+  .perm-table tbody td:first-child{text-align:left;padding-left:16px;font-weight:700;display:flex;align-items:center;gap:9px}
+  .perm-avatar{width:26px;height:26px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex:none}
+  .perm-note{display:flex;gap:10px;background:var(--info-50);border-radius:var(--radius-md);padding:12px 14px;margin-top:16px;font-size:12px;color:var(--navy-800)}
+  .table-wrap{overflow-x:auto;border-radius:var(--radius-lg)}
+
+  /* ---------- publish drawer ---------- */
+  .checklist-item{display:flex;align-items:flex-start;gap:11px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .checklist-item:last-child{border-bottom:none}
+  .checklist-item .cl-ic{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px}
+  .checklist-item .cl-ic.ok{background:var(--success-50);color:var(--success)}
+  .checklist-item .cl-ic.warn{background:var(--warning-50);color:var(--warning)}
+  .checklist-item .cl-title{font-size:13px;font-weight:700}
+  .checklist-item .cl-sub{font-size:11.5px;color:var(--ink-faint);margin-top:2px}
+
+  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:60px 20px;color:var(--ink-faint);text-align:center}
+  .empty-state .es-ic{width:52px;height:52px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
+  .empty-state .es-title{font-size:14px;font-weight:700;color:var(--ink)}
+  .empty-state .es-sub{font-size:12.5px;max-width:320px}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy-900);color:#fff;padding:12px 20px;border-radius:var(--radius-md);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;z-index:100;animation:toastIn .18s ease}
+  @keyframes toastIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+  .toast .t-ic{color:var(--success)}
+
+  .step-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .step-type-opt{border:1.5px solid var(--border);border-radius:var(--radius-md);padding:10px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-align:left}
+  .step-type-opt.selected{border-color:var(--primary);background:var(--primary-50);color:var(--primary-dark)}
+  .step-type-opt .sto-ic{font-size:15px}
+
+  .action-tpl{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--radius-md);padding:11px 13px;margin-bottom:8px;text-align:left}
+  .action-tpl:hover{border-color:var(--navy-400);background:var(--info-50)}
+  .action-tpl .at-ic{width:28px;height:28px;border-radius:7px;background:var(--muted);display:flex;align-items:center;justify-content:center;flex:none}
+  .action-tpl .at-title{font-size:12.5px;font-weight:700}
+  .action-tpl .at-sub{font-size:11px;color:var(--ink-faint)}
+
+  @media (max-width:1080px){
+    .fb-layout{grid-template-columns:200px 1fr 260px}
+    .widget-grid{grid-template-columns:repeat(2,1fr)}
+    .chart-card{grid-column:span 2}
+  }
+</style>
+
+<div class="app" id="app-root"></div>
+<div id="modal-root"></div>
+<div id="drawer-root"></div>
+<div id="toast-root"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ ICONS ============ */
+function ic(name, size){
+  size = size || 16;
+  var p = {
+    home:'<path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/>',
+    chart:'<path d="M4 20V10"/><path d="M11 20V4"/><path d="M18 20v-7"/>',
+    grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    doc:'<path d="M7 3h7l4 4v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v4h4"/>',
+    award:'<circle cx="12" cy="9" r="5"/><path d="m8.5 13.5-1.5 6 5-2.5 5 2.5-1.5-6"/>',
+    gradcap:'<path d="M2 9 12 4l10 5-10 5-10-5Z"/><path d="M6 12v4.5c0 1 3 2.5 6 2.5s6-1.5 6-2.5V12"/>',
+    tv:'<rect x="3" y="5" width="18" height="12" rx="1.5"/><path d="M9 21h6M12 17v4"/>',
+    mail:'<rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m4 6.5 8 6 8-6"/>',
+    link:'<path d="M9.5 14.5 14.5 9.5"/><path d="M11 6.5 13 4.5a3.5 3.5 0 0 1 5 5l-2 2"/><path d="M13 17.5 11 19.5a3.5 3.5 0 0 1-5-5l2-2"/>',
+    forum:'<path d="M4 5h16v10H8l-4 4V5Z"/>',
+    hcm:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/><path d="M17 5.5a3 3 0 0 1 0 6M20 20v-1a5 5 0 0 0-3.5-4.8"/>',
+    db:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/>',
+    users:'<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20v-1a5 5 0 0 1 5-5h3a5 5 0 0 1 5 5v1"/><circle cx="17.5" cy="8" r="2.6"/><path d="M16 9.2a4.2 4.2 0 0 1 5.5 4v.8"/>',
+    flow:'<circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><circle cx="6" cy="18" r="2.4"/><path d="M8.2 6h5a3 3 0 0 1 3 3v6.2M8.2 18h4"/>',
+    search:'<circle cx="11" cy="11" r="6.5"/><path d="m20 20-3.6-3.6"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    arrowLeft:'<path d="M19 12H5"/><path d="m11 18-6-6 6-6"/>',
+    eye:'<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/>',
+    chevronDown:'<polyline points="6 9 12 15 18 9"/>',
+    x:'<path d="M18 6 6 18"/><path d="M6 6l12 12"/>',
+    check:'<polyline points="20 6 9 17 4 12"/>',
+    edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+    trash:'<path d="M4 7h16"/><path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/><path d="M9 7V4h6v3"/>',
+    drag:'<circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/>',
+    clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    shield:'<path d="M12 3.5 5 6v6c0 5 3 7.5 7 8.5 4-1 7-3.5 7-8.5V6l-7-2.5Z"/>',
+    gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V19a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H4a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H10a1.6 1.6 0 0 0 1-1.5V4a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V10a1.6 1.6 0 0 0 1.5 1H20a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1Z"/>',
+    bolt:'<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/>',
+    copy:'<rect x="9" y="9" width="12" height="12" rx="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
+    sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
+    moon:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/>',
+    bell:'<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/>',
+    calendar:'<rect x="3.5" y="5" width="17" height="15.5" rx="1.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/>',
+    money:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M14.5 9.5a2.5 2 0 0 0-2.5-1.2c-1.4 0-2.5.7-2.5 1.9s1 1.7 2.5 2c1.5.3 2.5.8 2.5 2s-1.1 1.9-2.5 1.9a2.7 2.7 0 0 1-2.5-1.3"/>',
+    select:'<rect x="3.5" y="4.5" width="17" height="15" rx="1.5"/><path d="M8 10h8M8 14h5"/>',
+    upload:'<path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>',
+    text:'<path d="M5 6h14M5 12h9M5 18h6"/>',
+    sig:'<path d="M3 17c2-6 3-8 5-8s2 5 4 5 2-9 4-9 2 12 5 12"/>',
+    id:'<rect x="3" y="5" width="18" height="14" rx="1.5"/><circle cx="8.5" cy="11" r="2"/><path d="M6 16c.5-1.5 1.6-2 2.5-2s2 .5 2.5 2"/><path d="M14 9h5M14 13h5"/>',
+    dept:'<path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6M4 11h16"/>',
+    divider:'<path d="M4 12h4M16 12h4M9 12h6" stroke-dasharray="1 3"/>',
+    info:'<circle cx="12" cy="12" r="8.5"/><path d="M12 8v.01M12 11v5"/>',
+    node:'<circle cx="12" cy="5" r="2.3"/><circle cx="5" cy="19" r="2.3"/><circle cx="19" cy="19" r="2.3"/><path d="M12 7.3v4M12 11.3 6.5 16.7M12 11.3l5.5 5.4"/>',
+    funnel2:'<path d="M4 5h16l-6 8v6l-4 2v-8Z"/>',
+    webhook:'<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M6 8.5v7M8.2 5 17 15.5"/>',
+    ai:'<path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/><circle cx="12" cy="12" r="3.5"/>',
+    api:'<rect x="3" y="8" width="18" height="8" rx="1.5"/><path d="M7 12h.01M12 12h.01M17 12h.01"/>',
+    task:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="m8.5 12 2.2 2.2L16 9.5"/>',
+    transfer:'<path d="M4 8h13"/><path d="m13 4 4 4-4 4"/><path d="M20 16H7"/><path d="m11 12-4 4 4 4"/>',
+  };
+  var body = p[name] || p.info;
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+body+'</svg>';
+}
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function uid(){ return 'id'+Math.random().toString(36).slice(2,9); }
+function qs(s,r){ return (r||document).querySelector(s); }
+
+/* ============ SEED DATA ============ */
+var CATEGORIES = ['Recursos Humanos','Financeiro','Tecnologia','Operações','Jurídico','Outros'];
+var ICON_OPTIONS = ['🏖️','💰','🖥️','🛒','🎓','📝','💡','📦','✅','🧾','🗂️','📅','🚪','🔧'];
+var COLOR_OPTIONS = [
+  {v:'#EA7623', name:'Laranja'}, {v:'#1E72A1', name:'Azul'}, {v:'#104A74', name:'Navy'},
+  {v:'#F0A526', name:'Âmbar'}, {v:'#1E9E5A', name:'Verde'}, {v:'#8EA1C7', name:'Azul claro'},
+  {v:'#0B2233', name:'Grafite'}, {v:'#D44D1C', name:'Terracota'}
+];
+var FIELD_TYPES = [
+  {group:'Campos básicos', items:[
+    {type:'short_text', label:'Texto curto', icon:'text'},
+    {type:'long_text', label:'Texto longo', icon:'doc'},
+    {type:'number', label:'Número', icon:'money'},
+    {type:'date', label:'Data', icon:'calendar'},
+    {type:'single_select', label:'Seleção única', icon:'select'},
+    {type:'multi_select', label:'Seleção múltipla', icon:'grid'},
+    {type:'attachment', label:'Anexo', icon:'upload'},
+  ]},
+  {group:'Campos avançados', items:[
+    {type:'currency', label:'Valor monetário', icon:'money'},
+    {type:'cpf_cnpj', label:'CPF / CNPJ', icon:'id'},
+    {type:'signature', label:'Assinatura', icon:'sig'},
+    {type:'user', label:'Usuário / Responsável', icon:'users'},
+    {type:'department', label:'Departamento', icon:'dept'},
+  ]},
+  {group:'Estrutura', items:[
+    {type:'section', label:'Divisor de seção', icon:'divider'},
+    {type:'info_text', label:'Texto informativo', icon:'info'},
+  ]}
+];
+function fieldTypeMeta(type){
+  for (var g=0; g<FIELD_TYPES.length; g++) for (var i=0;i<FIELD_TYPES[g].items.length;i++) if (FIELD_TYPES[g].items[i].type===type) return FIELD_TYPES[g].items[i];
+  return {type:type,label:type,icon:'info'};
+}
+var STEP_TYPES = [
+  {type:'aprovacao', label:'Aprovação', icon:'✅'},
+  {type:'tarefa', label:'Tarefa', icon:'🗂️'},
+  {type:'automatica', label:'Automática', icon:'⚙️'},
+  {type:'notificacao', label:'Notificação', icon:'🔔'},
+];
+var ACTION_TEMPLATES = [
+  {name:'Aprovar', icon:'check', desc:'Move a solicitação para a etapa seguinte.'},
+  {name:'Reprovar', icon:'x', desc:'Encerra a solicitação como reprovada.'},
+  {name:'Solicitar Ajuste', icon:'edit', desc:'Retorna ao solicitante para correção.'},
+  {name:'Solicitar Documento', icon:'doc', desc:'Pede um documento antes de continuar.'},
+  {name:'Transferir', icon:'transfer', desc:'Encaminha para outro responsável.'},
+  {name:'Personalizada', icon:'gear', desc:'Crie uma ação com nome e regras próprias.'},
+];
+var AUTOMATION_TYPES = [
+  {type:'email', label:'Enviar e-mail', icon:'mail'},
+  {type:'push', label:'Enviar push', icon:'bell'},
+  {type:'update_field', label:'Atualizar campo', icon:'edit'},
+  {type:'create_task', label:'Criar tarefa', icon:'task'},
+  {type:'ai', label:'Executar IA', icon:'ai'},
+  {type:'webhook', label:'Webhook', icon:'webhook'},
+  {type:'api', label:'Chamar API', icon:'api'},
+  {type:'microflow', label:'Executar Microflow', icon:'flow'},
+];
+
+function makeAction(o){
+  return Object.assign({
+    id: uid(), name:'Aprovar', icon:'check', destinationStepId:null,
+    description:'Move a solicitação para a próxima etapa.',
+    conditions:[], result:{buttonLabel:'Aprovar solicitação', endsProcess:false},
+    interface:{commentRequired:'Opcional', allowAttachments:true, requireUserPick:false},
+    automations:[]
+  }, o);
+}
+
+function richProcessData(){
+  var f1={id:uid(),type:'date',label:'Data de início',required:true};
+  var f2={id:uid(),type:'date',label:'Data de término',required:true};
+  var f3={id:uid(),type:'currency',label:'Valor total',required:false};
+  var f4={id:uid(),type:'long_text',label:'Motivo / Justificativa',required:true};
+  var f5={id:uid(),type:'single_select',label:'Tipo de solicitação',required:true,options:['Padrão','Urgente']};
+  var start={id:'s_start', name:'Formulário enviado', system:true, initial:true, type:'sistema'};
+  var end={id:'s_end', name:'Finalizado', system:true, final:true, type:'sistema'};
+  var s2={id:uid(), name:'Análise do Gestor', type:'aprovacao',
+    description:'O gestor direto do solicitante avalia o pedido.',
+    responsavel:{tipo:'Gestor do solicitante'},
+    sla:{prazo:2,unidade:'dias',aoVencer:'Notificar e escalar para o gestor superior',avisarAntes:true,avisarTempo:'4 horas antes'},
+    campos:[
+      {fieldId:f1.id,visibility:'editable'},{fieldId:f2.id,visibility:'editable'},
+      {fieldId:f3.id,visibility:'visible'},{fieldId:f4.id,visibility:'visible'},{fieldId:f5.id,visibility:'visible'}
+    ],
+    acoes:[]
+  };
+  var s3={id:uid(), name:'Análise do RH', type:'aprovacao',
+    description:'RH confere elegibilidade e saldo antes da aprovação final.',
+    responsavel:{tipo:'Departamento', valor:'Recursos Humanos'},
+    sla:{prazo:1,unidade:'dias',aoVencer:'Aprovar automaticamente',avisarAntes:true,avisarTempo:'2 horas antes'},
+    campos:[
+      {fieldId:f1.id,visibility:'visible'},{fieldId:f2.id,visibility:'visible'},
+      {fieldId:f3.id,visibility:'editable'},{fieldId:f4.id,visibility:'visible'},{fieldId:f5.id,visibility:'hidden'}
+    ],
+    acoes:[]
+  };
+  s2.acoes = [
+    makeAction({name:'Aprovar', icon:'check', destinationStepId:s3.id,
+      description:'Move a solicitação para a análise do RH.',
+      conditions:[{field:'Valor total', operator:'maior ou igual a', value:'R$ 5.000,00'}],
+      result:{buttonLabel:'Aprovar solicitação', endsProcess:false},
+      interface:{commentRequired:'Opcional', allowAttachments:true, requireUserPick:false},
+      automations:[{id:uid(),type:'email',label:'Enviar e-mail',target:'Solicitante'},{id:uid(),type:'update_field',label:'Atualizar campo',target:'Status = Aprovado pelo gestor'}]}),
+    makeAction({name:'Solicitar Ajuste', icon:'edit', destinationStepId:'s_start',
+      description:'Retorna a solicitação para correção antes de continuar.',
+      result:{buttonLabel:'Solicitar ajuste', endsProcess:false},
+      interface:{commentRequired:'Obrigatório', allowAttachments:false, requireUserPick:false},
+      automations:[{id:uid(),type:'email',label:'Enviar e-mail',target:'Solicitante'}]}),
+    makeAction({name:'Reprovar', icon:'x', destinationStepId:'s_end',
+      description:'Encerra a solicitação como reprovada.',
+      result:{buttonLabel:'Reprovar solicitação', endsProcess:true},
+      interface:{commentRequired:'Obrigatório', allowAttachments:false, requireUserPick:false},
+      automations:[{id:uid(),type:'email',label:'Enviar e-mail',target:'Solicitante'},{id:uid(),type:'push',label:'Enviar push',target:'Solicitante'}]})
+  ];
+  s3.acoes = [
+    makeAction({name:'Aprovar', icon:'check', destinationStepId:'s_end',
+      description:'Encerra a solicitação como aprovada.',
+      result:{buttonLabel:'Aprovar solicitação', endsProcess:true},
+      automations:[{id:uid(),type:'email',label:'Enviar e-mail',target:'Solicitante e Gestor'},{id:uid(),type:'microflow',label:'Executar Microflow',target:'Atualizar saldo de férias'}]}),
+    makeAction({name:'Solicitar Documento', icon:'doc', destinationStepId:'s_start',
+      description:'Pede um comprovante adicional ao solicitante.',
+      interface:{commentRequired:'Obrigatório', allowAttachments:true, requireUserPick:false},
+      automations:[{id:uid(),type:'email',label:'Enviar e-mail',target:'Solicitante'}]}),
+    makeAction({name:'Reprovar', icon:'x', destinationStepId:'s_end',
+      description:'Encerra a solicitação como reprovada pelo RH.',
+      result:{buttonLabel:'Reprovar solicitação', endsProcess:true},
+      automations:[{id:uid(),type:'email',label:'Enviar e-mail',target:'Solicitante'}]})
+  ];
+  return {
+    formFields:[f1,f2,f3,f4,f5],
+    steps:[start, s2, s3, end],
+    widgets:[
+      {id:uid(),type:'kpi',label:'Total de solicitações',value:'128',trend:'+12% no mês'},
+      {id:uid(),type:'kpi',label:'Tempo médio de conclusão',value:'1,8 dias',trend:'−0,4 dia vs. mês anterior'},
+      {id:uid(),type:'kpi',label:'SLA cumprido',value:'94%',trend:'+2pp no mês'},
+      {id:uid(),type:'funnel',label:'Solicitações por etapa',data:[
+        {name:'Formulário enviado',value:12},{name:'Análise do Gestor',value:8},{name:'Análise do RH',value:5},{name:'Finalizado',value:103}
+      ]},
+      {id:uid(),type:'bar',label:'Aprovações por responsável',data:[
+        {name:'Gestores',value:45},{name:'RH',value:38},{name:'Financeiro',value:20}
+      ]}
+    ],
+    permissions:[
+      {id:uid(),group:'Todos os colaboradores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:false},
+      {id:uid(),group:'Gestores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:true},
+      {id:uid(),group:'Recursos Humanos',criar:true,visualizar:true,editar:true,administrar:true,acompanhar:true},
+      {id:uid(),group:'Administradores',criar:true,visualizar:true,editar:true,administrar:true,acompanhar:true}
+    ]
+  };
+}
+function emptyProcessData(){
+  return {
+    formFields:[],
+    steps:[{id:'s_start',name:'Formulário enviado',system:true,initial:true,type:'sistema'},{id:'s_end',name:'Finalizado',system:true,final:true,type:'sistema'}],
+    widgets:[],
+    permissions:[
+      {id:uid(),group:'Todos os colaboradores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:false}
+    ]
+  };
+}
+
+function seedProcesses(){
+  var list = [
+    {id:'p1',name:'Solicitação de Férias',description:'Peça e acompanhe seus períodos de férias com aprovação do gestor e RH.',category:'Recursos Humanos',icon:'🏖️',color:'#EA7623',status:'published',openCount:12,avgSla:'1,8 dias',updatedAt:'22/07/2026'},
+    {id:'p2',name:'Reembolso de Despesas',description:'Solicite reembolso de despesas corporativas com anexo de notas fiscais.',category:'Financeiro',icon:'💰',color:'#1E72A1',status:'published',openCount:5,avgSla:'0,9 dia',updatedAt:'21/07/2026'},
+    {id:'p3',name:'Chamados de TI',description:'Abra chamados técnicos para o time de tecnologia e acompanhe o SLA.',category:'Tecnologia',icon:'🖥️',color:'#104A74',status:'published',openCount:23,avgSla:'6 horas',updatedAt:'20/07/2026'},
+    {id:'p4',name:'Solicitação de Compras',description:'Peça a compra de materiais e serviços com aprovação por alçada de valor.',category:'Operações',icon:'🛒',color:'#F0A526',status:'draft',openCount:0,avgSla:'—',updatedAt:'19/07/2026'},
+    {id:'p5',name:'Onboarding de Colaboradores',description:'Fluxo guiado de admissão para novos colaboradores, do convite ao 1º dia.',category:'Recursos Humanos',icon:'🎓',color:'#1E9E5A',status:'published',openCount:3,avgSla:'2,5 dias',updatedAt:'18/07/2026'},
+    {id:'p6',name:'Aprovação de Documentos',description:'Envie contratos e documentos para aprovação e assinatura interna.',category:'Jurídico',icon:'📝',color:'#8EA1C7',status:'draft',openCount:0,avgSla:'—',updatedAt:'16/07/2026'},
+  ];
+  var data = {};
+  list.forEach(function(p){ data[p.id] = richProcessData(); });
+  return {list:list, data:data};
+}
+
+/* ============ STATE ============ */
+var seed = seedProcesses();
+var state = {
+  screen:'home',
+  theme: 'auto',
+  filter:'all',
+  search:'',
+  processes: seed.list,
+  processData: seed.data,
+  wizardOpen:false,
+  wizardDraft:null,
+  currentProcessId:null,
+  editorTab:'geral',
+  selectedStepId:null,
+  stepTab:'geral',
+  selectedFieldId:null,
+  openAction:null, // {stepId, actionId}
+  actionTab:'resultado',
+  addStepOpen:false,
+  newStep:{name:'',type:'aprovacao'},
+  addActionOpen:null, // stepId
+  addWidgetOpen:false,
+  addAutomationOpen:null, // actionId context, handled inline
+  publishOpen:false,
+  toast:null,
+};
+
+function currentProcess(){ return state.processes.find(function(p){return p.id===state.currentProcessId;}); }
+function currentData(){ return state.processData[state.currentProcessId]; }
+function findStep(id){ var d=currentData(); return d && d.steps.find(function(s){return s.id===id;}); }
+function findAction(stepId, actionId){ var s=findStep(stepId); return s && (s.acoes||[]).find(function(a){return a.id===actionId;}); }
+
+/* ============ RENDER ROOT ============ */
+function render(){
+  renderShell();
+  renderScreen();
+  renderModal();
+  renderDrawer();
+  renderToast();
+}
+
+function renderShell(){
+  var root = qs('#app-root');
+  if (root.dataset.built) { updateThemeToggle(); return; }
+  root.dataset.built = '1';
+  root.innerHTML =
+    '<aside class="sidebar">'+
+      '<div class="brand"><div class="brand-mark">H</div><div class="brand-name"><b>hy</b>work</div></div>'+
+      '<div class="workspace-switcher"><div class="ws-icon">H</div><div class="ws-text"><div class="ws-title">Hywork</div><div class="ws-sub">Espaço atual</div></div>'+ic('chevronDown',14)+'</div>'+
+      navItem('home','Home',false)+
+      navItem('chart','Analytics',false)+
+      navItem('grid','Modelos',false)+
+      navItem('doc','Conteúdos',false)+
+      navItem('award','Reconhecimentos',false)+
+      navItem('gradcap','Academy',false)+
+      navItem('tv','TV Corporativa',false)+
+      navItem('mail','Assinatura de Email',false)+
+      navItem('link','Integrações de Documentos',false)+
+      navItem('forum','Fórum',false)+
+      navItem('hcm','Integração RH / HCM',false)+
+      navItem('flow','Processos',true)+
+      navItem('db','Dados',false)+
+      '<div class="nav-group-label">Administração</div>'+
+      navItem('users','Usuários',false)+
+      '<div class="sidebar-foot"></div>'+
+    '</aside>'+
+    '<div class="app-main">'+
+      '<header class="topbar">'+
+        '<div class="topbar-search">'+ic('search',15)+'<input type="text" placeholder="Pesquise por aqui..." /></div>'+
+        '<div class="topbar-spacer"></div>'+
+        '<div class="theme-toggle" id="theme-toggle">'+
+          '<button data-theme-choice="light" title="Tema claro">'+ic('sun',14)+'</button>'+
+          '<button data-theme-choice="dark" title="Tema escuro">'+ic('moon',14)+'</button>'+
+        '</div>'+
+        '<button class="icon-btn" title="Notificações">'+ic('bell',17)+'</button>'+
+        '<div class="user-chip"><div class="avatar">LV</div><div><div class="u-name">Luiza Vieira</div><div class="u-mail">lu@hwprod.com.br</div></div></div>'+
+      '</header>'+
+      '<main class="screen-root" id="screen-root"></main>'+
+    '</div>';
+  updateThemeToggle();
+}
+function navItem(icon,label,active){
+  return '<a href="#" class="nav-item'+(active?' active':'')+'" data-action="'+(label==='Processos'?'noop':'noop')+'">'+ic(icon,17)+'<span>'+label+'</span>'+(active?'<span class="nav-dot"></span>':'')+'</a>';
+}
+function updateThemeToggle(){
+  var el = qs('#theme-toggle'); if(!el) return;
+  Array.prototype.forEach.call(el.querySelectorAll('button'), function(b){
+    b.classList.toggle('active', (state.theme==='light' && b.dataset.themeChoice==='light') || (state.theme==='dark' && b.dataset.themeChoice==='dark'));
+  });
+}
+
+/* ============ SCREEN: HOME ============ */
+function renderScreen(){
+  var root = qs('#screen-root');
+  if (state.screen==='home') root.innerHTML = homeHTML();
+  else root.innerHTML = editorHTML();
+}
+
+function homeHTML(){
+  var filtered = state.processes.filter(function(p){
+    if (state.filter==='published' && p.status!=='published') return false;
+    if (state.filter==='draft' && p.status!=='draft') return false;
+    if (state.search && p.name.toLowerCase().indexOf(state.search.toLowerCase())===-1) return false;
+    return true;
+  });
+  var totalOpen = state.processes.reduce(function(a,p){return a+p.openCount;},0);
+  var published = state.processes.filter(function(p){return p.status==='published';}).length;
+
+  var cards = filtered.map(processCardHTML).join('');
+  var newCard = '<button class="new-process-card" data-action="open-wizard">'+
+    '<div class="np-plus">'+ic('plus',18)+'</div>Novo processo</button>';
+
+  return '<div class="screen-inner">'+
+    '<div class="page-head">'+
+      '<div><h1>Processos</h1><p class="page-sub">Monte fluxos internos com formulário, workflow, indicadores e permissões — sem escrever código.</p></div>'+
+      '<button class="btn btn-primary" data-action="open-wizard">'+ic('plus',16)+'Novo Processo</button>'+
+    '</div>'+
+    '<div class="stats-row">'+
+      statCard('Processos publicados', published, '')+
+      statCard('Solicitações em aberto', totalOpen, '+8 esta semana')+
+      statCard('SLA médio geral', '1,9 dias', '-0,2 dia no mês')+
+      statCard('Rascunhos', state.processes.filter(function(p){return p.status==='draft';}).length, '')+
+    '</div>'+
+    '<div class="toolbar">'+
+      '<div class="chip-row">'+
+        chip('all','Todos')+chip('published','Publicados')+chip('draft','Rascunhos')+
+      '</div>'+
+      '<div class="topbar-search" style="max-width:260px" id="home-search-wrap">'+ic('search',14)+'<input id="home-search" type="text" placeholder="Buscar processo..." value="'+esc(state.search)+'"/></div>'+
+    '</div>'+
+    '<div id="process-grid-area">'+homeGridAreaHTML(filtered, cards, newCard)+'</div>'+
+  '</div>';
+}
+function homeGridAreaHTML(filtered, cards, newCard){
+  return filtered.length ? '<div class="process-grid">'+cards+newCard+'</div>' :
+      '<div class="empty-state">'+
+        '<div class="es-ic">'+ic('search',22)+'</div>'+
+        '<div class="es-title">Nenhum processo encontrado</div>'+
+        '<div class="es-sub">Ajuste a busca ou os filtros, ou crie um novo processo do zero.</div>'+
+        '<button class="btn btn-primary" data-action="open-wizard" style="margin-top:6px">'+ic('plus',15)+'Novo Processo</button>'+
+      '</div>';
+}
+function refreshHomeGridArea(){
+  var area = qs('#process-grid-area'); if (!area) return;
+  var filtered = state.processes.filter(function(p){
+    if (state.filter==='published' && p.status!=='published') return false;
+    if (state.filter==='draft' && p.status!=='draft') return false;
+    if (state.search && p.name.toLowerCase().indexOf(state.search.toLowerCase())===-1) return false;
+    return true;
+  });
+  var cards = filtered.map(processCardHTML).join('');
+  var newCard = '<button class="new-process-card" data-action="open-wizard"><div class="np-plus">'+ic('plus',18)+'</div>Novo processo</button>';
+  area.innerHTML = homeGridAreaHTML(filtered, cards, newCard);
+}
+function statCard(label,value,trend){
+  return '<div class="stat-card"><div class="stat-label">'+esc(label)+'</div><div class="stat-value">'+esc(value)+'</div>'+(trend?'<div class="stat-trend">'+esc(trend)+'</div>':'')+'</div>';
+}
+function chip(key,label){
+  return '<button class="chip'+(state.filter===key?' active':'')+'" data-action="set-filter" data-filter="'+key+'">'+esc(label)+'</button>';
+}
+function processCardHTML(p){
+  var statusBadge = p.status==='published' ? '<span class="badge badge-success">'+ic('check',10)+' Publicado</span>' : '<span class="badge badge-muted">Rascunho</span>';
+  return '<button class="process-card" data-action="open-editor" data-id="'+p.id+'">'+
+    '<div class="pc-top"><div class="pc-icon" style="background:'+p.color+'22;color:'+p.color+'">'+p.icon+'</div>'+statusBadge+'</div>'+
+    '<div><div class="pc-name">'+esc(p.name)+'</div><div class="pc-desc">'+esc(p.description)+'</div></div>'+
+    '<div class="pc-meta"><span>'+esc(p.category)+'</span><span class="pc-open">'+(p.status==='published' ? p.openCount+' abertas' : 'Alterado '+p.updatedAt)+'</span></div>'+
+  '</button>';
+}
+
+/* ============ EDITOR SHELL ============ */
+function editorHTML(){
+  var p = currentProcess(); if(!p) { state.screen='home'; return homeHTML(); }
+  var tabs = [
+    ['geral','Geral','gear'], ['form','Formulário','doc'], ['workflow','Workflow','flow'],
+    ['dashboard','Dashboard','chart'], ['permissoes','Permissões','shield']
+  ];
+  var tabsHTML = tabs.map(function(t){
+    return '<button class="etab'+(state.editorTab===t[0]?' active':'')+'" data-action="set-etab" data-tab="'+t[0]+'">'+ic(t[2],14)+esc(t[1])+'</button>';
+  }).join('');
+
+  var body;
+  if (state.editorTab==='geral') body = geralTabHTML(p);
+  else if (state.editorTab==='form') body = formTabHTML();
+  else if (state.editorTab==='workflow') body = workflowTabHTML();
+  else if (state.editorTab==='dashboard') body = dashboardTabHTML();
+  else body = permissoesTabHTML();
+
+  var flush = state.editorTab==='form' || state.editorTab==='workflow';
+
+  return ''+
+    '<div class="editor-topbar">'+
+      '<a href="#" class="back-link" data-action="go-home">'+ic('arrowLeft',14)+'Voltar para Processos</a>'+
+      '<div class="editor-header">'+
+        '<div class="editor-header-left">'+
+          '<div class="editor-icon" style="background:'+p.color+'22;color:'+p.color+'">'+p.icon+'</div>'+
+          '<div><div class="editor-title-row"><h2 id="editor-title-text">'+esc(p.name)+'</h2>'+(p.status==='published'?'<span class="badge badge-success">Publicado</span>':'<span class="badge badge-muted">Rascunho</span>')+'</div>'+
+          '<div class="editor-desc">'+esc(p.description)+'</div></div>'+
+        '</div>'+
+        '<div class="editor-actions">'+
+          '<button class="btn btn-outline btn-sm" data-action="noop">'+ic('eye',15)+'Visualizar</button>'+
+          '<button class="btn btn-primary btn-sm" data-action="open-publish">'+ic('bolt',15)+'Publicar</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="editor-tabs">'+tabsHTML+'</div>'+
+    '<div class="'+(flush?'etab-body-flush':'etab-body')+'">'+body+'</div>';
+}
+
+/* ---- Geral tab ---- */
+function geralTabHTML(p){
+  return '<div class="screen-inner" style="padding:26px 0 0;max-width:640px">'+
+    '<div class="section-head"><div><h3>Informações gerais</h3><p>Nome, descrição e identidade visual usados na lista de processos.</p></div></div>'+
+    '<div class="field-row"><label class="field-label">Nome do processo</label><input class="input" data-bind="p.name" value="'+esc(p.name)+'"/></div>'+
+    '<div class="field-row"><label class="field-label">Descrição</label><textarea class="textarea" data-bind="p.description">'+esc(p.description)+'</textarea></div>'+
+    '<div class="field-row"><label class="field-label">Categoria</label><select class="select" data-bind="p.category">'+CATEGORIES.map(function(c){return '<option'+(c===p.category?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>'+
+    '<div class="field-row"><label class="field-label">Ícone</label><div class="icon-grid">'+ICON_OPTIONS.map(function(i){return '<button type="button" class="icon-swatch'+(i===p.icon?' selected':'')+'" data-action="set-icon" data-icon="'+i+'">'+i+'</button>';}).join('')+'</div></div>'+
+    '<div class="field-row"><label class="field-label">Cor</label><div class="color-grid">'+COLOR_OPTIONS.map(function(c){return '<button type="button" class="color-swatch'+(c.v===p.color?' selected':'')+'" style="background:'+c.v+'" title="'+c.name+'" data-action="set-color" data-color="'+c.v+'"></button>';}).join('')+'</div></div>'+
+  '</div>';
+}
+
+/* ---- Form builder tab ---- */
+function formTabHTML(){
+  var d = currentData();
+  var palette = FIELD_TYPES.map(function(g){
+    return '<div class="fb-group-label">'+g.group+'</div>'+g.items.map(function(it){
+      return '<div class="palette-item" draggable="true" data-fieldtype="'+it.type+'" data-action="palette-drag"><div class="pi-ic">'+ic(it.icon,13)+'</div>'+it.label+'</div>';
+    }).join('');
+  }).join('');
+
+  var canvasInner = d.formFields.length ? d.formFields.map(function(f){
+    var meta = fieldTypeMeta(f.type);
+    return '<div class="field-card'+(state.selectedFieldId===f.id?' selected':'')+'" draggable="true" data-action="select-field" data-id="'+f.id+'">'+
+      '<span class="fc-drag">'+ic('drag',15)+'</span>'+
+      '<div class="fc-ic">'+ic(meta.icon,14)+'</div>'+
+      '<div class="fc-text"><div class="fc-label"><span id="fc-label-'+f.id+'">'+esc(f.label)+'</span>'+(f.required?' <span style="color:var(--error)">*</span>':'')+'</div><div class="fc-type">'+meta.label+'</div></div>'+
+      '<div class="fc-actions"><button class="icon-btn" data-action="delete-field" data-id="'+f.id+'" title="Excluir">'+ic('trash',14)+'</button></div>'+
+    '</div>';
+  }).join('') : '<div class="fb-empty"><div class="fe-ic">'+ic('doc',22)+'</div><div style="font-weight:700;color:var(--ink)">Arraste um componente aqui</div><div style="max-width:260px">Escolha um campo na paleta à esquerda e solte no formulário para começar.</div></div>';
+
+  var field = d.formFields.find(function(f){return f.id===state.selectedFieldId;});
+  var inspector = field ? fieldInspectorHTML(field) : '<div class="fb-inspector-empty">Selecione um campo no formulário para configurar rótulo, obrigatoriedade e visibilidade condicional.</div>';
+
+  return '<div class="fb-layout">'+
+    '<div class="fb-col fb-palette"><div class="fb-group-label" style="margin-top:0">Paleta de componentes</div>'+palette+'</div>'+
+    '<div class="fb-col fb-canvas-col"><div class="section-head" style="margin-bottom:12px"><div><h3>Construtor de formulário</h3><p>Este formulário é a etapa "Formulário enviado" do workflow.</p></div></div>'+
+      '<div class="fb-canvas" id="fb-canvas" data-action="canvas-dropzone">'+canvasInner+'</div>'+
+    '</div>'+
+    '<div class="fb-col fb-inspector"><div class="fb-group-label" style="margin-top:0">Configuração do componente</div>'+inspector+'</div>'+
+  '</div>';
+}
+function fieldInspectorHTML(f){
+  var meta = fieldTypeMeta(f.type);
+  return '<div style="font-size:11.5px;color:var(--ink-faint);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:6px">'+ic(meta.icon,13)+meta.label+'</div>'+
+    '<div class="field-row"><label class="field-label">Rótulo do campo</label><input class="input" data-bind="field.label" data-id="'+f.id+'" value="'+esc(f.label)+'"/></div>'+
+    '<div class="field-row"><label class="field-label">Texto de ajuda</label><input class="input" data-bind="field.help" data-id="'+f.id+'" value="'+esc(f.help||'')+'" placeholder="Opcional"/></div>'+
+    '<div class="field-row"><label class="field-label">Placeholder</label><input class="input" data-bind="field.placeholder" data-id="'+f.id+'" value="'+esc(f.placeholder||'')+'" placeholder="Opcional"/></div>'+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Campo obrigatório</div><div class="sr-sub">Impede o envio sem preenchimento</div></div>'+switchHTML('field.required', f.id, !!f.required)+'</div>'+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Visibilidade condicional</div><div class="sr-sub">Mostrar apenas quando outra condição for atendida</div></div>'+switchHTML('field.conditional', f.id, !!f.conditional)+'</div>'+
+    (f.conditional ? '<div class="rule-row"><span style="font-size:11.5px;color:var(--ink-faint);white-space:nowrap">Mostrar se</span><select class="select"><option>Tipo de solicitação</option></select><select class="select"><option>igual a</option></select><input class="input" placeholder="Urgente"/></div>' : '')+
+    '<button class="btn btn-danger-ghost btn-sm" style="margin-top:10px" data-action="delete-field" data-id="'+f.id+'">'+ic('trash',14)+'Excluir campo</button>';
+}
+function switchHTML(bind,id,checked){
+  return '<label class="switch"><input type="checkbox" data-bind="'+bind+'" data-id="'+(id||'')+'" '+(checked?'checked':'')+'/><span class="track"><span class="thumb"></span></span></label>';
+}
+
+/* ---- Workflow tab ---- */
+function stepIcon(step){
+  if (step.system && step.initial) return '📨';
+  if (step.system && step.final) return '🏁';
+  var t = STEP_TYPES.find(function(x){return x.type===step.type;});
+  return t ? t.icon : '🗂️';
+}
+function workflowTabHTML(){
+  var d = currentData();
+  var nodes = d.steps.map(function(s,i){
+    var selected = state.selectedStepId===s.id;
+    var node = '<div class="wf-node'+(selected?' selected':'')+(s.system?' system':'')+(s.final?' final':'')+'" data-action="select-step" data-id="'+s.id+'">'+
+      (s.initial?'<span class="wf-tag">Etapa inicial</span>':'')+
+      '<div class="wf-ic">'+stepIcon(s)+'</div>'+
+      '<div class="wf-text"><div class="wf-name" id="wf-name-'+s.id+'">'+esc(s.name)+'</div><div class="wf-sub">'+(s.system?'Etapa do sistema':(s.responsavel?respLabel(s.responsavel):'Sem responsável definido'))+'</div></div>'+
+    '</div>';
+    var connector = (i < d.steps.length) ? '<div class="wf-connector"></div>' : '';
+    return node + connector;
+  }).join('');
+
+  return '<div class="wf-layout">'+
+    '<div class="wf-canvas-wrap"><div class="wf-flow">'+
+      nodes+
+      '<button class="wf-add" data-action="open-add-step">'+ic('plus',15)+'Adicionar Etapa</button>'+
+    '</div></div>'+
+    '<div class="wf-panel">'+workflowPanelHTML()+'</div>'+
+  '</div>';
+}
+function respLabel(r){
+  if (!r) return 'Sem responsável';
+  if (r.tipo==='Departamento') return 'Departamento · '+r.valor;
+  return r.tipo;
+}
+function workflowPanelHTML(){
+  var step = findStep(state.selectedStepId);
+  if (!step){
+    return '<div class="wf-panel-empty"><div class="we-ic">'+ic('flow',20)+'</div><div style="font-weight:700;color:var(--ink)">Selecione uma etapa</div><div>Clique em uma etapa no fluxo ao lado para configurar responsável, SLA, campos e ações.</div></div>';
+  }
+  var isSystem = !!step.system;
+  var head = '<div class="wf-panel-head"><div class="wf-panel-title" id="wf-panel-title-text">'+esc(step.name)+'</div><div class="wf-panel-sub">'+(isSystem?'Etapa do sistema — configurações limitadas':'Configurações da etapa')+'</div></div>';
+
+  if (isSystem){
+    return head+'<div class="wf-panel-body">'+
+      '<div class="field-row"><label class="field-label">Nome da etapa</label><input class="input" value="'+esc(step.name)+'" disabled/></div>'+
+      '<div class="field-hint" style="margin-bottom:16px">'+(step.initial?'Esta é a etapa inicial: é criada automaticamente quando o formulário é enviado.':'Esta é a etapa final: encerra a solicitação, sem ações adicionais.')+'</div>'+
+    '</div>';
+  }
+
+  var tabs = [['geral','Geral'],['responsavel','Responsável'],['sla','SLA'],['campos','Campos'],['acoes','Ações']];
+  var tabsHTML = tabs.map(function(t){ return '<button class="subtab'+(state.stepTab===t[0]?' active':'')+'" data-action="set-steptab" data-tab="'+t[0]+'">'+t[1]+'</button>'; }).join('');
+
+  var body;
+  if (state.stepTab==='geral') body = stepGeralHTML(step);
+  else if (state.stepTab==='responsavel') body = stepResponsavelHTML(step);
+  else if (state.stepTab==='sla') body = stepSlaHTML(step);
+  else if (state.stepTab==='campos') body = stepCamposHTML(step);
+  else body = stepAcoesHTML(step);
+
+  return head + '<div class="subtabs">'+tabsHTML+'</div><div class="wf-panel-body">'+body+'</div>';
+}
+function stepGeralHTML(step){
+  return '<div class="field-row"><label class="field-label">Nome da etapa</label><input class="input" data-bind="step.name" data-stepid="'+step.id+'" value="'+esc(step.name)+'"/></div>'+
+    '<div class="field-row"><label class="field-label">Descrição</label><textarea class="textarea" data-bind="step.description" data-stepid="'+step.id+'">'+esc(step.description||'')+'</textarea></div>'+
+    '<div class="field-row"><label class="field-label">Tipo de etapa</label><div class="step-type-grid">'+STEP_TYPES.map(function(t){
+      return '<button class="step-type-opt'+(step.type===t.type?' selected':'')+'" data-action="set-steptype" data-stepid="'+step.id+'" data-type="'+t.type+'"><span class="sto-ic">'+t.icon+'</span>'+t.label+'</button>';
+    }).join('')+'</div></div>'+
+    '<button class="btn btn-danger-ghost btn-sm" data-action="delete-step" data-id="'+step.id+'">'+ic('trash',14)+'Excluir etapa</button>';
+}
+function stepResponsavelHTML(step){
+  var r = step.responsavel || {tipo:'Usuário específico'};
+  var tipos = ['Usuário específico','Cargo','Departamento','Gestor do solicitante','Grupo'];
+  return '<div class="field-row"><label class="field-label">Tipo de responsável</label><select class="select" data-bind="step.resp_tipo" data-stepid="'+step.id+'">'+tipos.map(function(t){return '<option'+(t===r.tipo?' selected':'')+'>'+t+'</option>';}).join('')+'</select></div>'+
+    (r.tipo!=='Gestor do solicitante' ? '<div class="field-row"><label class="field-label">'+(r.tipo==='Departamento'?'Selecione o departamento':r.tipo==='Cargo'?'Selecione o cargo':r.tipo==='Grupo'?'Selecione o grupo':'Selecione a pessoa')+'</label><select class="select" data-bind="step.resp_valor" data-stepid="'+step.id+'"><option'+((r.valor||'')==='Recursos Humanos'?' selected':'')+'>Recursos Humanos</option><option>Financeiro</option><option>Tecnologia</option><option>Jurídico</option></select></div>' :
+      '<div class="field-hint">O responsável será calculado automaticamente com base no organograma de quem enviou a solicitação.</div>')+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Permitir reatribuição</div><div class="sr-sub">O responsável pode transferir a etapa para outra pessoa</div></div>'+switchHTML('step.allowReassign', step.id, step.allowReassign!==false)+'</div>';
+}
+function stepSlaHTML(step){
+  var s = step.sla || {prazo:1,unidade:'dias',aoVencer:'Notificar responsável'};
+  return '<div class="field-row-2"><div><label class="field-label">Prazo</label><input class="input" type="number" min="1" data-bind="step.sla_prazo" data-stepid="'+step.id+'" value="'+s.prazo+'"/></div>'+
+    '<div><label class="field-label">Unidade</label><select class="select" data-bind="step.sla_unidade" data-stepid="'+step.id+'"><option'+(s.unidade==='horas'?' selected':'')+'>horas</option><option'+(s.unidade==='dias'?' selected':'')+'>dias</option></select></div></div>'+
+    '<div class="field-row"><label class="field-label">Ação ao vencer o SLA</label><select class="select" data-bind="step.sla_vencer" data-stepid="'+step.id+'">'+
+      ['Notificar responsável','Notificar e escalar para o gestor superior','Aprovar automaticamente','Reprovar automaticamente'].map(function(o){return '<option'+(o===s.aoVencer?' selected':'')+'>'+o+'</option>';}).join('')+
+    '</select></div>'+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Avisar antes de vencer</div><div class="sr-sub">'+(s.avisarTempo||'4 horas antes')+'</div></div>'+switchHTML('step.sla_avisar', step.id, !!s.avisarAntes)+'</div>';
+}
+function stepCamposHTML(step){
+  var d = currentData();
+  if (!d.formFields.length) return '<div class="field-hint">Nenhum campo criado ainda. Adicione campos na aba Formulário para controlar a visibilidade por etapa.</div>';
+  var rows = d.formFields.map(function(f){
+    var cfg = (step.campos||[]).find(function(c){return c.fieldId===f.id;}) || {visibility:'visible'};
+    return '<div class="field-mini-row"><div><div class="fmr-name">'+esc(f.label)+'</div><div class="fmr-type">'+fieldTypeMeta(f.type).label+'</div></div>'+
+      '<div class="seg" data-action="set-fieldvis" data-stepid="'+step.id+'" data-fieldid="'+f.id+'">'+
+        ['hidden','visible','editable'].map(function(v){ var lbl={hidden:'Oculto',visible:'Visível',editable:'Editável'}[v]; return '<button class="'+(cfg.visibility===v?'active':'')+'" data-vis="'+v+'">'+lbl+'</button>'; }).join('')+
+      '</div></div>';
+  }).join('');
+  return '<div class="field-hint" style="margin-bottom:10px">Defina como cada campo do formulário aparece para o responsável desta etapa.</div>'+rows;
+}
+function stepAcoesHTML(step){
+  var actions = step.acoes || [];
+  var cards = actions.map(function(a){
+    var dest = findStep(a.destinationStepId);
+    var condHTML = a.conditions && a.conditions.length ? '<div class="ac-cond">SE '+esc(a.conditions[0].field)+' '+esc(a.conditions[0].operator).toUpperCase()+' '+esc(a.conditions[0].value)+'</div>' : '';
+    return '<div class="action-card" data-action="open-action" data-stepid="'+step.id+'" data-actionid="'+a.id+'">'+
+      '<div class="ac-top"><div class="ac-name"><span class="ac-ic">'+ic(a.icon,12)+'</span>'+esc(a.name)+'</div>'+(a.automations&&a.automations.length?'<span class="badge badge-info">'+a.automations.length+' automa'+(a.automations.length>1?'ções':'ção')+'</span>':'')+'</div>'+
+      '<div class="ac-desc">'+esc(a.description)+'</div>'+
+      '<div class="ac-dest">Destino: <span>'+(dest?esc(dest.name):'—')+'</span></div>'+
+      condHTML+
+    '</div>';
+  }).join('');
+  return '<div class="action-list-note">As ações representam as decisões que o responsável desta etapa poderá tomar.</div>'+
+    cards+
+    '<button class="add-action-btn" data-action="open-add-action" data-stepid="'+step.id+'">'+ic('plus',14)+' Adicionar Ação</button>';
+}
+
+/* ---- Dashboard tab ---- */
+function dashboardTabHTML(){
+  var d = currentData();
+  var widgets = d.widgets.map(widgetHTML).join('');
+  var addCard = '<div class="add-widget-card" data-action="open-add-widget">'+ic('plus',18)+'Adicionar indicador</div>';
+  return '<div class="screen-inner" style="padding:26px 0 0">'+
+    '<div class="section-head"><div><h3>Indicadores do processo</h3><p>Métricas visíveis para quem administra e acompanha este processo.</p></div>'+
+      '<button class="btn btn-outline btn-sm" data-action="open-add-widget">'+ic('plus',14)+'Adicionar Indicador</button></div>'+
+    (d.widgets.length ? '<div class="widget-grid">'+widgets+addCard+'</div>' :
+      '<div class="empty-state"><div class="es-ic">'+ic('chart',22)+'</div><div class="es-title">Nenhum indicador configurado</div><div class="es-sub">Indicadores são opcionais, mas ajudam o time a acompanhar volume, SLA e gargalos.</div><button class="btn btn-primary" style="margin-top:6px" data-action="open-add-widget">'+ic('plus',14)+'Adicionar Indicador</button></div>')+
+  '</div>';
+}
+function widgetHTML(w){
+  var remove = '<button class="icon-btn widget-remove" data-action="remove-widget" data-id="'+w.id+'" title="Remover">'+ic('x',14)+'</button>';
+  if (w.type==='kpi'){
+    return '<div class="kpi-card widget-shell">'+remove+'<div class="kc-label">'+esc(w.label)+'</div><div class="kc-value">'+esc(w.value)+'</div><div class="kc-trend">'+esc(w.trend)+'</div></div>';
+  }
+  if (w.type==='funnel'){
+    var max = Math.max.apply(null, w.data.map(function(x){return x.value;}));
+    var rows = w.data.map(function(x){ return '<div class="funnel-row"><div class="fr-name">'+esc(x.name)+'</div><div class="fr-bar-wrap"><div class="fr-bar" style="width:'+Math.round(x.value/max*100)+'%"></div></div><div class="fr-val">'+x.value+'</div></div>'; }).join('');
+    return '<div class="chart-card widget-shell">'+remove+'<div class="cc-label">'+esc(w.label)+'</div>'+rows+'</div>';
+  }
+  var max2 = Math.max.apply(null, w.data.map(function(x){return x.value;}));
+  var cols = w.data.map(function(x){ return '<div class="bc-col"><div class="bc-val">'+x.value+'</div><div class="bc-bar" style="height:'+Math.round(x.value/max2*100)+'%"></div><div class="bc-label">'+esc(x.name)+'</div></div>'; }).join('');
+  return '<div class="chart-card widget-shell">'+remove+'<div class="cc-label">'+esc(w.label)+'</div><div class="bar-chart">'+cols+'</div></div>';
+}
+
+/* ---- Permissões tab ---- */
+function permissoesTabHTML(){
+  var d = currentData();
+  var rows = d.permissions.map(function(r){
+    return '<tr><td><span class="perm-avatar">'+esc(r.group.slice(0,2).toUpperCase())+'</span>'+esc(r.group)+'</td>'+
+      ['criar','visualizar','editar','administrar','acompanhar'].map(function(k){
+        return '<td><input type="checkbox" class="checkbox" data-action="toggle-perm" data-id="'+r.id+'" data-key="'+k+'" '+(r[k]?'checked':'')+'/></td>';
+      }).join('')+
+    '</tr>';
+  }).join('');
+  return '<div class="screen-inner" style="padding:26px 0 0">'+
+    '<div class="section-head"><div><h3>Permissões</h3><p>Defina quem pode criar, visualizar, editar, administrar ou acompanhar este processo.</p></div>'+
+      '<button class="btn btn-outline btn-sm" data-action="add-perm-group">'+ic('plus',14)+'Adicionar grupo</button></div>'+
+    '<div class="table-wrap"><table class="perm-table"><thead><tr><th>Grupo / Cargo</th><th>Criar</th><th>Visualizar</th><th>Editar</th><th>Administrar</th><th>Acompanhar</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="perm-note">'+ic('info',16)+'<div>Colaboradores só verão este processo no catálogo se tiverem permissão de <strong>Criar</strong> ou <strong>Acompanhar</strong>.</div></div>'+
+  '</div>';
+}
+
+/* ============ MODALS ============ */
+function renderModal(){
+  var root = qs('#modal-root');
+  if (state.wizardOpen){ root.innerHTML = wizardModalHTML(); return; }
+  if (state.addStepOpen){ root.innerHTML = addStepModalHTML(); return; }
+  if (state.addActionOpen){ root.innerHTML = addActionModalHTML(); return; }
+  if (state.addWidgetOpen){ root.innerHTML = addWidgetModalHTML(); return; }
+  root.innerHTML='';
+}
+function wizardModalHTML(){
+  var w = state.wizardDraft;
+  return '<div class="overlay" data-action="close-wizard-overlay"><div class="modal modal-md">'+
+    '<div class="modal-head"><div><h3>Criar processo</h3><p>Etapa 1 de 5 — informações básicas</p></div><button class="icon-btn" data-action="close-wizard">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body"><div class="wizard-grid">'+
+      '<div>'+
+        '<div class="field-row"><label class="field-label">Nome do processo</label><input class="input" id="wz-name" placeholder="Ex: Solicitação de Home Office" value="'+esc(w.name)+'" data-bind="wizard.name"/></div>'+
+        '<div class="field-row"><label class="field-label">Descrição</label><textarea class="textarea" placeholder="Explique em uma frase para que serve este processo" data-bind="wizard.description">'+esc(w.description)+'</textarea></div>'+
+        '<div class="field-row"><label class="field-label">Categoria</label><select class="select" data-bind="wizard.category">'+CATEGORIES.map(function(c){return '<option'+(c===w.category?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>'+
+        '<div class="field-row"><label class="field-label">Ícone</label><div class="icon-grid">'+ICON_OPTIONS.map(function(i){return '<button type="button" class="icon-swatch'+(i===w.icon?' selected':'')+'" data-action="wz-set-icon" data-icon="'+i+'">'+i+'</button>';}).join('')+'</div></div>'+
+        '<div class="field-row" style="margin-bottom:0"><label class="field-label">Cor</label><div class="color-grid">'+COLOR_OPTIONS.map(function(c){return '<button type="button" class="color-swatch'+(c.v===w.color?' selected':'')+'" style="background:'+c.v+'" data-action="wz-set-color" data-color="'+c.v+'"></button>';}).join('')+'</div></div>'+
+      '</div>'+
+      '<div class="preview-panel" id="wz-preview">'+'<div class="pp-label">Pré-visualização</div>'+processCardHTML(Object.assign({},w,{id:'preview',status:'draft',updatedAt:'agora'}))+'</div>'+
+    '</div></div>'+
+    '<div class="modal-foot"><button class="btn btn-ghost" data-action="close-wizard">Cancelar</button><button class="btn btn-primary" id="wz-continue-btn" data-action="wizard-continue" '+(w.name.trim()?'':'disabled')+'>Continuar<span style="display:inline-flex">'+ic('arrowLeft',14).replace('rotate(0)','')+'</span></button></div>'+
+  '</div></div>';
+}
+function addStepModalHTML(){
+  var ns = state.newStep;
+  return '<div class="overlay" data-action="close-addstep-overlay"><div class="modal modal-sm">'+
+    '<div class="modal-head"><div><h3>Nova etapa</h3><p>Insira antes de "Finalizado"</p></div><button class="icon-btn" data-action="close-addstep">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+
+      '<div class="field-row"><label class="field-label">Nome da etapa</label><input class="input" id="ns-name" placeholder="Ex: Aprovação financeira" value="'+esc(ns.name)+'" data-bind="newstep.name"/></div>'+
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Tipo</label><div class="step-type-grid">'+STEP_TYPES.map(function(t){return '<button type="button" class="step-type-opt'+(ns.type===t.type?' selected':'')+'" data-action="ns-set-type" data-type="'+t.type+'"><span class="sto-ic">'+t.icon+'</span>'+t.label+'</button>';}).join('')+'</div></div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn btn-ghost" data-action="close-addstep">Cancelar</button><button class="btn btn-primary" id="ns-confirm-btn" data-action="confirm-addstep" '+(ns.name.trim()?'':'disabled')+'>Criar etapa</button></div>'+
+  '</div></div>';
+}
+function addActionModalHTML(){
+  var tpls = ACTION_TEMPLATES.map(function(t){
+    return '<button type="button" class="action-tpl" data-action="confirm-addaction" data-name="'+esc(t.name)+'" data-icon="'+t.icon+'"><div class="at-ic">'+ic(t.icon,14)+'</div><div><div class="at-title">'+t.name+'</div><div class="at-sub">'+t.desc+'</div></div></button>';
+  }).join('');
+  return '<div class="overlay" data-action="close-addaction-overlay"><div class="modal modal-sm">'+
+    '<div class="modal-head"><div><h3>Adicionar ação</h3><p>Escolha um modelo para começar</p></div><button class="icon-btn" data-action="close-addaction">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+tpls+'</div>'+
+  '</div></div>';
+}
+function addWidgetModalHTML(){
+  var kpis = [
+    {label:'Total de solicitações',icon:'grid'},{label:'Tempo médio de conclusão',icon:'clock'},
+    {label:'SLA cumprido',icon:'shield'},{label:'Taxa de aprovação',icon:'check'}
+  ];
+  var charts = [
+    {label:'Por etapa (funil)',icon:'funnel2',type:'funnel'},{label:'Por responsável (barras)',icon:'chart',type:'bar'},
+  ];
+  var kpiHTML = kpis.map(function(k){return '<button type="button" class="action-tpl" data-action="confirm-addwidget" data-kind="kpi" data-label="'+esc(k.label)+'"><div class="at-ic">'+ic(k.icon,14)+'</div><div class="at-title">'+k.label+'</div></button>';}).join('');
+  var chartHTML = charts.map(function(k){return '<button type="button" class="action-tpl" data-action="confirm-addwidget" data-kind="'+k.type+'" data-label="'+esc(k.label)+'"><div class="at-ic">'+ic(k.icon,14)+'</div><div class="at-title">'+k.label+'</div></button>';}).join('');
+  return '<div class="overlay" data-action="close-addwidget-overlay"><div class="modal modal-sm">'+
+    '<div class="modal-head"><div><h3>Adicionar indicador</h3><p>KPIs e gráficos para o dashboard do processo</p></div><button class="icon-btn" data-action="close-addwidget">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body"><div class="fb-group-label" style="margin-top:0">KPIs</div>'+kpiHTML+'<div class="fb-group-label">Gráficos</div>'+chartHTML+'</div>'+
+  '</div></div>';
+}
+
+/* ============ DRAWERS (action config + publish) ============ */
+function renderDrawer(){
+  var root = qs('#drawer-root');
+  if (state.openAction){ root.innerHTML = actionDrawerHTML(); return; }
+  if (state.publishOpen){ root.innerHTML = publishDrawerHTML(); return; }
+  root.innerHTML='';
+}
+function actionDrawerHTML(){
+  var a = findAction(state.openAction.stepId, state.openAction.actionId);
+  if (!a) return '';
+  var tabs = [['resultado','Resultado'],['condicoes','Condições'],['interface','Interface'],['automacoes','Automações']];
+  var tabsHTML = tabs.map(function(t){ return '<button class="subtab'+(state.actionTab===t[0]?' active':'')+'" data-action="set-actiontab" data-tab="'+t[0]+'">'+t[1]+'</button>'; }).join('');
+  var body;
+  if (state.actionTab==='resultado') body = actionResultadoHTML(a);
+  else if (state.actionTab==='condicoes') body = actionCondicoesHTML(a);
+  else if (state.actionTab==='interface') body = actionInterfaceHTML(a);
+  else body = actionAutomacoesHTML(a);
+  return '<div class="drawer-overlay" data-action="close-action-overlay"><div class="drawer">'+
+    '<div class="drawer-head" style="position:relative"><div class="dh-eyebrow">Configurar ação</div><h3><span id="action-drawer-icon">'+ic(a.icon,16)+'</span> <span id="action-drawer-title-text">'+esc(a.name)+'</span></h3><button class="icon-btn drawer-close" data-action="close-action">'+ic('x',16)+'</button></div>'+
+    '<div class="subtabs" style="padding-left:22px;padding-right:22px">'+tabsHTML+'</div>'+
+    '<div class="drawer-body">'+body+'</div>'+
+    '<div class="drawer-foot"><button class="btn btn-danger-ghost btn-sm" data-action="delete-action" data-stepid="'+state.openAction.stepId+'" data-actionid="'+a.id+'">'+ic('trash',14)+'Excluir ação</button><button class="btn btn-primary btn-sm" data-action="close-action">Concluir</button></div>'+
+  '</div></div>';
+}
+function actionResultadoHTML(a){
+  var d = currentData();
+  var steps = d.steps.filter(function(s){return s.id!==state.openAction.stepId;});
+  return '<div class="field-row"><label class="field-label">Nome da ação</label><input class="input" data-bind="action.name" value="'+esc(a.name)+'"/></div>'+
+    '<div class="field-row"><label class="field-label">Texto do botão</label><input class="input" data-bind="action.buttonLabel" value="'+esc(a.result.buttonLabel)+'"/></div>'+
+    '<div class="field-row"><label class="field-label">Etapa de destino</label><select class="select" data-bind="action.destination">'+steps.map(function(s){return '<option value="'+s.id+'"'+(s.id===a.destinationStepId?' selected':'')+'>'+esc(s.name)+'</option>';}).join('')+'</select></div>'+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Encerra o processo</div><div class="sr-sub">A solicitação é finalizada ao executar esta ação</div></div>'+switchHTML('action.ends', '', !!a.result.endsProcess)+'</div>';
+}
+function actionCondicoesHTML(a){
+  var rows = (a.conditions||[]).map(function(c,i){
+    return '<div class="rule-row"><select class="select"><option'+(c.field==='Valor total'?' selected':'')+'>Valor total</option><option'+(c.field==='Tipo de solicitação'?' selected':'')+'>Tipo de solicitação</option><option'+(c.field==='Departamento'?' selected':'')+'>Departamento</option></select>'+
+      '<select class="select"><option'+(c.operator==='maior ou igual a'?' selected':'')+'>maior ou igual a</option><option'+(c.operator==='menor que'?' selected':'')+'>menor que</option><option'+(c.operator==='igual a'?' selected':'')+'>igual a</option></select>'+
+      '<input class="input" value="'+esc(c.value)+'"/><button class="icon-btn" data-action="remove-condition" data-idx="'+i+'">'+ic('x',14)+'</button></div>';
+  }).join('');
+  return '<div class="switch-row"><div class="sr-text"><div class="sr-title">Exigir condições</div><div class="sr-sub">A ação só aparece se as condições abaixo forem verdadeiras</div></div>'+switchHTML('action.hasConditions','', (a.conditions||[]).length>0)+'</div>'+
+    '<div style="margin-top:14px">'+(rows||'<div class="field-hint" style="margin-bottom:10px">Nenhuma condição — a ação sempre estará disponível.</div>')+'</div>'+
+    (rows?'<div class="rule-connector">E</div>':'')+
+    '<button class="add-line-btn" data-action="add-condition">'+ic('plus',13)+'Adicionar condição</button>';
+}
+function actionInterfaceHTML(a){
+  var i = a.interface||{};
+  return '<div class="field-row"><label class="field-label">Comentário</label><select class="select" data-bind="action.commentRequired"><option'+(i.commentRequired==='Obrigatório'?' selected':'')+'>Obrigatório</option><option'+(i.commentRequired==='Opcional'?' selected':'')+'>Opcional</option><option'+(i.commentRequired==='Oculto'?' selected':'')+'>Oculto</option></select></div>'+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Permitir anexos</div><div class="sr-sub">Quem executa a ação pode anexar arquivos</div></div>'+switchHTML('action.allowAttachments','',!!i.allowAttachments)+'</div>'+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Solicitar escolha de usuário</div><div class="sr-sub">Útil para ações como "Transferir"</div></div>'+switchHTML('action.requireUserPick','',!!i.requireUserPick)+'</div>'+
+    '<div class="field-row" style="margin-top:16px"><label class="field-label">Campos extras exibidos nesta ação</label>'+
+      (currentData().formFields.length ? currentData().formFields.map(function(f){return '<div class="switch-row"><div class="sr-text"><div class="sr-title">'+esc(f.label)+'</div></div>'+switchHTML('action.extrafield',f.id,false)+'</div>';}).join('') : '<div class="field-hint">Nenhum campo disponível ainda.</div>')+
+    '</div>';
+}
+function actionAutomacoesHTML(a){
+  var rows = (a.automations||[]).map(function(au){
+    var meta = AUTOMATION_TYPES.find(function(t){return t.type===au.type;}) || {icon:'bolt'};
+    return '<div class="automation-row"><div class="au-ic">'+ic(meta.icon,15)+'</div><div class="au-text"><div class="au-title">'+esc(au.label)+'</div><div class="au-sub">'+esc(au.target||'')+'</div></div><button class="icon-btn" data-action="remove-automation" data-id="'+au.id+'">'+ic('trash',14)+'</button></div>';
+  }).join('');
+  var gallery = AUTOMATION_TYPES.map(function(t){
+    return '<button type="button" class="automation-opt" data-action="add-automation" data-type="'+t.type+'" data-label="'+t.label+'"><div class="ao-ic">'+ic(t.icon,14)+'</div><div class="ao-title">'+t.label+'</div></button>';
+  }).join('');
+  return '<div class="field-hint" style="margin-bottom:12px">Executadas automaticamente depois que esta ação é confirmada.</div>'+
+    (rows || '<div class="field-hint" style="margin-bottom:14px">Nenhuma automação configurada.</div>')+
+    '<div class="fb-group-label">Adicionar automação</div><div class="automation-gallery">'+gallery+'</div>';
+}
+
+function publishDrawerHTML(){
+  var d = currentData(); var p = currentProcess();
+  var checks = [
+    {ok:d.formFields.length>0, title:'Formulário configurado', sub:d.formFields.length+' campo(s) adicionados'},
+    {ok:d.steps.filter(function(s){return !s.system;}).length>0, title:'Workflow com etapas definidas', sub:(d.steps.length-2)+' etapa(s) além de início e fim'},
+    {ok:d.steps.some(function(s){return (s.acoes||[]).length>0;}), title:'Ações configuradas', sub:'Responsáveis podem tomar decisões em cada etapa'},
+    {ok:d.permissions.some(function(r){return r.criar;}), title:'Permissões definidas', sub:'Ao menos um grupo pode criar solicitações'},
+    {ok:d.widgets.length>0, title:'Indicadores configurados', sub: d.widgets.length>0 ? d.widgets.length+' indicador(es) no dashboard' : 'Opcional — nenhum indicador adicionado ainda', optional:true},
+  ];
+  var readyCount = checks.filter(function(c){return c.ok||c.optional;}).length;
+  var allOk = checks.every(function(c){return c.ok || c.optional;});
+  var itemsHTML = checks.map(function(c){
+    return '<div class="checklist-item"><div class="cl-ic '+(c.ok?'ok':'warn')+'">'+ic(c.ok?'check':'info',12)+'</div><div><div class="cl-title">'+c.title+'</div><div class="cl-sub">'+c.sub+'</div></div></div>';
+  }).join('');
+  return '<div class="drawer-overlay" data-action="close-publish-overlay"><div class="drawer">'+
+    '<div class="drawer-head" style="position:relative"><div class="dh-eyebrow">Publicar processo</div><h3>'+esc(p.name)+'</h3><button class="icon-btn drawer-close" data-action="close-publish">'+ic('x',16)+'</button></div>'+
+    '<div class="drawer-body">'+itemsHTML+'</div>'+
+    '<div class="drawer-foot"><button class="btn btn-ghost" data-action="close-publish">Continuar editando</button><button class="btn btn-primary" data-action="confirm-publish">'+ic('bolt',15)+'Confirmar publicação</button></div>'+
+  '</div></div>';
+}
+
+/* ============ TOAST ============ */
+function renderToast(){
+  var root = qs('#toast-root');
+  if (!state.toast){ root.innerHTML=''; return; }
+  root.innerHTML = '<div class="toast"><span class="t-ic">'+ic('check',15)+'</span>'+esc(state.toast)+'</div>';
+}
+function showToast(msg){ state.toast = msg; renderToast(); clearTimeout(showToast._t); showToast._t = setTimeout(function(){ state.toast=null; renderToast(); }, 2600); }
+
+/* ============ EVENTS ============ */
+document.addEventListener('click', function(e){
+  var t = e.target.closest('[data-action]');
+  if (!t) return;
+  var action = t.dataset.action;
+  /* backdrop-close actions must only fire when the click landed on the backdrop itself,
+     not on any content nested inside it (there is no stopPropagation on the content) */
+  if (/-overlay$/.test(action) && e.target !== t) return;
+  var handled = true;
+  switch(action){
+    case 'noop': e.preventDefault(); break;
+    case 'go-home': state.screen='home'; state.selectedStepId=null; break;
+    case 'open-wizard':
+      state.wizardOpen = true;
+      state.wizardDraft = {name:'',description:'',category:CATEGORIES[0],icon:ICON_OPTIONS[0],color:COLOR_OPTIONS[0].v};
+      break;
+    case 'close-wizard': case 'close-wizard-overlay': state.wizardOpen=false; break;
+    case 'wz-set-icon': state.wizardDraft.icon = t.dataset.icon; break;
+    case 'wz-set-color': state.wizardDraft.color = t.dataset.color; break;
+    case 'wizard-continue': {
+      if (!state.wizardDraft.name.trim()) break;
+      var id = uid();
+      var np = Object.assign({id:id,status:'draft',openCount:0,avgSla:'—',updatedAt:'agora'}, state.wizardDraft);
+      state.processes.unshift(np);
+      state.processData[id] = emptyProcessData();
+      state.wizardOpen=false;
+      state.currentProcessId=id; state.screen='editor'; state.editorTab='form'; state.selectedStepId=null;
+      showToast('Processo criado. Agora monte o formulário.');
+      break;
+    }
+    case 'open-editor':
+      state.currentProcessId = t.dataset.id; state.screen='editor'; state.editorTab='geral'; state.selectedStepId=null;
+      break;
+    case 'set-filter': state.filter = t.dataset.filter; break;
+    case 'set-etab': state.editorTab = t.dataset.tab; state.selectedFieldId=null; break;
+    case 'set-icon': currentProcess().icon = t.dataset.icon; break;
+    case 'set-color': currentProcess().color = t.dataset.color; break;
+
+    /* form builder */
+    case 'select-field': state.selectedFieldId = t.dataset.id; break;
+    case 'delete-field': {
+      var dd = currentData(); dd.formFields = dd.formFields.filter(function(f){return f.id!==t.dataset.id;});
+      if (state.selectedFieldId===t.dataset.id) state.selectedFieldId=null;
+      break;
+    }
+    case 'palette-drag': break; /* handled by dragstart listener */
+
+    /* workflow */
+    case 'select-step': state.selectedStepId = t.dataset.id; state.stepTab='geral'; break;
+    case 'set-steptab': state.stepTab = t.dataset.tab; break;
+    case 'set-steptype': { var st=findStep(t.dataset.stepid); st.type=t.dataset.type; break; }
+    case 'delete-step': {
+      var dd2=currentData(); dd2.steps = dd2.steps.filter(function(s){return s.id!==t.dataset.id;});
+      state.selectedStepId=null;
+      break;
+    }
+    case 'set-fieldvis': {
+      var wrap=t.closest('[data-action="set-fieldvis"]'); var btn=e.target.closest('button[data-vis]'); if(!btn) break;
+      var st2=findStep(wrap.dataset.stepid); st2.campos = st2.campos||[];
+      var cfg=st2.campos.find(function(c){return c.fieldId===wrap.dataset.fieldid;});
+      if(!cfg){ cfg={fieldId:wrap.dataset.fieldid,visibility:'visible'}; st2.campos.push(cfg); }
+      cfg.visibility = btn.dataset.vis;
+      break;
+    }
+    case 'open-add-step': state.addStepOpen=true; state.newStep={name:'',type:'aprovacao'}; break;
+    case 'close-addstep': case 'close-addstep-overlay': state.addStepOpen=false; break;
+    case 'ns-set-type': state.newStep.type=t.dataset.type; break;
+    case 'confirm-addstep': {
+      if (!state.newStep.name.trim()) break;
+      var dd3=currentData(); var endIdx = dd3.steps.findIndex(function(s){return s.final;});
+      var ns={id:uid(), name:state.newStep.name, type:state.newStep.type, responsavel:{tipo:'Usuário específico'}, sla:{prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}, campos:[], acoes:[]};
+      dd3.steps.splice(endIdx,0,ns);
+      state.addStepOpen=false; state.selectedStepId=ns.id; state.stepTab='geral';
+      showToast('Etapa criada.');
+      break;
+    }
+    case 'open-add-action': state.addActionOpen=t.dataset.stepid; break;
+    case 'close-addaction': case 'close-addaction-overlay': state.addActionOpen=null; break;
+    case 'confirm-addaction': {
+      var stepid = state.addActionOpen; var st3=findStep(stepid);
+      var d4 = currentData(); var nextStep = d4.steps.find(function(s){return s.id!==stepid;});
+      st3.acoes = st3.acoes || [];
+      var na = makeAction({name:t.dataset.name, icon:t.dataset.icon, destinationStepId: nextStep?nextStep.id:null, description:'Configure o resultado, condições e automações desta ação.'});
+      st3.acoes.push(na);
+      state.addActionOpen=null;
+      state.selectedStepId=stepid; state.stepTab='acoes';
+      state.openAction={stepId:stepid, actionId:na.id}; state.actionTab='resultado';
+      break;
+    }
+    case 'open-action': state.openAction={stepId:t.dataset.stepid, actionId:t.dataset.actionid}; state.actionTab='resultado'; break;
+    case 'close-action': case 'close-action-overlay': state.openAction=null; break;
+    case 'set-actiontab': state.actionTab=t.dataset.tab; break;
+    case 'delete-action': {
+      var st4=findStep(t.dataset.stepid); st4.acoes = st4.acoes.filter(function(a){return a.id!==t.dataset.actionid;});
+      state.openAction=null;
+      break;
+    }
+    case 'add-condition': { var a1=findAction(state.openAction.stepId,state.openAction.actionId); a1.conditions=a1.conditions||[]; a1.conditions.push({field:'Valor total',operator:'maior ou igual a',value:''}); break; }
+    case 'remove-condition': { var a2=findAction(state.openAction.stepId,state.openAction.actionId); a2.conditions.splice(+t.dataset.idx,1); break; }
+    case 'add-automation': { var a3=findAction(state.openAction.stepId,state.openAction.actionId); a3.automations=a3.automations||[]; a3.automations.push({id:uid(),type:t.dataset.type,label:t.dataset.label,target:'Solicitante'}); break; }
+    case 'remove-automation': { var a4=findAction(state.openAction.stepId,state.openAction.actionId); a4.automations=a4.automations.filter(function(x){return x.id!==t.dataset.id;}); break; }
+
+    /* dashboard */
+    case 'open-add-widget': state.addWidgetOpen=true; break;
+    case 'close-addwidget': case 'close-addwidget-overlay': state.addWidgetOpen=false; break;
+    case 'confirm-addwidget': {
+      var d5=currentData(); var kind=t.dataset.kind; var label=t.dataset.label; var w;
+      if (kind==='kpi') w={id:uid(),type:'kpi',label:label,value:'—',trend:'Sem dados ainda'};
+      else if (kind==='funnel') w={id:uid(),type:'funnel',label:label,data:d5.steps.filter(function(s){return true;}).map(function(s){return {name:s.name,value:0};})};
+      else w={id:uid(),type:'bar',label:label,data:[{name:'Sem dados',value:0}]};
+      d5.widgets.push(w); state.addWidgetOpen=false;
+      break;
+    }
+    case 'remove-widget': { var d6=currentData(); d6.widgets=d6.widgets.filter(function(w){return w.id!==t.dataset.id;}); break; }
+
+    /* permissions */
+    case 'add-perm-group': { var d7=currentData(); d7.permissions.push({id:uid(),group:'Novo grupo',criar:false,visualizar:true,editar:false,administrar:false,acompanhar:false}); break; }
+
+    /* publish */
+    case 'open-publish': state.publishOpen=true; break;
+    case 'close-publish': case 'close-publish-overlay': state.publishOpen=false; break;
+    case 'confirm-publish': {
+      currentProcess().status='published';
+      state.publishOpen=false;
+      showToast('Processo publicado com sucesso!');
+      break;
+    }
+    default: handled=false;
+  }
+  if (handled){ e.preventDefault(); render(); }
+});
+
+/* Only select/checkbox bindings are handled here (their DOM nodes aren't mid-interaction
+   when 'change' fires). Plain text/textarea fields are handled entirely by the 'input'
+   listener above and must stay untouched here - re-rendering on their blur-triggered
+   'change' would detach the field a user might be mid-click on (e.g. a nearby button),
+   causing the browser to silently drop that click. */
+document.addEventListener('change', function(e){
+  var el = e.target.closest('[data-bind]');
+  if (!el) return;
+  if (el.tagName==='INPUT' && el.type!=='checkbox') return;
+  if (el.tagName==='TEXTAREA') return;
+  var bind = el.dataset.bind;
+  var val = el.type==='checkbox' ? el.checked : el.value;
+  var matched = true;
+  if (bind==='p.category') currentProcess().category = val;
+  else if (bind==='wizard.category') state.wizardDraft.category = val;
+  else if (bind==='step.resp_tipo') { var s=findStep(el.dataset.stepid); s.responsavel=s.responsavel||{}; s.responsavel.tipo=val; }
+  else if (bind==='step.resp_valor') { var s2=findStep(el.dataset.stepid); s2.responsavel.valor=val; }
+  else if (bind==='step.sla_unidade') { var s3=findStep(el.dataset.stepid); s3.sla=s3.sla||{}; s3.sla.unidade=val; }
+  else if (bind==='step.sla_vencer') { var s4=findStep(el.dataset.stepid); s4.sla.aoVencer=val; }
+  else if (bind==='action.commentRequired') { var a=findAction(state.openAction.stepId,state.openAction.actionId); a.interface.commentRequired=val; }
+  else if (bind==='action.destination') { var a2=findAction(state.openAction.stepId,state.openAction.actionId); a2.destinationStepId=val; }
+  else if (bind==='field.required') { var f=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f.required=val; }
+  else if (bind==='field.conditional') { var f2=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f2.conditional=val; }
+  else if (bind==='step.allowReassign') { var s5=findStep(el.dataset.stepid); s5.allowReassign=val; }
+  else if (bind==='step.sla_avisar') { var s6=findStep(el.dataset.stepid); s6.sla.avisarAntes=val; }
+  else if (bind==='action.ends') { var a3=findAction(state.openAction.stepId,state.openAction.actionId); a3.result.endsProcess=val; }
+  else if (bind==='action.allowAttachments') { var a4=findAction(state.openAction.stepId,state.openAction.actionId); a4.interface.allowAttachments=val; }
+  else if (bind==='action.requireUserPick') { var a5=findAction(state.openAction.stepId,state.openAction.actionId); a5.interface.requireUserPick=val; }
+  else matched = false;
+  if (matched) render();
+});
+
+/* Text inputs are never destroyed while focused: state is mutated and only the
+   specific dependent DOM nodes elsewhere on the page are patched in place. */
+function setText(sel, val){ var n = document.querySelector(sel); if (n) n.textContent = val; }
+document.addEventListener('input', function(e){
+  var el = e.target.closest('[data-bind]');
+  if (el){
+    var bind = el.dataset.bind; var val = el.value;
+    if (bind==='p.name'){ currentProcess().name=val; setText('#editor-title-text', val || 'Sem nome'); }
+    else if (bind==='p.description'){ currentProcess().description=val; }
+    else if (bind==='wizard.name'){
+      state.wizardDraft.name=val;
+      setText('#wz-preview .pc-name', val || 'Nome do processo');
+      var wb=qs('#wz-continue-btn'); if(wb) wb.disabled = !val.trim();
+    }
+    else if (bind==='wizard.description'){ state.wizardDraft.description=val; setText('#wz-preview .pc-desc', val); }
+    else if (bind==='newstep.name'){
+      state.newStep.name=val;
+      var nb=qs('#ns-confirm-btn'); if(nb) nb.disabled = !val.trim();
+    }
+    else if (bind==='field.label'){ var f=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f.label=val; setText('#fc-label-'+el.dataset.id, val || 'Campo sem rótulo'); }
+    else if (bind==='field.help'){ var f2=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f2.help=val; }
+    else if (bind==='field.placeholder'){ var f3=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f3.placeholder=val; }
+    else if (bind==='step.name'){ var s=findStep(el.dataset.stepid); s.name=val; setText('#wf-name-'+el.dataset.stepid, val || 'Etapa sem nome'); setText('#wf-panel-title-text', val || 'Etapa sem nome'); }
+    else if (bind==='step.description'){ var s2=findStep(el.dataset.stepid); s2.description=val; }
+    else if (bind==='step.sla_prazo'){ var s3=findStep(el.dataset.stepid); s3.sla.prazo=val; }
+    else if (bind==='action.name'){ var a=findAction(state.openAction.stepId,state.openAction.actionId); a.name=val; setText('#action-drawer-title-text', val || 'Ação sem nome'); }
+    else if (bind==='action.buttonLabel'){ var a2=findAction(state.openAction.stepId,state.openAction.actionId); a2.result.buttonLabel=val; }
+    return;
+  }
+  if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }
+});
+
+/* condition/automation text inputs inside drawer (not re-rendered live to keep caret stable) */
+document.addEventListener('change', function(e){
+  if (e.target.closest('.rule-row')){ /* condition rows are simplified/static for prototype clarity */ }
+});
+
+/* drag and drop: palette -> canvas */
+document.addEventListener('dragstart', function(e){
+  var el = e.target.closest('.palette-item');
+  if (el){ e.dataTransfer.setData('text/plain', el.dataset.fieldtype); return; }
+  var fc = e.target.closest('.field-card');
+  if (fc){ e.dataTransfer.setData('text/reorder', fc.dataset.id); }
+});
+document.addEventListener('dragover', function(e){
+  if (e.target.closest('#fb-canvas')){ e.preventDefault(); qs('#fb-canvas').classList.add('drag-over'); }
+});
+document.addEventListener('dragleave', function(e){
+  if (e.target.closest('#fb-canvas')===null){ var c=qs('#fb-canvas'); if(c) c.classList.remove('drag-over'); }
+});
+document.addEventListener('drop', function(e){
+  var canvas = e.target.closest('#fb-canvas');
+  if (!canvas) return;
+  e.preventDefault(); canvas.classList.remove('drag-over');
+  var type = e.dataTransfer.getData('text/plain');
+  if (type){
+    var meta = fieldTypeMeta(type);
+    var f = {id:uid(), type:type, label:meta.label, required:false};
+    currentData().formFields.push(f);
+    state.selectedFieldId = f.id;
+    render();
+  }
+});
+
+/* theme toggle */
+document.addEventListener('click', function(e){
+  var b = e.target.closest('[data-theme-choice]');
+  if (!b) return;
+  var choice = b.dataset.themeChoice;
+  state.theme = choice;
+  document.documentElement.setAttribute('data-theme', choice);
+  updateThemeToggle();
+});
+
+render();
+})();
+</script>
+
+</body>
+</html>

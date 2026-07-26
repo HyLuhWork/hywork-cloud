@@ -15,6 +15,12 @@ partir de modelos" com 3 templates clicáveis que pré-preenchem o wizard. A lis
 processos virou uma lista vertical (não grade de cards) com badge colorido em
 monograma, nome e um toggle "Ativo" por processo. Ver "O que mudou na v3" abaixo.
 
+**v4** — configuração de etapa movida do painel lateral para uma **modal com abas**
+(Geral / Responsável / SLA / Campos / Regras de saída), com etapa inicial/final
+configurável e tipos de responsável alinhados ao vocabulário pedido. Ver
+"O que mudou na v4" abaixo. Também corrigido um bug visual em que as abas do editor
+apareciam com caixa (bug de reset de `button` no CSS).
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -102,6 +108,39 @@ Os KPIs agregados e os filtros por status da v2 foram removidos para bater com o
 exatamente como enviado; posso trazê-los de volta como um bloco opcional se fizerem
 falta na prática.
 
+## O que mudou na v4
+
+A configuração de etapa saiu do painel lateral fixo (v2/v3) e virou uma **modal**,
+seguindo pedido explícito: ao clicar em qualquer etapa do canvas, abre uma modal com
+cinco abas (etapas do sistema mostram só quatro, sem "Regras de saída"):
+
+- **Geral** — nome, descrição, tipo de etapa (Aprovação/Tarefa/Condição) e dois
+  toggles novos: **Etapa inicial do processo** e **Etapa final do processo**. Marcar
+  uma etapa como inicial desmarca automaticamente qualquer outra (só existe um ponto
+  de entrada); "final" pode ser marcado em várias etapas ao mesmo tempo (um processo
+  pode terminar de formas diferentes — aprovado, reprovado etc.). O canvas reflete os
+  dois estados com badges "ETAPA INICIAL" (vermelho) e "ETAPA FINAL" (verde).
+- **Responsável** — tipos alinhados ao vocabulário pedido: **Estrutura Organizacional**,
+  **Usuários específicos**, **Grupos de usuários** e **Vínculo do colaborador** (ex:
+  gestor direto). Trocar o tipo já ajusta as opções disponíveis no campo seguinte.
+- **SLA** — prazo, unidade e ação automática ao vencer, isolado numa aba própria.
+- **Campos** — rótulos atualizados para o vocabulário pedido: **Ocultar**, **Só
+  exibir**, **Editar**. Continuam vindo por padrão dos campos do formulário inicial,
+  ajustáveis por etapa.
+- **Regras de saída** — o mecanismo inline (condição + destino + automação numa
+  mesma regra, com criação de etapa nova sem sair da tela) da v2 continua exatamente
+  igual, agora dentro da aba "Regras de saída" da modal em vez de sempre visível no
+  painel lateral.
+
+O canvas do Fluxo agora ocupa a largura toda (sem painel lateral fixo), já que toda
+edição acontece na modal.
+
+De quebra, corrigi um bug visual: as abas do editor (Fluxo/Formulário/Indicadores/
+Permissões) apareciam com uma caixa cinza ao redor de cada uma porque o reset de
+`button` no CSS nunca zerava `border`/`background` — o navegador aplicava o estilo
+padrão de botão por baixo do sublinhado. Corrigido na base, auditei os demais botões
+da interface para confirmar que nenhum outro dependia do estilo padrão do navegador.
+
 ## O que está implementado
 
 **Central de Processos (Home)** — botão "Criar do 0", caixa do HyA Builder (mockada),
@@ -115,10 +154,10 @@ o admin já entra direto no construtor de formulário.
 **Editor do processo** — cabeçalho fixo com identidade do processo (nome e descrição
 editáveis via popover), status, "Testar fluxo" e "Publicar", e quatro abas:
 
-- **Fluxo** — canvas vertical de etapas com resumo de regras visível em cada nó, e um
-  painel lateral único (sem sub-abas) que abre ao clicar numa etapa: tipo, responsável
-  e prazo (se aplicável), **regras de saída** (o coração da tela) e campos visíveis
-  (recolhido por padrão). Etapas novas podem ser criadas direto de dentro de uma regra.
+- **Fluxo** — canvas vertical de etapas com resumo de regras visível em cada nó,
+  ocupando a largura toda. Clicar numa etapa abre uma modal com abas Geral /
+  Responsável / SLA / Campos / **Regras de saída** (o coração da tela — condição,
+  destino e automação numa mesma regra, com criação de etapa nova sem sair da tela).
 - **Formulário** — construtor drag-and-drop: paleta à esquerda, canvas central,
   inspetor de configuração à direita.
 - **Indicadores** — KPIs e gráficos simples de funil/barras, adicionáveis via galeria.

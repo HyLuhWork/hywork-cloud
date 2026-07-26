@@ -292,6 +292,14 @@
   .wf-node .wf-name{font-size:13.5px;font-weight:700}
   .wf-node .wf-sub{font-size:11px;color:var(--ink-faint);margin-top:1px}
   .wf-node .wf-tag{position:absolute;top:-9px;right:12px;background:var(--primary);color:#fff;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:var(--radius-full)}
+  .wf-node .wf-tag-final{position:absolute;top:-9px;left:12px;background:var(--success);color:#fff;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:var(--radius-full)}
+  .mtabs{display:flex;gap:22px;padding:0 22px;border-bottom:1px solid var(--border)}
+  .mtab{padding:11px 1px 10px;font-size:12.5px;font-weight:700;color:var(--ink-faint);border-bottom:2.5px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:6px}
+  .mtab svg{color:var(--ink-faint)}
+  .mtab:hover{color:var(--ink)}
+  .mtab:hover svg{color:var(--ink)}
+  .mtab.active{color:var(--ink);border-bottom-color:var(--primary)}
+  .mtab.active svg{color:var(--primary)}
   .wf-rules-preview{margin-top:9px;padding-top:9px;border-top:1px dashed var(--border);display:flex;flex-direction:column;gap:5px}
   .wf-rules-preview .wfr-line{font-size:11px;color:var(--ink-muted);line-height:1.5;padding-left:13px;text-indent:-13px}
   .wf-rules-preview .wfr-line b{color:var(--ink);font-weight:700}
@@ -564,6 +572,14 @@ var STEP_KINDS = [
 function kindMeta(kind){ return STEP_KINDS.find(function(k){return k.kind===kind;}) || {kind:kind,label:kind,icon:'📄'}; }
 function needsHuman(kind){ return kind==='aprovacao' || kind==='tarefa'; }
 
+var RESPONSAVEL_TYPES = [
+  {tipo:'Estrutura Organizacional', field:'Área', hint:'O responsável é definido pela área do organograma.', options:['Recursos Humanos','Financeiro','Tecnologia','Jurídico','Operações']},
+  {tipo:'Usuários específicos', field:'Pessoa', hint:'Uma ou mais pessoas específicas, escolhidas por nome.', options:['Mariana Rocha (RH)','Bruno Tavares (Financeiro)','Carla Menezes (TI)','Lucas Ferraz (Facilities)']},
+  {tipo:'Grupos de usuários', field:'Grupo', hint:'Qualquer pessoa do grupo pode atuar nesta etapa.', options:['Gestores','Recursos Humanos','Financeiro','Administradores']},
+  {tipo:'Vínculo do colaborador', field:'Vínculo', hint:'Calculado automaticamente a partir de quem enviou a solicitação.', options:['Gestor direto do solicitante','Gestor do gestor','Mesma área do solicitante']},
+];
+function respTypeMeta(tipo){ return RESPONSAVEL_TYPES.find(function(t){return t.tipo===tipo;}) || RESPONSAVEL_TYPES[0]; }
+
 var AUTOMATION_TYPES = [
   {type:'email', label:'Notificar e-mail', icon:'mail'},
   {type:'push', label:'Notificar push', icon:'bell'},
@@ -593,17 +609,17 @@ function richProcessData(){
   var end={id:'s_end', name:'Finalizado', system:true, final:true, kind:'sistema'};
   var sFin={id:uid(), name:'Análise do Financeiro', kind:'aprovacao',
     description:'Financeiro confere o valor antes da aprovação final.',
-    responsavel:{tipo:'Departamento', valor:'Financeiro'},
+    responsavel:{tipo:'Estrutura Organizacional', valor:'Financeiro'},
     sla:{prazo:1,unidade:'dias',aoVencer:'Notificar responsável'},
     campos:[], regras:[]};
   var s3={id:uid(), name:'Análise do RH', kind:'aprovacao',
     description:'RH confere elegibilidade antes da aprovação final.',
-    responsavel:{tipo:'Departamento', valor:'Recursos Humanos'},
+    responsavel:{tipo:'Estrutura Organizacional', valor:'Recursos Humanos'},
     sla:{prazo:1,unidade:'dias',aoVencer:'Aprovar automaticamente'},
     campos:[], regras:[]};
   var s2={id:uid(), name:'Análise do Gestor', kind:'aprovacao',
     description:'O gestor direto do solicitante avalia o pedido.',
-    responsavel:{tipo:'Gestor do solicitante'},
+    responsavel:{tipo:'Vínculo do colaborador', valor:'Gestor direto do solicitante'},
     sla:{prazo:2,unidade:'dias',aoVencer:'Notificar e escalar para o gestor superior'},
     campos:[
       {fieldId:f1.id,visibility:'editable'},{fieldId:f2.id,visibility:'editable'},
@@ -692,6 +708,8 @@ var state = {
   currentProcessId:null,
   editorTab:'workflow',
   selectedStepId:null,
+  stepModalOpen:null,
+  stepModalTab:'geral',
   selectedFieldId:null,
   editGeneralOpen:false,
   openAutomationAdder:null, // {stepId, regraId}
@@ -945,8 +963,8 @@ function switchHTML(bind,id,checked){
 
 /* ---- Workflow tab ---- */
 function stepIcon(step){
-  if (step.system && step.initial) return '📨';
-  if (step.system && step.final) return '🏁';
+  if (step.id==='s_start') return '📨';
+  if (step.id==='s_end') return '🏁';
   return kindMeta(step.kind).icon;
 }
 function ruleConditionText(r){
@@ -982,6 +1000,7 @@ function workflowTabHTML(){
     }
     var node = '<div class="wf-node'+(selected?' selected':'')+(s.system?' system':'')+(s.final?' final':'')+(s.kind?' kind-'+s.kind:'')+'" data-action="select-step" data-id="'+s.id+'">'+
       (s.initial?'<span class="wf-tag">Etapa inicial</span>':'')+
+      (s.final?'<span class="wf-tag-final">Etapa final</span>':'')+
       '<div class="wf-node-top"><div class="wf-ic">'+stepIcon(s)+'</div>'+
       '<div class="wf-text"><div class="wf-name" id="wf-name-'+s.id+'">'+esc(s.name)+'</div><div class="wf-sub">'+(s.system?'Etapa do sistema':(needsHuman(s.kind)&&s.responsavel?respLabel(s.responsavel):(s.kind==='condicao'?'Decisão automática':'Sem responsável definido')))+'</div></div></div>'+
       rulesPreview+
@@ -996,82 +1015,84 @@ function workflowTabHTML(){
       '<div class="wf-gap"></div>'+
       '<button class="wf-add" data-action="open-add-step">'+ic('plus',15)+'Adicionar Etapa</button>'+
     '</div></div>'+
-    '<div class="wf-panel">'+workflowPanelHTML()+'</div>'+
   '</div>';
 }
 function respLabel(r){
   if (!r) return 'Sem responsável';
-  if (r.tipo==='Departamento') return 'Departamento · '+r.valor;
-  return r.tipo;
+  if (r.tipo==='Vínculo do colaborador') return r.valor || r.tipo;
+  return r.valor ? r.tipo+' · '+r.valor : r.tipo;
 }
-function workflowPanelHTML(){
-  var step = findStep(state.selectedStepId);
-  if (!step){
-    return '<div class="wf-panel-empty"><div class="we-ic">'+ic('flow',20)+'</div><div style="font-weight:700;color:var(--ink)">Selecione uma etapa</div><div>Clique em uma etapa no fluxo ao lado para configurar responsável, regras de saída e campos — tudo num painel só.</div></div>';
-  }
+function disabledSwitchHTML(){
+  return '<label class="switch"><input type="checkbox" checked disabled/><span class="track"><span class="thumb"></span></span></label>';
+}
+function stepModalGeralHTML(step){
   var isSystem = !!step.system;
-  var head = '<div class="wf-panel-head"><div class="wf-panel-title-row"><input class="wf-panel-title" id="wf-panel-title-text" data-bind="step.name" data-stepid="'+step.id+'" value="'+esc(step.name)+'" '+(isSystem?'disabled':'')+'/></div>'+
-    '<div class="wf-panel-sub">'+(isSystem?'Etapa do sistema — configurações limitadas':'Tudo sobre esta etapa fica aqui, sem precisar navegar')+'</div></div>';
-
-  if (isSystem){
-    return head+'<div class="wf-panel-body">'+
-      '<div class="field-hint" style="margin-bottom:16px">'+(step.initial?'Esta etapa é criada automaticamente quando o formulário é enviado.':'Esta etapa encerra a solicitação — não tem regras de saída.')+'</div>'+
-    '</div>';
-  }
-
-  var body = '';
-  body += '<div class="wf-panel-section">'+
-    '<div class="wf-panel-section-label">Tipo de etapa</div>'+
-    '<div class="kind-picker">'+STEP_KINDS.map(function(k){
-      return '<button class="kind-opt'+(step.kind===k.kind?' selected':'')+'" data-action="set-stepkind" data-stepid="'+step.id+'" data-kind="'+k.kind+'" title="'+k.desc+'"><span class="ko-ic">'+k.icon+'</span>'+k.label+'</button>';
-    }).join('')+'</div>'+
-  '</div>';
-
-  if (needsHuman(step.kind)){
-    body += stepResponsavelSlaHTML(step);
-  }
-
-  body += '<div class="wf-panel-section">'+
-    '<div class="wf-panel-section-label">'+ic('fork',13)+' O que acontece depois</div>'+
-    '<div class="field-hint" style="margin-bottom:12px">Cada regra abaixo define: quando ela vale, para qual etapa o fluxo vai, e o que mais acontece (notificações). Tudo aqui, sem abrir outra tela.</div>'+
-    rulesListHTML(step)+
-  '</div>';
-
-  body += '<div class="wf-panel-section">'+
-    '<details class="wf-collapse"><summary>Campos visíveis nesta etapa<span class="dc-chev">'+ic('chevronDown',14)+'</span></summary><div class="dc-body">'+stepCamposHTML(step)+'</div></details>'+
-  '</div>';
-
-  body += '<button class="btn btn-danger-ghost btn-sm" data-action="delete-step" data-id="'+step.id+'">'+ic('trash',14)+'Excluir etapa</button>';
-
-  return head + '<div class="wf-panel-body">'+body+'</div>';
+  var kindPicker = isSystem ? '' : '<div class="field-row"><label class="field-label">Tipo de etapa</label><div class="kind-picker">'+STEP_KINDS.map(function(k){
+    return '<button class="kind-opt'+(step.kind===k.kind?' selected':'')+'" data-action="set-stepkind" data-stepid="'+step.id+'" data-kind="'+k.kind+'" title="'+k.desc+'"><span class="ko-ic">'+k.icon+'</span>'+k.label+'</button>';
+  }).join('')+'</div></div>';
+  return '<div class="field-row"><label class="field-label">Nome da etapa</label><input class="input" data-bind="step.name" data-stepid="'+step.id+'" value="'+esc(step.name)+'" '+(isSystem?'disabled':'')+'/></div>'+
+    '<div class="field-row"><label class="field-label">Descrição</label><textarea class="textarea" data-bind="step.description" data-stepid="'+step.id+'" '+(isSystem?'disabled':'')+'>'+esc(step.description||'')+'</textarea></div>'+
+    kindPicker+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Etapa inicial do processo</div><div class="sr-sub">O fluxo sempre começa por aqui</div></div>'+
+      (isSystem ? disabledSwitchHTML() : '<label class="switch" data-action="set-initial" data-stepid="'+step.id+'"><input type="checkbox" '+(step.initial?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>')+
+    '</div>'+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Etapa final do processo</div><div class="sr-sub">Encerra a solicitação quando alcançada</div></div>'+
+      (isSystem ? disabledSwitchHTML() : '<label class="switch" data-action="toggle-final" data-stepid="'+step.id+'"><input type="checkbox" '+(step.final?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>')+
+    '</div>'+
+    (isSystem ? '<div class="field-hint" style="margin-top:10px">'+(step.initial?'Esta etapa é criada automaticamente quando o formulário é enviado — não pode ser alterada.':'Esta etapa do sistema encerra a solicitação — não pode ser alterada.')+'</div>' : '');
 }
-function stepResponsavelSlaHTML(step){
-  var r = step.responsavel || {tipo:'Usuário específico'};
+function stepModalResponsavelHTML(step){
+  var r = step.responsavel || {tipo:RESPONSAVEL_TYPES[0].tipo, valor:RESPONSAVEL_TYPES[0].options[0]};
+  var meta = respTypeMeta(r.tipo);
+  return '<div class="field-row"><label class="field-label">Tipo de responsável</label><select class="select" data-bind="step.resp_tipo" data-stepid="'+step.id+'">'+RESPONSAVEL_TYPES.map(function(t){return '<option'+(t.tipo===r.tipo?' selected':'')+'>'+t.tipo+'</option>';}).join('')+'</select></div>'+
+    '<div class="field-row"><label class="field-label">'+meta.field+'</label><select class="select" data-bind="step.resp_valor" data-stepid="'+step.id+'">'+meta.options.map(function(o){return '<option'+(o===r.valor?' selected':'')+'>'+o+'</option>';}).join('')+'</select><div class="field-hint">'+meta.hint+'</div></div>'+
+    '<div class="switch-row"><div class="sr-text"><div class="sr-title">Permitir reatribuição</div><div class="sr-sub">O responsável pode transferir a etapa para outra pessoa</div></div>'+switchHTML('step.allowReassign', step.id, step.allowReassign!==false)+'</div>';
+}
+function stepModalSlaHTML(step){
   var s = step.sla || {prazo:1,unidade:'dias',aoVencer:'Notificar responsável'};
-  var tipos = ['Usuário específico','Cargo','Departamento','Gestor do solicitante','Grupo'];
-  return '<div class="wf-panel-section">'+
-    '<div class="wf-panel-section-label">Responsável &amp; prazo</div>'+
-    '<div class="field-row"><select class="select" data-bind="step.resp_tipo" data-stepid="'+step.id+'">'+tipos.map(function(t){return '<option'+(t===r.tipo?' selected':'')+'>'+t+'</option>';}).join('')+'</select></div>'+
-    (r.tipo!=='Gestor do solicitante' ? '<div class="field-row"><select class="select" data-bind="step.resp_valor" data-stepid="'+step.id+'"><option'+((r.valor||'')==='Recursos Humanos'?' selected':'')+'>Recursos Humanos</option><option'+((r.valor||'')==='Financeiro'?' selected':'')+'>Financeiro</option><option'+((r.valor||'')==='Tecnologia'?' selected':'')+'>Tecnologia</option><option'+((r.valor||'')==='Jurídico'?' selected':'')+'>Jurídico</option></select></div>' :
-      '<div class="field-hint" style="margin-bottom:14px">Calculado automaticamente pelo organograma de quem enviou.</div>')+
-    '<div class="field-row-2" style="margin-bottom:6px"><input class="input" type="number" min="1" data-bind="step.sla_prazo" data-stepid="'+step.id+'" value="'+s.prazo+'"/>'+
-    '<select class="select" data-bind="step.sla_unidade" data-stepid="'+step.id+'"><option'+(s.unidade==='horas'?' selected':'')+'>horas</option><option'+(s.unidade==='dias'?' selected':'')+'>dias</option></select></div>'+
-    '<select class="select" data-bind="step.sla_vencer" data-stepid="'+step.id+'">'+
+  return '<div class="field-row-2"><div><label class="field-label">Prazo</label><input class="input" type="number" min="1" data-bind="step.sla_prazo" data-stepid="'+step.id+'" value="'+s.prazo+'"/></div>'+
+    '<div><label class="field-label">Unidade</label><select class="select" data-bind="step.sla_unidade" data-stepid="'+step.id+'"><option'+(s.unidade==='horas'?' selected':'')+'>horas</option><option'+(s.unidade==='dias'?' selected':'')+'>dias</option></select></div></div>'+
+    '<div class="field-row"><label class="field-label">Ação ao vencer o prazo</label><select class="select" data-bind="step.sla_vencer" data-stepid="'+step.id+'">'+
       ['Notificar responsável','Notificar e escalar para o gestor superior','Aprovar automaticamente','Reprovar automaticamente'].map(function(o){return '<option'+(o===s.aoVencer?' selected':'')+'>'+o+'</option>';}).join('')+
-    '</select><div class="field-hint">Ação automática se o prazo vencer.</div>'+
-  '</div>';
+    '</select><div class="field-hint">Executada automaticamente se o prazo vencer sem ação do responsável.</div></div>';
 }
 function stepCamposHTML(step){
   var d = currentData();
-  if (!d.formFields.length) return '<div class="field-hint">Nenhum campo criado ainda. Adicione campos na aba Formulário.</div>';
+  if (!d.formFields.length) return '<div class="field-hint">Nenhum campo criado ainda. Adicione campos na aba Formulário — eles aparecem aqui automaticamente.</div>';
   var rows = d.formFields.map(function(f){
     var cfg = (step.campos||[]).find(function(c){return c.fieldId===f.id;}) || {visibility:'visible'};
     return '<div class="field-mini-row"><div><div class="fmr-name">'+esc(f.label)+'</div><div class="fmr-type">'+fieldTypeMeta(f.type).label+'</div></div>'+
       '<div class="seg" data-action="set-fieldvis" data-stepid="'+step.id+'" data-fieldid="'+f.id+'">'+
-        ['hidden','visible','editable'].map(function(v){ var lbl={hidden:'Oculto',visible:'Visível',editable:'Editável'}[v]; return '<button class="'+(cfg.visibility===v?'active':'')+'" data-vis="'+v+'">'+lbl+'</button>'; }).join('')+
+        ['hidden','visible','editable'].map(function(v){ var lbl={hidden:'Ocultar',visible:'Só exibir',editable:'Editar'}[v]; return '<button class="'+(cfg.visibility===v?'active':'')+'" data-vis="'+v+'">'+lbl+'</button>'; }).join('')+
       '</div></div>';
   }).join('');
-  return rows;
+  return '<div class="field-hint" style="margin-bottom:12px">Por padrão, os campos vêm do formulário inicial. Ajuste como cada um aparece nesta etapa.</div>'+rows;
+}
+function stepModalHTML(){
+  var step = findStep(state.stepModalOpen);
+  if (!step) return '';
+  var isSystem = !!step.system;
+  var tabs = [['geral','Geral','gear'],['responsavel','Responsável','users'],['sla','SLA','clock'],['campos','Campos','doc']];
+  if (!isSystem) tabs.push(['regras','Regras de saída','fork']);
+  var tabsHTML = tabs.map(function(t){
+    return '<button class="mtab'+(state.stepModalTab===t[0]?' active':'')+'" data-action="set-stepmodaltab" data-tab="'+t[0]+'">'+ic(t[2],14)+t[1]+'</button>';
+  }).join('');
+
+  var body;
+  if (state.stepModalTab==='geral') body = stepModalGeralHTML(step);
+  else if (state.stepModalTab==='responsavel') body = needsHuman(step.kind) ? stepModalResponsavelHTML(step) : '<div class="field-hint">Etapas do tipo Condição são decididas automaticamente pelo sistema — não têm responsável humano.</div>';
+  else if (state.stepModalTab==='sla') body = needsHuman(step.kind) ? stepModalSlaHTML(step) : '<div class="field-hint">Etapas do tipo Condição não têm prazo — são resolvidas instantaneamente pelo sistema.</div>';
+  else if (state.stepModalTab==='campos') body = stepCamposHTML(step);
+  else body = '<div class="field-hint" style="margin-bottom:12px">Cada regra define: quando ela vale, para qual etapa o fluxo vai, e o que mais acontece (notificações) — tudo num lugar só, sem abrir outra tela.</div>'+rulesListHTML(step);
+
+  var footLeft = isSystem ? '<div class="field-hint">Etapa do sistema — não pode ser excluída.</div>' : '<button class="btn btn-danger-ghost btn-sm" data-action="delete-step" data-id="'+step.id+'">'+ic('trash',14)+'Excluir etapa</button>';
+
+  return '<div class="overlay" data-action="close-stepmodal-overlay"><div class="modal modal-lg">'+
+    '<div class="modal-head"><div><div class="dh-eyebrow" style="margin-bottom:4px">Configurar etapa</div><h3 id="step-modal-title-text">'+esc(step.name)+'</h3><p>'+(isSystem?'Etapa do sistema — configurações limitadas':'Nome, responsável, prazo, campos e regras — tudo aqui, sem precisar navegar')+'</p></div><button class="icon-btn" data-action="close-stepmodal">'+ic('x',16)+'</button></div>'+
+    '<div class="mtabs">'+tabsHTML+'</div>'+
+    '<div class="modal-body" style="min-height:340px">'+body+'</div>'+
+    '<div class="modal-foot" style="justify-content:space-between">'+footLeft+'<button class="btn btn-primary btn-sm" data-action="close-stepmodal">'+ic('check',14)+'Concluído</button></div>'+
+  '</div></div>';
 }
 
 /* ---- Regras de saída (the core rebuild) ---- */
@@ -1199,6 +1220,7 @@ function renderModal(){
   if (state.addStepOpen){ root.innerHTML = addStepModalHTML(); return; }
   if (state.addWidgetOpen){ root.innerHTML = addWidgetModalHTML(); return; }
   if (state.editGeneralOpen){ root.innerHTML = editGeneralModalHTML(); return; }
+  if (state.stepModalOpen){ root.innerHTML = stepModalHTML(); return; }
   root.innerHTML='';
 }
 function wizardModalHTML(){
@@ -1429,11 +1451,30 @@ document.addEventListener('click', function(e){
     case 'palette-drag': break;
 
     /* workflow: step selection & basics */
-    case 'select-step': state.selectedStepId = t.dataset.id; state.openNewStepFor=null; state.openAutomationAdder=null; break;
-    case 'set-stepkind': { var st=findStep(t.dataset.stepid); st.kind=t.dataset.kind; if (needsHuman(st.kind) && !st.responsavel) st.responsavel={tipo:'Usuário específico'}; if (needsHuman(st.kind) && !st.sla) st.sla={prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}; break; }
+    case 'select-step': {
+      state.selectedStepId = t.dataset.id;
+      state.stepModalOpen = t.dataset.id;
+      state.stepModalTab = 'geral';
+      state.openNewStepFor=null; state.openAutomationAdder=null;
+      break;
+    }
+    case 'close-stepmodal': case 'close-stepmodal-overlay': {
+      state.stepModalOpen=null; state.selectedStepId=null;
+      state.openNewStepFor=null; state.openAutomationAdder=null;
+      break;
+    }
+    case 'set-stepmodaltab': state.stepModalTab = t.dataset.tab; break;
+    case 'set-initial': {
+      var targetId = t.dataset.stepid;
+      currentData().steps.forEach(function(s){ s.initial = (s.id===targetId); });
+      break;
+    }
+    case 'toggle-final': { var stf=findStep(t.dataset.stepid); stf.final = !stf.final; break; }
+    case 'set-stepkind': { var st=findStep(t.dataset.stepid); st.kind=t.dataset.kind; if (needsHuman(st.kind) && !st.responsavel) st.responsavel={tipo:'Estrutura Organizacional', valor:'Recursos Humanos'}; if (needsHuman(st.kind) && !st.sla) st.sla={prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}; break; }
     case 'delete-step': {
       var dd2=currentData(); dd2.steps = dd2.steps.filter(function(s){return s.id!==t.dataset.id;});
       state.selectedStepId=null;
+      state.stepModalOpen=null;
       break;
     }
     case 'set-fieldvis': {
@@ -1449,13 +1490,14 @@ document.addEventListener('click', function(e){
     case 'ns-set-kind': state.newStep.kind=t.dataset.kind; break;
     case 'confirm-addstep': {
       if (!state.newStep.name.trim()) break;
-      var dd3=currentData(); var endIdx = dd3.steps.findIndex(function(s){return s.final;});
+      var dd3=currentData(); var endIdx = dd3.steps.findIndex(function(s){return s.system && s.final;});
       var ns={id:uid(), name:state.newStep.name, kind:state.newStep.kind, campos:[], regras:[]};
-      if (needsHuman(ns.kind)){ ns.responsavel={tipo:'Usuário específico'}; ns.sla={prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}; }
+      if (needsHuman(ns.kind)){ ns.responsavel={tipo:'Estrutura Organizacional', valor:'Recursos Humanos'}; ns.sla={prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}; }
       var endStep = dd3.steps[endIdx];
       ns.regras = [makeRegra({isDefault:true, label: ns.kind==='aprovacao' ? 'Aprovar' : 'Concluir', destinoStepId: endStep?endStep.id:null})];
       dd3.steps.splice(endIdx,0,ns);
       state.addStepOpen=false; state.selectedStepId=ns.id;
+      state.stepModalOpen=ns.id; state.stepModalTab='geral';
       showToast('Etapa criada.');
       break;
     }
@@ -1488,8 +1530,8 @@ document.addEventListener('click', function(e){
       var inputEl = qs('#new-step-inline-input');
       var name = inputEl ? inputEl.value.trim() : '';
       if (!name) break;
-      var dd4=currentData(); var endIdx2 = dd4.steps.findIndex(function(s){return s.final;});
-      var ns2={id:uid(), name:name, kind:'aprovacao', responsavel:{tipo:'Usuário específico'}, sla:{prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}, campos:[], regras:[]};
+      var dd4=currentData(); var endIdx2 = dd4.steps.findIndex(function(s){return s.system && s.final;});
+      var ns2={id:uid(), name:name, kind:'aprovacao', responsavel:{tipo:'Estrutura Organizacional', valor:'Recursos Humanos'}, sla:{prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}, campos:[], regras:[]};
       var endStep2 = dd4.steps[endIdx2];
       ns2.regras=[makeRegra({isDefault:true, label:'Aprovar', destinoStepId:endStep2?endStep2.id:null})];
       dd4.steps.splice(endIdx2,0,ns2);
@@ -1566,7 +1608,7 @@ document.addEventListener('change', function(e){
   var matched = true;
   if (bind==='p.category') currentProcess().category = val;
   else if (bind==='wizard.category') state.wizardDraft.category = val;
-  else if (bind==='step.resp_tipo') { var s=findStep(el.dataset.stepid); s.responsavel=s.responsavel||{}; s.responsavel.tipo=val; }
+  else if (bind==='step.resp_tipo') { var s=findStep(el.dataset.stepid); s.responsavel=s.responsavel||{}; s.responsavel.tipo=val; s.responsavel.valor = respTypeMeta(val).options[0]; }
   else if (bind==='step.resp_valor') { var s2=findStep(el.dataset.stepid); s2.responsavel.valor=val; }
   else if (bind==='step.sla_unidade') { var s3=findStep(el.dataset.stepid); s3.sla=s3.sla||{}; s3.sla.unidade=val; }
   else if (bind==='step.sla_vencer') { var s4=findStep(el.dataset.stepid); s4.sla.aoVencer=val; }
@@ -1598,7 +1640,8 @@ document.addEventListener('input', function(e){
     else if (bind==='field.label'){ var f=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f.label=val; setText('#fc-label-'+el.dataset.id, val || 'Campo sem rótulo'); }
     else if (bind==='field.help'){ var f2=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f2.help=val; }
     else if (bind==='field.placeholder'){ var f3=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f3.placeholder=val; }
-    else if (bind==='step.name'){ var s=findStep(el.dataset.stepid); s.name=val; setText('#wf-name-'+el.dataset.stepid, val || 'Etapa sem nome'); }
+    else if (bind==='step.name'){ var s=findStep(el.dataset.stepid); s.name=val; setText('#wf-name-'+el.dataset.stepid, val || 'Etapa sem nome'); setText('#step-modal-title-text', val || 'Etapa sem nome'); }
+    else if (bind==='step.description'){ var sdesc=findStep(el.dataset.stepid); sdesc.description=val; }
     else if (bind==='step.sla_prazo'){ var s3=findStep(el.dataset.stepid); s3.sla.prazo=val; }
     else if (bind==='rule.label'){ var r=findRegra(el.dataset.stepid, el.dataset.regraid); r.label=val; }
     else if (bind==='rule.condVal'){ var r2=findRegra(el.dataset.stepid, el.dataset.regraid); r2.condicoes[0]=r2.condicoes[0]||{}; r2.condicoes[0].valor=val; }

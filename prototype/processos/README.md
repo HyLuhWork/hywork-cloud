@@ -21,6 +21,12 @@ configurável e tipos de responsável alinhados ao vocabulário pedido. Ver
 "O que mudou na v4" abaixo. Também corrigido um bug visual em que as abas do editor
 apareciam com caixa (bug de reset de `button` no CSS).
 
+**v5** — simplificação direta da modal de etapa: removida a aba "Regras de saída" e
+o seletor "Tipo de etapa" (Geral agora só tem nome, descrição e os toggles de
+inicial/final); e a aba Campos ganhou a possibilidade real de **criar campos
+específicos da etapa** (não fazem parte do formulário inicial, existem só ali). Ver
+"O que mudou na v5" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -140,6 +146,29 @@ Permissões) apareciam com uma caixa cinza ao redor de cada uma porque o reset d
 `button` no CSS nunca zerava `border`/`background` — o navegador aplicava o estilo
 padrão de botão por baixo do sublinhado. Corrigido na base, auditei os demais botões
 da interface para confirmar que nenhum outro dependia do estilo padrão do navegador.
+
+## O que mudou na v5
+
+Simplificação direta da modal de etapa, a pedido:
+
+- **Removida a aba "Regras de saída"** da modal. A modal agora tem só quatro abas
+  (Geral, Responsável, SLA, Campos) — inclusive para etapas do sistema, que já tinham
+  esse número. O dado de regras (condição → destino → automação) continua existindo
+  por baixo — ainda aparece no resumo de cada etapa no canvas do Fluxo e é usado pelo
+  "Testar fluxo" para traçar o caminho — só não há mais uma tela dedicada para editá-lo
+  dentro da modal.
+- **Removido o seletor "Tipo de etapa"** (Aprovação/Tarefa/Condição) da aba Geral. O
+  tipo agora só é escolhido no momento da criação (modal "Nova etapa"), fica fixo
+  depois — a aba Geral ficou só com nome, descrição e os dois toggles de
+  inicial/final.
+- **Campos ganhou "Campos adicionais desta etapa"**, com funcionamento real: um botão
+  "+ Adicionar campo desta etapa" abre um formulário inline (nome + tipo, reaproveitando
+  o mesmo catálogo de tipos do construtor de formulário) que cria um campo novo,
+  guardado só naquela etapa (`step.camposExtras`) — não aparece no formulário inicial
+  nem em outras etapas. Serve para dados que só fazem sentido durante aquela análise
+  (ex: "Nº da ordem de pagamento" na etapa Financeiro, já incluído como exemplo). Dá
+  para excluir cada campo extra individualmente; tudo persiste no estado da sessão
+  como qualquer outro dado do protótipo.
 
 ## O que está implementado
 

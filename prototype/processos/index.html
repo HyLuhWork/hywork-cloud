@@ -564,6 +564,7 @@ function fieldTypeMeta(type){
   for (var g=0; g<FIELD_TYPES.length; g++) for (var i=0;i<FIELD_TYPES[g].items.length;i++) if (FIELD_TYPES[g].items[i].type===type) return FIELD_TYPES[g].items[i];
   return {type:type,label:type,icon:'info'};
 }
+var FIELD_TYPES_FLAT = FIELD_TYPES.filter(function(g){return g.group!=='Estrutura';}).reduce(function(acc,g){ return acc.concat(g.items); }, []);
 var STEP_KINDS = [
   {kind:'aprovacao', label:'Aprovação', icon:'✅', desc:'Alguém decide entre botões (aprovar, recusar...)'},
   {kind:'tarefa', label:'Tarefa', icon:'🗂️', desc:'Alguém executa uma atividade e conclui'},
@@ -611,7 +612,8 @@ function richProcessData(){
     description:'Financeiro confere o valor antes da aprovação final.',
     responsavel:{tipo:'Estrutura Organizacional', valor:'Financeiro'},
     sla:{prazo:1,unidade:'dias',aoVencer:'Notificar responsável'},
-    campos:[], regras:[]};
+    campos:[], regras:[],
+    camposExtras:[{id:uid(), type:'short_text', label:'Nº da ordem de pagamento', required:false}]};
   var s3={id:uid(), name:'Análise do RH', kind:'aprovacao',
     description:'RH confere elegibilidade antes da aprovação final.',
     responsavel:{tipo:'Estrutura Organizacional', valor:'Recursos Humanos'},
@@ -714,6 +716,7 @@ var state = {
   editGeneralOpen:false,
   openAutomationAdder:null, // {stepId, regraId}
   openNewStepFor:null, // {stepId, regraId}
+  stepFieldAdderOpen:false,
   addStepOpen:false,
   newStep:{name:'',kind:'aprovacao'},
   addWidgetOpen:false,
@@ -1027,12 +1030,8 @@ function disabledSwitchHTML(){
 }
 function stepModalGeralHTML(step){
   var isSystem = !!step.system;
-  var kindPicker = isSystem ? '' : '<div class="field-row"><label class="field-label">Tipo de etapa</label><div class="kind-picker">'+STEP_KINDS.map(function(k){
-    return '<button class="kind-opt'+(step.kind===k.kind?' selected':'')+'" data-action="set-stepkind" data-stepid="'+step.id+'" data-kind="'+k.kind+'" title="'+k.desc+'"><span class="ko-ic">'+k.icon+'</span>'+k.label+'</button>';
-  }).join('')+'</div></div>';
   return '<div class="field-row"><label class="field-label">Nome da etapa</label><input class="input" data-bind="step.name" data-stepid="'+step.id+'" value="'+esc(step.name)+'" '+(isSystem?'disabled':'')+'/></div>'+
     '<div class="field-row"><label class="field-label">Descrição</label><textarea class="textarea" data-bind="step.description" data-stepid="'+step.id+'" '+(isSystem?'disabled':'')+'>'+esc(step.description||'')+'</textarea></div>'+
-    kindPicker+
     '<div class="switch-row"><div class="sr-text"><div class="sr-title">Etapa inicial do processo</div><div class="sr-sub">O fluxo sempre começa por aqui</div></div>'+
       (isSystem ? disabledSwitchHTML() : '<label class="switch" data-action="set-initial" data-stepid="'+step.id+'"><input type="checkbox" '+(step.initial?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>')+
     '</div>'+
@@ -1058,22 +1057,41 @@ function stepModalSlaHTML(step){
 }
 function stepCamposHTML(step){
   var d = currentData();
-  if (!d.formFields.length) return '<div class="field-hint">Nenhum campo criado ainda. Adicione campos na aba Formulário — eles aparecem aqui automaticamente.</div>';
-  var rows = d.formFields.map(function(f){
+  var baseRows = d.formFields.length ? d.formFields.map(function(f){
     var cfg = (step.campos||[]).find(function(c){return c.fieldId===f.id;}) || {visibility:'visible'};
     return '<div class="field-mini-row"><div><div class="fmr-name">'+esc(f.label)+'</div><div class="fmr-type">'+fieldTypeMeta(f.type).label+'</div></div>'+
       '<div class="seg" data-action="set-fieldvis" data-stepid="'+step.id+'" data-fieldid="'+f.id+'">'+
         ['hidden','visible','editable'].map(function(v){ var lbl={hidden:'Ocultar',visible:'Só exibir',editable:'Editar'}[v]; return '<button class="'+(cfg.visibility===v?'active':'')+'" data-vis="'+v+'">'+lbl+'</button>'; }).join('')+
       '</div></div>';
+  }).join('') : '<div class="field-hint">Nenhum campo no formulário inicial ainda — adicione na aba Formulário.</div>';
+
+  var extras = step.camposExtras || [];
+  var extraRows = extras.map(function(f){
+    var meta = fieldTypeMeta(f.type);
+    return '<div class="field-mini-row"><div class="fc-ic" style="margin-right:9px;flex:none">'+ic(meta.icon,13)+'</div><div style="flex:1"><div class="fmr-name">'+esc(f.label)+(f.required?' <span style="color:var(--error)">*</span>':'')+'</div><div class="fmr-type">'+meta.label+' · só nesta etapa</div></div>'+
+      '<button class="icon-btn" data-action="remove-stepfield" data-stepid="'+step.id+'" data-fieldid="'+f.id+'" title="Excluir campo">'+ic('trash',13)+'</button></div>';
   }).join('');
-  return '<div class="field-hint" style="margin-bottom:12px">Por padrão, os campos vêm do formulário inicial. Ajuste como cada um aparece nesta etapa.</div>'+rows;
+
+  var adding = !!state.stepFieldAdderOpen;
+  var adderToggle = '<button class="link-btn" data-action="toggle-stepfield-adder" data-stepid="'+step.id+'">'+ic('plus',12)+'Adicionar campo desta etapa</button>';
+  var adderForm = adding ? '<div class="automation-mini-form" style="margin-top:8px">'+
+      '<input class="input" id="stepfield-name-input" placeholder="Nome do campo"/>'+
+      '<select class="select" id="stepfield-type-select">'+FIELD_TYPES_FLAT.map(function(t){return '<option value="'+t.type+'">'+t.label+'</option>';}).join('')+'</select>'+
+      '<button class="btn btn-primary btn-xs" data-action="confirm-add-stepfield" data-stepid="'+step.id+'">'+ic('check',13)+' Adicionar</button>'+
+    '</div>' : '';
+
+  return '<div class="field-hint" style="margin-bottom:12px">Por padrão, os campos vêm do formulário inicial. Ajuste como cada um aparece nesta etapa.</div>'+
+    baseRows+
+    '<div class="rule-mini-label" style="margin-top:18px">Campos adicionais desta etapa</div>'+
+    '<div class="field-hint" style="margin-bottom:10px">Só existem aqui — não fazem parte do formulário inicial nem de outras etapas. Ficam visíveis e editáveis só para quem atua nesta etapa.</div>'+
+    extraRows+
+    '<div style="margin-top:6px">'+adderToggle+adderForm+'</div>';
 }
 function stepModalHTML(){
   var step = findStep(state.stepModalOpen);
   if (!step) return '';
   var isSystem = !!step.system;
   var tabs = [['geral','Geral','gear'],['responsavel','Responsável','users'],['sla','SLA','clock'],['campos','Campos','doc']];
-  if (!isSystem) tabs.push(['regras','Regras de saída','fork']);
   var tabsHTML = tabs.map(function(t){
     return '<button class="mtab'+(state.stepModalTab===t[0]?' active':'')+'" data-action="set-stepmodaltab" data-tab="'+t[0]+'">'+ic(t[2],14)+t[1]+'</button>';
   }).join('');
@@ -1082,13 +1100,12 @@ function stepModalHTML(){
   if (state.stepModalTab==='geral') body = stepModalGeralHTML(step);
   else if (state.stepModalTab==='responsavel') body = needsHuman(step.kind) ? stepModalResponsavelHTML(step) : '<div class="field-hint">Etapas do tipo Condição são decididas automaticamente pelo sistema — não têm responsável humano.</div>';
   else if (state.stepModalTab==='sla') body = needsHuman(step.kind) ? stepModalSlaHTML(step) : '<div class="field-hint">Etapas do tipo Condição não têm prazo — são resolvidas instantaneamente pelo sistema.</div>';
-  else if (state.stepModalTab==='campos') body = stepCamposHTML(step);
-  else body = '<div class="field-hint" style="margin-bottom:12px">Cada regra define: quando ela vale, para qual etapa o fluxo vai, e o que mais acontece (notificações) — tudo num lugar só, sem abrir outra tela.</div>'+rulesListHTML(step);
+  else body = stepCamposHTML(step);
 
   var footLeft = isSystem ? '<div class="field-hint">Etapa do sistema — não pode ser excluída.</div>' : '<button class="btn btn-danger-ghost btn-sm" data-action="delete-step" data-id="'+step.id+'">'+ic('trash',14)+'Excluir etapa</button>';
 
   return '<div class="overlay" data-action="close-stepmodal-overlay"><div class="modal modal-lg">'+
-    '<div class="modal-head"><div><div class="dh-eyebrow" style="margin-bottom:4px">Configurar etapa</div><h3 id="step-modal-title-text">'+esc(step.name)+'</h3><p>'+(isSystem?'Etapa do sistema — configurações limitadas':'Nome, responsável, prazo, campos e regras — tudo aqui, sem precisar navegar')+'</p></div><button class="icon-btn" data-action="close-stepmodal">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-head"><div><div class="dh-eyebrow" style="margin-bottom:4px">Configurar etapa</div><h3 id="step-modal-title-text">'+esc(step.name)+'</h3><p>'+(isSystem?'Etapa do sistema — configurações limitadas':'Nome, responsável, prazo e campos — tudo aqui, sem precisar navegar')+'</p></div><button class="icon-btn" data-action="close-stepmodal">'+ic('x',16)+'</button></div>'+
     '<div class="mtabs">'+tabsHTML+'</div>'+
     '<div class="modal-body" style="min-height:340px">'+body+'</div>'+
     '<div class="modal-foot" style="justify-content:space-between">'+footLeft+'<button class="btn btn-primary btn-sm" data-action="close-stepmodal">'+ic('check',14)+'Concluído</button></div>'+
@@ -1455,15 +1472,33 @@ document.addEventListener('click', function(e){
       state.selectedStepId = t.dataset.id;
       state.stepModalOpen = t.dataset.id;
       state.stepModalTab = 'geral';
-      state.openNewStepFor=null; state.openAutomationAdder=null;
+      state.openNewStepFor=null; state.openAutomationAdder=null; state.stepFieldAdderOpen=false;
       break;
     }
     case 'close-stepmodal': case 'close-stepmodal-overlay': {
       state.stepModalOpen=null; state.selectedStepId=null;
-      state.openNewStepFor=null; state.openAutomationAdder=null;
+      state.openNewStepFor=null; state.openAutomationAdder=null; state.stepFieldAdderOpen=false;
       break;
     }
-    case 'set-stepmodaltab': state.stepModalTab = t.dataset.tab; break;
+    case 'set-stepmodaltab': state.stepModalTab = t.dataset.tab; state.stepFieldAdderOpen=false; break;
+    case 'toggle-stepfield-adder': state.stepFieldAdderOpen = !state.stepFieldAdderOpen; break;
+    case 'confirm-add-stepfield': {
+      var sfNameEl = qs('#stepfield-name-input'); var sfTypeEl = qs('#stepfield-type-select');
+      var sfLabel = sfNameEl ? sfNameEl.value.trim() : '';
+      if (!sfLabel) break;
+      var sfType = sfTypeEl ? sfTypeEl.value : 'short_text';
+      var sfStep = findStep(t.dataset.stepid);
+      sfStep.camposExtras = sfStep.camposExtras || [];
+      sfStep.camposExtras.push({id:uid(), type:sfType, label:sfLabel, required:false});
+      state.stepFieldAdderOpen = false;
+      showToast('Campo adicionado a esta etapa.');
+      break;
+    }
+    case 'remove-stepfield': {
+      var rmStep = findStep(t.dataset.stepid);
+      rmStep.camposExtras = (rmStep.camposExtras||[]).filter(function(f){return f.id!==t.dataset.fieldid;});
+      break;
+    }
     case 'set-initial': {
       var targetId = t.dataset.stepid;
       currentData().steps.forEach(function(s){ s.initial = (s.id===targetId); });

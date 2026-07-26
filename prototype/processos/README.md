@@ -27,6 +27,10 @@ inicial/final); e a aba Campos ganhou a possibilidade real de **criar campos
 específicos da etapa** (não fazem parte do formulário inicial, existem só ali). Ver
 "O que mudou na v5" abaixo.
 
+**v6** — nova aba de topo **Automações** (evento → condição → ação), inspirada num
+modelo de referência enviado, com abas do editor reordenadas para Formulário, Fluxo,
+Automações, Indicadores, Permissões. Ver "O que mudou na v6" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -170,6 +174,45 @@ Simplificação direta da modal de etapa, a pedido:
   para excluir cada campo extra individualmente; tudo persiste no estado da sessão
   como qualquer outro dado do protótipo.
 
+## O que mudou na v6
+
+Nova aba de topo **Automações**, a partir de um modelo de referência enviado
+(canvas com nó de gatilho, botão "+" levando a Condição/Ação, painel lateral
+contextual, e sub-abas "Automação" / "Logs de Auditoria"). As abas do editor foram
+reordenadas para **Formulário, Fluxo, Automações, Indicadores, Permissões**.
+
+A aba tem duas telas:
+
+- **Lista de automações** — cards com nome, resumo em uma linha (evento + nº de
+  condições + nº de ações), toggle Ativo/Inativo e exclusão. "+ Nova Automação" cria
+  uma automação em branco (gatilho padrão "Item Criado") e já abre o editor.
+- **Editor de uma automação** — canvas vertical no mesmo estilo do Fluxo: o nó
+  **QUANDO** (gatilho) no topo, seguido pelos blocos que você for adicionando via um
+  botão "+" circular, que oferece **Condição** ou **Ação**. Cada bloco adicionado vira
+  um nó **SE** (condição) ou **ENTÃO** (ação) no canvas, clicável, com um painel à
+  direita que muda conforme o que está selecionado:
+  - **Gatilho**: nome da automação + lista de eventos — Item Criado, Campo Alterado,
+    Item Excluído, **Item entrou na etapa** (escolhe qual etapa do Fluxo), **Ação
+    executada** (escolhe entre as ações/rótulos já configurados nas regras de saída do
+    Fluxo, ex: "Aprovar (Análise do Gestor)"), Usuário Atribuído, Data Alcançada.
+  - **Condição**: linhas de campo + operador (maior que, maior ou igual a, menor que,
+    menor ou igual a, igual a) + valor, combinadas com E; dá para adicionar mais de
+    uma.
+  - **Ação**: Enviar notificação (destinatário + mensagem), Mudar etapa (escolhe a
+    etapa do Fluxo), Solicitar preenchimento, Atualizar campo, Criar tarefa, Webhook,
+    Chamar API — cada uma com os campos relevantes ao tipo.
+  - O resumo de cada bloco no canvas e no card da lista é gerado ao vivo a partir da
+    configuração real (ex: "Quando o item entrar em Análise do Financeiro · 1 condição
+    · 1 ação").
+- **Logs de Auditoria** — tabela mockada (não gerada por execuções reais, já que este
+  protótipo não roda o processo de verdade) mostrando como ficaria o histórico de
+  disparos de uma automação, incluindo o caso "ignorada — condição não atendida".
+
+Incluí uma automação já configurada de exemplo em "Solicitação de Férias": *Avisar
+Financeiro em valores altos* — dispara quando o item entra em "Análise do
+Financeiro", só segue se o Valor total for ≥ R$ 5.000,00, e então notifica o
+Financeiro.
+
 ## O que está implementado
 
 **Central de Processos (Home)** — botão "Criar do 0", caixa do HyA Builder (mockada),
@@ -181,14 +224,18 @@ pré-visualização ao vivo do card final. Ao continuar, o processo nasce como r
 o admin já entra direto no construtor de formulário.
 
 **Editor do processo** — cabeçalho fixo com identidade do processo (nome e descrição
-editáveis via popover), status, "Testar fluxo" e "Publicar", e quatro abas:
+editáveis via popover), status, "Testar fluxo" e "Publicar", e cinco abas: Formulário,
+Fluxo, Automações, Indicadores, Permissões.
 
-- **Fluxo** — canvas vertical de etapas com resumo de regras visível em cada nó,
-  ocupando a largura toda. Clicar numa etapa abre uma modal com abas Geral /
-  Responsável / SLA / Campos / **Regras de saída** (o coração da tela — condição,
-  destino e automação numa mesma regra, com criação de etapa nova sem sair da tela).
 - **Formulário** — construtor drag-and-drop: paleta à esquerda, canvas central,
   inspetor de configuração à direita.
+- **Fluxo** — canvas vertical de etapas com resumo de regras visível em cada nó,
+  ocupando a largura toda. Clicar numa etapa abre uma modal com abas Geral /
+  Responsável / SLA / Campos (incluindo campos específicos daquela etapa). As regras
+  de saída (condição → destino → notificação) de cada etapa continuam existindo e
+  aparecem no resumo do nó e no "Testar fluxo".
+- **Automações** — evento → condição → ação para todo o processo (não por etapa),
+  num canvas com nó de gatilho e blocos adicionáveis. Ver "O que mudou na v6".
 - **Indicadores** — KPIs e gráficos simples de funil/barras, adicionáveis via galeria.
 - **Permissões** — tabela de grupos/cargos × (Criar, Visualizar, Editar, Administrar,
   Acompanhar).

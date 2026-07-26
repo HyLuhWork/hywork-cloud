@@ -446,11 +446,38 @@
   .drawer-body{flex:1;overflow-y:auto;padding:20px 22px}
   .drawer-foot{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;flex:none}
 
-  .action-tpl{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--radius-md);padding:11px 13px;margin-bottom:8px;text-align:left}
+  .action-tpl{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--radius-md);padding:11px 13px;margin-bottom:8px;text-align:left;width:100%}
   .action-tpl:hover{border-color:var(--navy-400);background:var(--info-50)}
+  .action-tpl.selected{border-color:var(--primary);background:var(--primary-50)}
   .action-tpl .at-ic{width:28px;height:28px;border-radius:7px;background:var(--muted);display:flex;align-items:center;justify-content:center;flex:none}
   .action-tpl .at-title{font-size:12.5px;font-weight:700}
   .action-tpl .at-sub{font-size:11px;color:var(--ink-faint)}
+
+  /* ---------- automações ---------- */
+  .automacao-list{display:flex;flex-direction:column;gap:10px}
+  .automacao-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:15px 17px;cursor:pointer}
+  .automacao-card:hover{border-color:var(--border-strong);box-shadow:var(--shadow-sm)}
+  .automacao-card .ac-top2{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-right:30px}
+  .automacao-card .ac-name2{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--ink)}
+  .automacao-card .ac-name2 svg{color:var(--primary)}
+  .automacao-card .ac-summary2{font-size:12px;color:var(--ink-muted);margin-top:6px}
+  .automacao-card .ac-delete2{position:absolute;top:13px;right:14px}
+  .auto-node{width:100%;background:var(--surface);border:1.5px solid var(--border-strong);border-radius:var(--radius-lg);padding:13px 15px;box-shadow:var(--shadow-sm);cursor:pointer;position:relative}
+  .auto-node:hover{border-color:var(--navy-400)}
+  .auto-node.selected{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-50)}
+  .auto-node-top{display:flex;align-items:center;gap:11px}
+  .auto-node .an-ic{width:34px;height:34px;border-radius:9px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+  .auto-node.kind-condicao .an-ic{background:var(--warning-50);color:var(--warning)}
+  .auto-node.kind-acao .an-ic{background:var(--success-50);color:var(--success)}
+  .auto-node .an-eyebrow{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint)}
+  .auto-node .an-title{font-size:13.5px;font-weight:700;margin-top:1px}
+  .auto-node .an-delete{position:absolute;top:8px;right:8px}
+  .auto-add-circle{width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto}
+  .auto-add-circle:hover{background:var(--navy-900)}
+  .auto-add-choices{display:flex;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);width:100%;box-shadow:var(--shadow-sm)}
+  .auto-add-choice{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;font-size:13px;font-weight:700;color:var(--ink-muted)}
+  .auto-add-choice:hover{background:var(--muted);color:var(--ink)}
+  .auto-add-choice+.auto-add-choice{border-left:1px solid var(--border)}
 
   @media (max-width:1100px){
     .fb-layout{grid-template-columns:195px 1fr 260px}
@@ -592,6 +619,49 @@ var AUTOMATION_TYPES = [
 ];
 function automationMeta(type){ return AUTOMATION_TYPES.find(function(t){return t.type===type;}) || {type:type,label:type,icon:'bolt'}; }
 
+var CONDITION_OPERATORS = ['maior ou igual a','maior que','menor ou igual a','menor que','igual a'];
+
+var EVENTO_TYPES = [
+  {tipo:'item_criado', label:'Item Criado', icon:'plus', desc:'Quando uma nova solicitação deste processo é criada.'},
+  {tipo:'campo_alterado', label:'Campo Alterado', icon:'edit', desc:'Quando um campo do formulário é alterado.'},
+  {tipo:'item_excluido', label:'Item Excluído', icon:'trash', desc:'Quando uma solicitação deste processo é excluída.'},
+  {tipo:'entrou_etapa', label:'Item entrou na etapa', icon:'flow', desc:'Quando a solicitação chega numa etapa específica.'},
+  {tipo:'acao_executada', label:'Ação executada', icon:'bolt', desc:'Quando alguém executa uma ação (ex: Aprovar) em alguma etapa.'},
+  {tipo:'usuario_atribuido', label:'Usuário Atribuído', icon:'users', desc:'Quando alguém é definido como responsável por uma etapa.'},
+  {tipo:'data_alcancada', label:'Data Alcançada', icon:'calendar', desc:'Quando um prazo ou SLA é alcançado.'},
+];
+function eventoMeta(tipo){ return EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) || EVENTO_TYPES[0]; }
+
+var AUTOMACAO_ACOES = [
+  {tipo:'notificacao', label:'Enviar notificação', icon:'bell'},
+  {tipo:'mudar_etapa', label:'Mudar etapa', icon:'flow'},
+  {tipo:'solicitar_preenchimento', label:'Solicitar preenchimento', icon:'edit'},
+  {tipo:'atualizar_campo', label:'Atualizar campo', icon:'edit'},
+  {tipo:'criar_tarefa', label:'Criar tarefa', icon:'task'},
+  {tipo:'webhook', label:'Webhook', icon:'webhook'},
+  {tipo:'api', label:'Chamar API', icon:'api'},
+];
+function acaoAutomacaoMeta(tipo){ return AUTOMACAO_ACOES.find(function(a){return a.tipo===tipo;}) || AUTOMACAO_ACOES[0]; }
+
+function allRuleTriggerOptions(){
+  var d = currentData(); if (!d) return [];
+  var out = [];
+  d.steps.forEach(function(s){
+    (s.regras||[]).forEach(function(r){
+      if (r.label) out.push({stepId:s.id, regraId:r.id, label:r.label+' ('+s.name+')'});
+    });
+  });
+  return out;
+}
+
+function makeAutomacao(o){
+  return Object.assign({ id: uid(), nome:'Nova automação', ativo:true, evento:{tipo:'item_criado'}, blocos:[] }, o);
+}
+function makeAutomacaoBloco(kind){
+  if (kind==='condicao') return {id:uid(), kind:'condicao', condicoes:[{campo:'Valor total', operador:'maior ou igual a', valor:''}]};
+  return {id:uid(), kind:'acao', tipo:'notificacao', alvo:'Solicitante', extra:''};
+}
+
 function makeRegra(o){
   return Object.assign({
     id: uid(), isDefault:false, label:'', destinoStepId:null,
@@ -668,6 +738,16 @@ function richProcessData(){
       {id:uid(),group:'Gestores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:true},
       {id:uid(),group:'Recursos Humanos',criar:true,visualizar:true,editar:true,administrar:true,acompanhar:true},
       {id:uid(),group:'Administradores',criar:true,visualizar:true,editar:true,administrar:true,acompanhar:true}
+    ],
+    automacoes:[
+      makeAutomacao({
+        nome:'Avisar Financeiro em valores altos',
+        evento:{tipo:'entrou_etapa', etapaId:sFin.id},
+        blocos:[
+          {id:uid(), kind:'condicao', condicoes:[{campo:'Valor total', operador:'maior ou igual a', valor:'R$ 5.000,00'}]},
+          {id:uid(), kind:'acao', tipo:'notificacao', alvo:'Financeiro', extra:'Solicitação de valor elevado aguardando análise.'}
+        ]
+      })
     ]
   };
 }
@@ -678,7 +758,8 @@ function emptyProcessData(){
     widgets:[],
     permissions:[
       {id:uid(),group:'Todos os colaboradores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:false}
-    ]
+    ],
+    automacoes:[]
   };
 }
 
@@ -724,6 +805,10 @@ var state = {
   testScenario:null,
   publishOpen:false,
   toast:null,
+  automacaoEditorId:null,
+  automacaoSelectedBlockId:null, // 'trigger' or a bloco id
+  automacaoAddChoiceOpen:false,
+  automacoesSubTab:'automacao', // 'automacao' | 'logs'
 };
 
 function currentProcess(){ return state.processes.find(function(p){return p.id===state.currentProcessId;}); }
@@ -731,6 +816,8 @@ function currentData(){ return state.processData[state.currentProcessId]; }
 function findStep(id){ var d=currentData(); return d && d.steps.find(function(s){return s.id===id;}); }
 function findRegra(stepId, regraId){ var s=findStep(stepId); return s && (s.regras||[]).find(function(r){return r.id===regraId;}); }
 function otherSteps(stepId){ return currentData().steps.filter(function(s){return s.id!==stepId;}); }
+function findAutomacao(id){ var d=currentData(); return d && (d.automacoes||[]).find(function(a){return a.id===id;}); }
+function findAutomacaoBloco(autoId, blocoId){ var a=findAutomacao(autoId); return a && a.blocos.find(function(b){return b.id===blocoId;}); }
 
 /* ============ RENDER ROOT ============ */
 function render(){
@@ -884,7 +971,7 @@ function processCardHTML(p){
 /* ============ EDITOR SHELL ============ */
 function editorHTML(){
   var p = currentProcess(); if(!p) { state.screen='home'; return homeHTML(); }
-  var tabs = [['workflow','Fluxo','flow'],['form','Formulário','doc'],['dashboard','Indicadores','chart'],['permissoes','Permissões','shield']];
+  var tabs = [['form','Formulário','doc'],['workflow','Fluxo','flow'],['automacoes','Automações','bolt'],['dashboard','Indicadores','chart'],['permissoes','Permissões','shield']];
   var tabsHTML = tabs.map(function(t){
     return '<button class="etab'+(state.editorTab===t[0]?' active':'')+'" data-action="set-etab" data-tab="'+t[0]+'">'+ic(t[2],14)+esc(t[1])+'</button>';
   }).join('');
@@ -892,10 +979,11 @@ function editorHTML(){
   var body;
   if (state.editorTab==='form') body = formTabHTML();
   else if (state.editorTab==='workflow') body = workflowTabHTML();
+  else if (state.editorTab==='automacoes') body = automacoesTabHTML();
   else if (state.editorTab==='dashboard') body = dashboardTabHTML();
   else body = permissoesTabHTML();
 
-  var flush = state.editorTab==='form' || state.editorTab==='workflow';
+  var flush = state.editorTab==='form' || state.editorTab==='workflow' || state.editorTab==='automacoes';
   var lastEditor = 'Mariana Rocha (RH)';
 
   return ''+
@@ -1210,6 +1298,201 @@ function widgetHTML(w){
   var max2 = Math.max.apply(null, w.data.map(function(x){return x.value;}));
   var cols = w.data.map(function(x){ return '<div class="bc-col"><div class="bc-val">'+x.value+'</div><div class="bc-bar" style="height:'+Math.round(x.value/max2*100)+'%"></div><div class="bc-label">'+esc(x.name)+'</div></div>'; }).join('');
   return '<div class="chart-card widget-shell">'+remove+'<div class="cc-label">'+esc(w.label)+'</div><div class="bar-chart">'+cols+'</div></div>';
+}
+
+/* ---- Automações tab ---- */
+function automacaoEventoText(auto){
+  var ev = auto.evento; var meta = eventoMeta(ev.tipo);
+  if (ev.tipo==='campo_alterado'){ var f = currentData().formFields.find(function(x){return x.id===ev.campoId;}); return 'Quando '+(f?f.label:'um campo')+' for alterado'; }
+  if (ev.tipo==='entrou_etapa'){ var s = findStep(ev.etapaId); return 'Quando o item entrar em '+(s?s.name:'uma etapa'); }
+  if (ev.tipo==='acao_executada'){ var opt = allRuleTriggerOptions().find(function(o){return o.regraId===ev.regraId;}); return 'Quando a ação '+(opt?opt.label:'for executada'); }
+  return meta.label;
+}
+function condicaoSummaryText(bloco){
+  var c = bloco.condicoes[0];
+  if (!c || !c.valor) return 'Condição não definida ainda';
+  return c.campo+' '+c.operador+' '+c.valor + (bloco.condicoes.length>1 ? ' (+'+(bloco.condicoes.length-1)+')' : '');
+}
+function labelForAlvo(bloco){
+  if (bloco.tipo==='mudar_etapa'){ var s=findStep(bloco.alvo); return s?s.name:'escolha a etapa'; }
+  return bloco.alvo || 'não definido';
+}
+function acaoSummaryText(bloco){
+  var meta = acaoAutomacaoMeta(bloco.tipo);
+  return meta.label + ' · ' + labelForAlvo(bloco);
+}
+function automacaoSummary(auto){
+  var condCount = auto.blocos.filter(function(b){return b.kind==='condicao';}).length;
+  var acaoCount = auto.blocos.filter(function(b){return b.kind==='acao';}).length;
+  return automacaoEventoText(auto) + (condCount? ' · '+condCount+' condição'+(condCount>1?'ões':'') : '') + (acaoCount? ' · '+acaoCount+' ação'+(acaoCount>1?'ões':'') : ' · sem ação definida');
+}
+function automacoesTabHTML(){
+  var subtabs = '<div class="mtabs" style="padding:0 28px">'+
+    '<button class="mtab'+(state.automacoesSubTab==='automacao'?' active':'')+'" data-action="set-automacoes-subtab" data-tab="automacao">Automação</button>'+
+    '<button class="mtab'+(state.automacoesSubTab==='logs'?' active':'')+'" data-action="set-automacoes-subtab" data-tab="logs">Logs de Auditoria</button>'+
+  '</div>';
+  var body = state.automacoesSubTab==='logs' ? automacaoLogsHTML() : (state.automacaoEditorId ? automacaoEditorHTML() : automacoesListHTML());
+  return subtabs + body;
+}
+function automacaoLogsHTML(){
+  var autos = currentData().automacoes || [];
+  var primeiraAuto = autos[0];
+  var rows = primeiraAuto ? [
+    {data:'26/07/2026 14:32', nome:primeiraAuto.nome, evento:automacaoEventoText(primeiraAuto), resultado:'Executada'},
+    {data:'25/07/2026 09:10', nome:primeiraAuto.nome, evento:automacaoEventoText(primeiraAuto), resultado:'Ignorada — condição não atendida'},
+    {data:'23/07/2026 17:48', nome:primeiraAuto.nome, evento:automacaoEventoText(primeiraAuto), resultado:'Executada'},
+  ] : [];
+  var tableRows = rows.map(function(r){
+    var ok = r.resultado==='Executada';
+    return '<tr><td style="text-align:left;padding-left:16px">'+r.data+'</td><td style="text-align:left">'+esc(r.nome)+'</td><td style="text-align:left">'+esc(r.evento)+'</td><td style="text-align:left"><span class="badge '+(ok?'badge-success':'badge-muted')+'">'+esc(r.resultado)+'</span></td></tr>';
+  }).join('');
+  return '<div class="screen-inner" style="padding:26px 0 0">'+
+    '<div class="section-head"><div><h3>Logs de auditoria</h3><p>Histórico de disparos das automações deste processo.</p></div></div>'+
+    (rows.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Data/Hora</th><th style="text-align:left">Automação</th><th style="text-align:left">Evento</th><th style="text-align:left">Resultado</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>'+
+      '<div class="field-hint" style="margin-top:14px">Prévia ilustrativa — o log real seria alimentado pelas execuções de cada automação em produção.</div>' :
+      '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nenhum log ainda</div><div class="es-sub">Crie uma automação na aba "Automação" para começar a ver o histórico de disparos aqui.</div></div>')+
+  '</div>';
+}
+function automacoesListHTML(){
+  var autos = currentData().automacoes || [];
+  var cards = autos.map(function(a){
+    return '<div class="automacao-card" data-action="open-automacao-editor" data-id="'+a.id+'">'+
+      '<div class="ac-top2"><div class="ac-name2">'+ic('bolt',15)+esc(a.nome)+'</div>'+
+        '<label class="switch" data-action="toggle-automacao-ativo" data-id="'+a.id+'"><input type="checkbox" '+(a.ativo?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>'+
+      '</div>'+
+      '<div class="ac-summary2">'+esc(automacaoSummary(a))+'</div>'+
+      '<button class="icon-btn ac-delete2" data-action="delete-automacao" data-id="'+a.id+'" title="Excluir">'+ic('trash',13)+'</button>'+
+    '</div>';
+  }).join('');
+  return '<div class="screen-inner" style="padding:26px 0 0">'+
+    '<div class="section-head"><div><h3>Automações</h3><p>Regras do tipo evento → condição → ação para este processo.</p></div>'+
+      '<button class="btn btn-outline btn-sm" data-action="new-automacao">'+ic('plus',14)+'Nova Automação</button></div>'+
+    (autos.length ? '<div class="automacao-list">'+cards+'</div>' :
+      '<div class="empty-state"><div class="es-ic">'+ic('bolt',22)+'</div><div class="es-title">Nenhuma automação configurada</div><div class="es-sub">Crie regras como "quando X acontecer, faça Y" — notificações, mudança de etapa e mais.</div><button class="btn btn-primary" style="margin-top:6px" data-action="new-automacao">'+ic('plus',14)+'Nova Automação</button></div>')+
+  '</div>';
+}
+function automacaoEditorHTML(){
+  var auto = findAutomacao(state.automacaoEditorId);
+  if (!auto) { state.automacaoEditorId=null; return automacoesListHTML(); }
+  var selected = state.automacaoSelectedBlockId;
+
+  var triggerNode = '<div class="auto-node kind-trigger'+(selected==='trigger'?' selected':'')+'" data-action="select-automacao-block" data-blockid="trigger">'+
+    '<div class="auto-node-top"><div class="an-ic">'+ic(eventoMeta(auto.evento.tipo).icon,16)+'</div>'+
+    '<div><div class="an-eyebrow">Quando</div><div class="an-title" id="auto-trigger-title">'+esc(automacaoEventoText(auto))+'</div></div></div>'+
+  '</div>';
+
+  var blocosHTML = auto.blocos.map(function(b){
+    var isCondicao = b.kind==='condicao';
+    var eyebrow = isCondicao ? 'Se' : 'Então';
+    var title = isCondicao ? condicaoSummaryText(b) : acaoSummaryText(b);
+    var icon = isCondicao ? 'fork' : acaoAutomacaoMeta(b.tipo).icon;
+    return '<div class="wf-connector"></div>'+
+      '<div class="auto-node kind-'+b.kind+(selected===b.id?' selected':'')+'" data-action="select-automacao-block" data-blockid="'+b.id+'">'+
+      '<button class="icon-btn an-delete" data-action="delete-automacao-bloco" data-blockid="'+b.id+'" title="Excluir">'+ic('x',13)+'</button>'+
+      '<div class="auto-node-top"><div class="an-ic">'+ic(icon,16)+'</div>'+
+      '<div><div class="an-eyebrow">'+eyebrow+'</div><div class="an-title">'+esc(title)+'</div></div></div>'+
+    '</div>';
+  }).join('');
+
+  var addBlock = state.automacaoAddChoiceOpen ?
+    '<div class="auto-add-choices">'+
+      '<button class="auto-add-choice" data-action="add-automacao-bloco" data-kind="condicao">'+ic('fork',15)+'Condição</button>'+
+      '<button class="auto-add-choice" data-action="add-automacao-bloco" data-kind="acao">'+ic('bolt',15)+'Ação</button>'+
+    '</div>' :
+    '<button class="auto-add-circle" data-action="toggle-automacao-addchoice" title="Adicionar condição ou ação">'+ic('plus',16)+'</button>';
+
+  return '<div style="padding:16px 28px 0">'+
+      '<a href="#" class="back-link" data-action="close-automacao-editor">'+ic('arrowLeft',14)+'Voltar para Automações</a>'+
+    '</div>'+
+    '<div class="wf-layout">'+
+      '<div class="wf-canvas-wrap"><div class="wf-flow">'+
+        triggerNode+'<div class="wf-connector"></div>'+blocosHTML+
+        '<div class="wf-gap"></div>'+addBlock+
+      '</div></div>'+
+      '<div class="wf-panel">'+automacaoPanelHTML(auto)+'</div>'+
+    '</div>';
+}
+function automacaoPanelHTML(auto){
+  var sel = state.automacaoSelectedBlockId;
+  if (!sel || sel==='trigger') return automacaoTriggerPanelHTML(auto);
+  var bloco = findAutomacaoBloco(auto.id, sel);
+  if (!bloco) return automacaoTriggerPanelHTML(auto);
+  if (bloco.kind==='condicao') return automacaoCondicaoPanelHTML(auto, bloco);
+  return automacaoAcaoPanelHTML(auto, bloco);
+}
+function automacaoTriggerPanelHTML(auto){
+  var ev = auto.evento;
+  var eventList = EVENTO_TYPES.map(function(e){
+    return '<button class="action-tpl'+(ev.tipo===e.tipo?' selected':'')+'" data-action="set-automacao-evento" data-autoid="'+auto.id+'" data-tipo="'+e.tipo+'"><div class="at-ic">'+ic(e.icon,14)+'</div><div><div class="at-title">'+e.label+'</div><div class="at-sub">'+e.desc+'</div></div></button>';
+  }).join('');
+
+  var extra = '';
+  if (ev.tipo==='campo_alterado'){
+    extra = '<div class="wf-panel-section"><div class="wf-panel-section-label">Campo</div><select class="select" data-bind="automacao.evento_campo" data-autoid="'+auto.id+'">'+currentData().formFields.map(function(f){return '<option value="'+f.id+'"'+(f.id===ev.campoId?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select></div>';
+  } else if (ev.tipo==='entrou_etapa'){
+    extra = '<div class="wf-panel-section"><div class="wf-panel-section-label">Etapa</div><select class="select" data-bind="automacao.evento_etapa" data-autoid="'+auto.id+'">'+currentData().steps.map(function(s){return '<option value="'+s.id+'"'+(s.id===ev.etapaId?' selected':'')+'>'+esc(s.name)+'</option>';}).join('')+'</select></div>';
+  } else if (ev.tipo==='acao_executada'){
+    var opts = allRuleTriggerOptions();
+    extra = '<div class="wf-panel-section"><div class="wf-panel-section-label">Ação</div>'+(opts.length ? '<select class="select" data-bind="automacao.evento_regra" data-autoid="'+auto.id+'">'+opts.map(function(o){return '<option value="'+o.regraId+'"'+(o.regraId===ev.regraId?' selected':'')+'>'+esc(o.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Nenhuma ação configurada no Fluxo ainda.</div>')+'</div>';
+  }
+
+  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Nome da automação</div>'+
+    '<input class="input" style="margin-top:8px" data-bind="automacao.nome" data-autoid="'+auto.id+'" value="'+esc(auto.nome)+'"/></div>'+
+    '<div class="wf-panel-body"><div class="wf-panel-section"><div class="wf-panel-section-label">Evento — quando dispara</div>'+eventList+'</div>'+extra+'</div>';
+}
+function automacaoCondicaoPanelHTML(auto, bloco){
+  var rows = bloco.condicoes.map(function(c,i){
+    return '<div class="cond-row"><select class="select" data-bind="automacao.condCampo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" data-idx="'+i+'">'+
+      currentData().formFields.map(function(f){return '<option'+(f.label===c.campo?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+
+      '</select><select class="select" data-bind="automacao.condOp" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" data-idx="'+i+'">'+
+      CONDITION_OPERATORS.map(function(o){return '<option'+(o===c.operador?' selected':'')+'>'+o+'</option>';}).join('')+
+      '</select><input class="input" placeholder="valor" data-bind="automacao.condVal" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" data-idx="'+i+'" value="'+esc(c.valor||'')+'"/>'+
+      (bloco.condicoes.length>1 ? '<button class="icon-btn" data-action="remove-automacao-cond" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" data-idx="'+i+'">'+ic('x',13)+'</button>' : '')+
+    '</div>';
+  }).join('');
+  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Se...</div><div class="wf-panel-sub">A automação só segue se isso for verdade</div></div>'+
+    '<div class="wf-panel-body"><div class="wf-panel-section">'+(bloco.condicoes.length>1?'<div class="rule-mini-label">Todas as condições (E)</div>':'')+rows+
+    '<button class="link-btn" style="margin-top:8px" data-action="add-automacao-cond" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+ic('plus',12)+'Adicionar condição</button>'+
+    '</div></div>';
+}
+function automacaoAcaoPanelHTML(auto, bloco){
+  var body = '<div class="wf-panel-section"><div class="wf-panel-section-label">Tipo de ação</div>'+
+    AUTOMACAO_ACOES.map(function(a){
+      return '<button class="action-tpl'+(bloco.tipo===a.tipo?' selected':'')+'" data-action="set-automacao-acao-tipo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" data-tipo="'+a.tipo+'"><div class="at-ic">'+ic(a.icon,14)+'</div><div class="at-title">'+a.label+'</div></button>';
+    }).join('')+
+  '</div>';
+  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Então...</div><div class="wf-panel-sub">O que a automação faz quando dispara</div></div>'+
+    '<div class="wf-panel-body">'+body+acaoExtraFieldsHTML(auto, bloco)+'</div>';
+}
+function acaoExtraFieldsHTML(auto, bloco){
+  var d = currentData();
+  if (bloco.tipo==='notificacao'){
+    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Destinatário</div>'+
+      '<select class="select" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+
+        ['Solicitante','Responsável da etapa atual','Gestor do solicitante','Financeiro','Recursos Humanos'].map(function(o){return '<option'+(o===bloco.alvo?' selected':'')+'>'+o+'</option>';}).join('')+
+      '</select><div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+esc(bloco.extra||'')+'</textarea></div></div>';
+  }
+  if (bloco.tipo==='mudar_etapa'){
+    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Etapa de destino</div>'+
+      '<select class="select" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+
+        '<option value="">Escolher etapa…</option>'+d.steps.map(function(s){return '<option value="'+s.id+'"'+(s.id===bloco.alvo?' selected':'')+'>'+esc(s.name)+'</option>';}).join('')+
+      '</select></div>';
+  }
+  if (bloco.tipo==='solicitar_preenchimento'){
+    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Campo a preencher</div>'+
+      (d.formFields.length ? '<select class="select" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+d.formFields.map(function(f){return '<option'+(f.label===bloco.alvo?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Nenhum campo no formulário ainda.</div>')+
+      '<div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Mensagem para quem preenche</label><input class="input" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.extra||'')+'"/></div></div>';
+  }
+  if (bloco.tipo==='atualizar_campo'){
+    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Campo</div>'+
+      (d.formFields.length ? '<select class="select" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+d.formFields.map(function(f){return '<option'+(f.label===bloco.alvo?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Nenhum campo no formulário ainda.</div>')+
+      '<div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Novo valor</label><input class="input" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.extra||'')+'"/></div></div>';
+  }
+  if (bloco.tipo==='criar_tarefa'){
+    return '<div class="wf-panel-section"><div class="field-row"><label class="field-label">Responsável</label><input class="input" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div>'+
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Descrição da tarefa</label><input class="input" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.extra||'')+'"/></div></div>';
+  }
+  return '<div class="wf-panel-section"><div class="field-row" style="margin-bottom:0"><label class="field-label">URL</label><input class="input" placeholder="https://" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div></div>';
 }
 
 /* ---- Permissões tab ---- */
@@ -1613,6 +1896,65 @@ document.addEventListener('click', function(e){
     /* permissions */
     case 'add-perm-group': { var d7=currentData(); d7.permissions.push({id:uid(),group:'Novo grupo',criar:false,visualizar:true,editar:false,administrar:false,acompanhar:false}); break; }
 
+    /* automações */
+    case 'set-automacoes-subtab': state.automacoesSubTab = t.dataset.tab; break;
+    case 'new-automacao': {
+      var d8=currentData(); d8.automacoes = d8.automacoes||[];
+      var na = makeAutomacao({});
+      d8.automacoes.push(na);
+      state.automacaoEditorId = na.id; state.automacaoSelectedBlockId='trigger'; state.automacaoAddChoiceOpen=false;
+      break;
+    }
+    case 'open-automacao-editor': {
+      state.automacaoEditorId = t.dataset.id; state.automacaoSelectedBlockId='trigger'; state.automacaoAddChoiceOpen=false;
+      break;
+    }
+    case 'close-automacao-editor': {
+      state.automacaoEditorId = null; state.automacaoSelectedBlockId = null; state.automacaoAddChoiceOpen=false;
+      break;
+    }
+    case 'toggle-automacao-ativo': { var ta=findAutomacao(t.dataset.id); ta.ativo = !ta.ativo; break; }
+    case 'delete-automacao': {
+      var d9=currentData(); d9.automacoes = d9.automacoes.filter(function(a){return a.id!==t.dataset.id;});
+      if (state.automacaoEditorId===t.dataset.id){ state.automacaoEditorId=null; state.automacaoSelectedBlockId=null; }
+      break;
+    }
+    case 'select-automacao-block': { state.automacaoSelectedBlockId = t.dataset.blockid; state.automacaoAddChoiceOpen=false; break; }
+    case 'toggle-automacao-addchoice': state.automacaoAddChoiceOpen = !state.automacaoAddChoiceOpen; break;
+    case 'add-automacao-bloco': {
+      var auB=findAutomacao(state.automacaoEditorId);
+      var nb = makeAutomacaoBloco(t.dataset.kind);
+      auB.blocos.push(nb);
+      state.automacaoSelectedBlockId = nb.id; state.automacaoAddChoiceOpen=false;
+      break;
+    }
+    case 'delete-automacao-bloco': {
+      var auD=findAutomacao(state.automacaoEditorId);
+      auD.blocos = auD.blocos.filter(function(b){return b.id!==t.dataset.blockid;});
+      if (state.automacaoSelectedBlockId===t.dataset.blockid) state.automacaoSelectedBlockId='trigger';
+      break;
+    }
+    case 'add-automacao-cond': {
+      var bC=findAutomacaoBloco(t.dataset.autoid, t.dataset.blockid);
+      bC.condicoes.push({campo:'Valor total', operador:'maior ou igual a', valor:''});
+      break;
+    }
+    case 'remove-automacao-cond': {
+      var bR=findAutomacaoBloco(t.dataset.autoid, t.dataset.blockid);
+      bR.condicoes.splice(+t.dataset.idx,1);
+      break;
+    }
+    case 'set-automacao-evento': {
+      var auE=findAutomacao(t.dataset.autoid);
+      auE.evento = {tipo:t.dataset.tipo};
+      break;
+    }
+    case 'set-automacao-acao-tipo': {
+      var bT=findAutomacaoBloco(t.dataset.autoid, t.dataset.blockid);
+      bT.tipo = t.dataset.tipo; bT.alvo=''; bT.extra='';
+      break;
+    }
+
     /* testar fluxo */
     case 'open-testflow': state.testFlowOpen=true; state.testScenario=null; break;
     case 'close-testflow': case 'close-testflow-overlay': state.testFlowOpen=false; break;
@@ -1652,6 +1994,12 @@ document.addEventListener('change', function(e){
   else if (bind==='rule.destino') { var r=findRegra(el.dataset.stepid, el.dataset.regraid); r.destinoStepId=val||null; }
   else if (bind==='rule.condCampo') { var r2=findRegra(el.dataset.stepid, el.dataset.regraid); r2.condicoes[0]=r2.condicoes[0]||{}; r2.condicoes[0].campo=val; }
   else if (bind==='rule.condOp') { var r3=findRegra(el.dataset.stepid, el.dataset.regraid); r3.condicoes[0]=r3.condicoes[0]||{}; r3.condicoes[0].operador=val; }
+  else if (bind==='automacao.evento_campo') { var au1=findAutomacao(el.dataset.autoid); au1.evento.campoId=val; }
+  else if (bind==='automacao.evento_etapa') { var au2=findAutomacao(el.dataset.autoid); au2.evento.etapaId=val; }
+  else if (bind==='automacao.evento_regra') { var au3=findAutomacao(el.dataset.autoid); au3.evento.regraId=val; }
+  else if (bind==='automacao.condCampo') { var b1=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); b1.condicoes[+el.dataset.idx].campo=val; }
+  else if (bind==='automacao.condOp') { var b2=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); b2.condicoes[+el.dataset.idx].operador=val; }
+  else if (bind==='automacao.acaoAlvo') { var b3=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(b3) b3.alvo=val; }
   else matched = false;
   if (matched) render();
 });
@@ -1680,6 +2028,10 @@ document.addEventListener('input', function(e){
     else if (bind==='step.sla_prazo'){ var s3=findStep(el.dataset.stepid); s3.sla.prazo=val; }
     else if (bind==='rule.label'){ var r=findRegra(el.dataset.stepid, el.dataset.regraid); r.label=val; }
     else if (bind==='rule.condVal'){ var r2=findRegra(el.dataset.stepid, el.dataset.regraid); r2.condicoes[0]=r2.condicoes[0]||{}; r2.condicoes[0].valor=val; }
+    else if (bind==='automacao.nome'){ var auN=findAutomacao(el.dataset.autoid); auN.nome=val; }
+    else if (bind==='automacao.condVal'){ var bV=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); bV.condicoes[+el.dataset.idx].valor=val; }
+    else if (bind==='automacao.acaoExtra'){ var bE=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); bE.extra=val; }
+    else if (bind==='automacao.acaoAlvo'){ var bA=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(bA) bA.alvo=val; }
     return;
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }

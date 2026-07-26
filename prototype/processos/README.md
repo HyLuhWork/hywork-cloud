@@ -1,11 +1,13 @@
-# Módulo Processos — Protótipo (visão do Administrador)
+# Módulo Processos — Protótipo (Administrador + Colaborador)
 
 Protótipo navegável de alta fidelidade da experiência de **construção** de processos
 internos na Hywork Cloud (férias, reembolso, compras, chamados, onboarding, aprovações
-etc), do ponto de vista do **Administrador**. A partir da v11, o protótipo também inclui
-a **visão operacional de um processo publicado** (quadro Kanban, lista e detalhe de
-solicitação com ações) — não é a tela de login do Colaborador/Responsável, mas mostra
-como o processo construído se comporta em uso, com dados de exemplo.
+etc), do ponto de vista do **Administrador** — e, a partir da v12, também do ponto de
+vista do **Colaborador** na Intranet: a Central de Processos onde ele inicia
+solicitações e acompanha o andamento delas. Um seletor "Administrador / Colaborador" no
+topo alterna entre as duas visões dentro do mesmo protótipo (é um atalho de demonstração
+— na plataforma real, isso seria decidido pela permissão/perfil de quem faz login, não
+por um botão).
 
 **v2** — revisado a partir de um vídeo de referência do produto real e de feedback
 direto sobre a lógica de construção do workflow. Ver "O que mudou na v2" abaixo.
@@ -63,6 +65,15 @@ solicitações de exemplo distribuídas pelas etapas. Clicar numa solicitação 
 modal de detalhes (formulário enviado, histórico, anexos) com as ações da etapa atual
 numa lateral — Aprovar, Reprovar, Mover Etapa e Devolver para o Solicitante realmente
 funcionam e movem a solicitação entre etapas. Ver "O que mudou na v11" abaixo.
+
+**v12** — nova visão do **Colaborador**: um seletor no topo alterna para a Intranet,
+onde o item "Processos" abre uma Central de Processos própria (todos os processos
+habilitados, Minhas Solicitações, Minha fila de aprovação, Histórico e "Suas
+pendências"). "Iniciar Solicitação" abre o formulário de verdade (com a personalização
+configurada) e, ao enviar, mostra um tracker das etapas do processo. O quadro do
+processo, nessa visão, só tem Kanban e List (sem Dashboard), sem foto de capa na página
+do Kanban, e os cards foram redesenhados no estilo Pipefy. Ver "O que mudou na v12"
+abaixo.
 
 ## Como abrir
 
@@ -439,6 +450,57 @@ após o loading:
 Foram incluídas seis solicitações de exemplo (`solicitacoes` em `richProcessData`)
 distribuídas por etapas diferentes — incluindo uma já finalizada como reprovada, com
 motivo registrado no histórico — para o Kanban/List não começarem vazios.
+
+## O que mudou na v12
+
+Até aqui, o protótipo cobria só o Administrador. Esta rodada adiciona a visão de quem
+usa os processos no dia a dia — o Colaborador, pela Intranet.
+
+**Seletor Administrador / Colaborador.** Um controle no topo (ao lado do tema
+claro/escuro) alterna o modo do protótipo. Em modo Colaborador, o item "Usuários" do
+menu (exclusivo de administração) fica oculto, e clicar em "Processos" no menu lateral
+leva para a Central de Processos do Colaborador em vez do construtor.
+
+**Central de Processos (Colaborador)** — nova Home, inspirada num mock específico
+enviado (banner escuro com busca, abas e grade de processos):
+
+- **Suas pendências** — se existir alguma solicitação parada numa etapa que ainda
+  precisa de decisão (em qualquer processo), aparece aqui em destaque acima das abas,
+  com link para ver todas na aba "Minha fila de aprovação". Como o protótipo não
+  modela login/permissão por pessoa, essa fila mostra todas as solicitações pendentes
+  do workspace, não só as "do usuário atual" — está documentado aqui para não parecer
+  bug caso o número pareça alto.
+- **Abas: Todos os processos, Minhas Solicitações, Minha fila de aprovação (com
+  contador), Histórico.** "Todos os processos" lista só os processos **publicados e
+  ativos** (o que o administrador habilitou), com busca por nome; as outras três
+  mostram solicitações reais (do "usuário atual" simulado, `Luiza Vieira`, no caso de
+  Minhas Solicitações; pendentes de decisão; ou já numa etapa final) numa tabela,
+  agrupando todos os processos.
+- **"Iniciar Solicitação"** em cada card de processo abre uma modal com o **formulário
+  de verdade** — os mesmos campos criados no construtor, respeitando a personalização
+  configurada (nome, descrição, capa, layout Cabeçalho/Lateral). Campos obrigatórios
+  bloqueiam o envio com um toast até serem preenchidos.
+- **Ao enviar, mostra um tracker do processo** — uma modal de confirmação com todas as
+  etapas em sequência, a atual em destaque e as já percorridas marcadas com check,
+  além de um atalho "Ver quadro" para o Kanban daquele processo.
+
+**Quadro do processo no modo Colaborador** (mesmo Kanban/List usados pelo
+Administrador, agora sensíveis ao papel de quem está vendo):
+
+- **Só Kanban e List** — a aba Dashboard não aparece para o Colaborador.
+- **Sem foto de capa na página do Kanban** — a capa do formulário (quando configurada)
+  só aparece nas abas List/Dashboard; na página do Kanban ela ficava visualmente
+  poluída ao lado das colunas, então foi removida especificamente dali (para os dois
+  papéis, Administrador e Colaborador).
+- **Cards no estilo Pipefy** — cada card mostra até dois campos do formulário com
+  ícone + rótulo em caixa alta + valor (em vez de uma linha única de meta-dados), e o
+  cabeçalho de cada coluna usa a cor da etapa (quando configurada) tanto na borda
+  quanto no texto do nome — mais fácil de escanear visualmente, como no quadro Kanban
+  do Pipefy usado como referência.
+- **Modal de detalhes sem ações para o Colaborador** — ao abrir uma solicitação nesse
+  modo, a lateral mostra o tracker de progresso e a etapa atual, mas não os botões de
+  ação (Aprovar/Reprovar/...), já que essas ações pertencem ao responsável da etapa,
+  não a quem apenas solicitou. O Administrador continua vendo as ações normalmente.
 
 ## O que está implementado
 

@@ -31,6 +31,11 @@ específicos da etapa** (não fazem parte do formulário inicial, existem só al
 modelo de referência enviado, com abas do editor reordenadas para Formulário, Fluxo,
 Automações, Indicadores, Permissões. Ver "O que mudou na v6" abaixo.
 
+**v7** — a modal de etapa ganhou de volta uma aba **Ações**, agora com um modelo bem
+mais estruturado: em vez de um cartão de regra genérico, existem quatro tipos fixos de
+ação (Aprovar, Reprovar, Mover Etapa, Devolver para o Solicitante), cada um com a
+configuração que faz sentido para ele. Ver "O que mudou na v7" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -213,6 +218,46 @@ Financeiro em valores altos* — dispara quando o item entra em "Análise do
 Financeiro", só segue se o Valor total for ≥ R$ 5.000,00, e então notifica o
 Financeiro.
 
+## O que mudou na v7
+
+A modal de etapa recebeu de volta uma aba **Ações** (agora a modal tem cinco abas:
+Geral, Responsável, SLA, Campos, Ações — etapas do sistema continuam sem ela), a
+pedido explícito: "quais ações o responsável dessa etapa pode ter?". Diferente da
+antiga "Regras de saída" da v2-v4 (um cartão genérico de condição+destino+automação),
+a v7 parte de **quatro tipos fixos de ação**, cada um com sua própria configuração:
+
+- **Aprovar** — só pede para qual etapa avançar ("Avançar para a etapa", qualquer
+  etapa do processo, com atalho "+ Nova" para criar uma na hora) e, opcionalmente, uma
+  condição (`SE campo operador valor`) escondida atrás de um link "Adicionar condição
+  (opcional)" — só aparece quando preenchida, para não poluir o caso comum de "aprovar
+  sempre avança para X".
+- **Reprovar** — tem um switch **"Exigir justificativa/motivo"** (pede um texto
+  explicando a reprovação antes de concluir) e um seletor **"Mudar automaticamente
+  para a etapa final"**, restrito às etapas marcadas como `final` do processo (cai para
+  todas as etapas caso nenhuma esteja marcada como final ainda); também aceita a mesma
+  condição opcional do Aprovar.
+- **Mover Etapa** — não tem nenhuma configuração de destino: o card é só informativo
+  ("o responsável escolhe, no momento de agir, para qual etapa mover"), porque a
+  escolha do destino é feita pela pessoa executando a etapa, não por quem constrói o
+  processo.
+- **Devolver para o Solicitante** — destino fixo e somente leitura (sempre a etapa
+  "Formulário enviado"), sem seletor nem condição, já que o comportamento é sempre o
+  mesmo.
+
+Cada tipo tem um chip próprio ("+ Aprovar", "+ Reprovar", "+ Mover Etapa", "+ Devolver
+para o Solicitante") acima da lista de ações — clicar já cria a ação com um destino
+padrão sensato (Aprovar aponta para a próxima etapa do fluxo; Reprovar para a primeira
+etapa final encontrada; Devolver para o início). Cada cartão também mostra, ao vivo,
+uma frase resumo (ex: *"Se Valor total for menor ou igual a R$ 5.000,00, a solicitação
+é aprovada e avança para Análise do Financeiro."*) — o mesmo princípio de "a lógica é
+visível sem clicar" das versões anteriores, agora com frases específicas por tipo de
+ação em vez de um template único.
+
+Continua existindo um botão genérico **"+ Adicionar ação personalizada"** (ou
+"+ Adicionar regra", em etapas sem responsável humano) para os casos que não se
+encaixam nos quatro tipos fixos — mantém o editor antigo completo (nome livre,
+condição, destino, criação de etapa nova) como escape hatch.
+
 ## O que está implementado
 
 **Central de Processos (Home)** — botão "Criar do 0", caixa do HyA Builder (mockada),
@@ -231,8 +276,9 @@ Fluxo, Automações, Indicadores, Permissões.
   inspetor de configuração à direita.
 - **Fluxo** — canvas vertical de etapas com resumo de regras visível em cada nó,
   ocupando a largura toda. Clicar numa etapa abre uma modal com abas Geral /
-  Responsável / SLA / Campos (incluindo campos específicos daquela etapa). As regras
-  de saída (condição → destino → notificação) de cada etapa continuam existindo e
+  Responsável / SLA / Campos / Ações (incluindo campos específicos daquela etapa e as
+  quatro ações estruturadas — Aprovar, Reprovar, Mover Etapa, Devolver para o
+  Solicitante — descritas em "O que mudou na v7"). As regras de saída de cada etapa
   aparecem no resumo do nó e no "Testar fluxo".
 - **Automações** — evento → condição → ação para todo o processo (não por etapa),
   num canvas com nó de gatilho e blocos adicionáveis. Ver "O que mudou na v6".

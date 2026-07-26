@@ -42,6 +42,11 @@ recolhido num dropdown, grupos de condições com E/OU, botão "Salvar automaç�
 ícones de tipo de etapa nem o seletor de tipo ao criar uma nova. Ver "O que mudou na v8"
 abaixo.
 
+**v9** — dois ajustes na aba Ações da etapa: "Devolver para o Solicitante" ganhou seu
+próprio switch de "Exigir justificativa/motivo", e a "Ação personalizada" passou a
+poder exigir o preenchimento de um campo específico do processo, além de (ou em vez
+de) mudar de etapa. Ver "O que mudou na v9" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -309,6 +314,26 @@ Ajustes direto de feedback, em duas frentes: Automações e a aba de etapas.
 - **Seletor de tipo removido da criação de etapa.** A modal "Nova etapa" agora só
   pede o nome; toda etapa nova nasce como uma etapa com responsável humano (o caso
   mais comum), sem exigir essa decisão antecipada de quem está montando o processo.
+
+## O que mudou na v9
+
+Dois ajustes na aba **Ações** da etapa, a partir de feedback direto sobre os quatro
+tipos de ação introduzidos na v7:
+
+- **"Devolver para o Solicitante" ganhou "Exigir justificativa/motivo".** Antes só a
+  ação Reprovar tinha esse switch; agora Devolver para o Solicitante também tem o seu
+  próprio (independente do de Reprovar), já que devolver para correção também costuma
+  exigir uma explicação do que precisa ser ajustado.
+- **"Ação personalizada" pode exigir o preenchimento de um campo.** Além de mover a
+  solicitação para outra etapa, uma ação personalizada agora pode também — ou só —
+  **exigir que o responsável preencha um campo específico do processo** antes de
+  concluir a ação. Um novo switch "Exigir preenchimento de campo" revela um seletor
+  com todos os campos do processo (formulário inicial + campos criados em qualquer
+  etapa); combinado com a condição já existente do cartão, dá para montar exatamente
+  o cenário pedido: *"Se Tipo de solicitação for Compra de equipamento, o responsável
+  precisa preencher o campo Centro de custo"*. O destino de etapa continua existindo,
+  mas agora é opcional ("Não mudar de etapa…") — uma ação personalizada pode só exigir
+  o campo, sem mover a solicitação.
 
 ## O que está implementado
 

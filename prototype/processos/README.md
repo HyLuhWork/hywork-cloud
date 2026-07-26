@@ -36,6 +36,12 @@ mais estruturado: em vez de um cartão de regra genérico, existem quatro tipos 
 ação (Aprovar, Reprovar, Mover Etapa, Devolver para o Solicitante), cada um com a
 configuração que faz sentido para ele. Ver "O que mudou na v7" abaixo.
 
+**v8** — ajustes em Automações (campos de qualquer etapa nas condições/eventos, evento
+recolhido num dropdown, grupos de condições com E/OU, botão "Salvar automação") e a aba
+**Fluxo** virou **Etapas**, com as etapas em caixas lado a lado (visão kanban) sem os
+ícones de tipo de etapa nem o seletor de tipo ao criar uma nova. Ver "O que mudou na v8"
+abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -258,6 +264,52 @@ Continua existindo um botão genérico **"+ Adicionar ação personalizada"** (o
 encaixam nos quatro tipos fixos — mantém o editor antigo completo (nome livre,
 condição, destino, criação de etapa nova) como escape hatch.
 
+## O que mudou na v8
+
+Ajustes direto de feedback, em duas frentes: Automações e a aba de etapas.
+
+**Em Automações:**
+
+- **Campos de qualquer etapa nas condições e eventos.** Os seletores de campo (no
+  evento "Campo Alterado", nas condições de um bloco "Se", e nas ações "Solicitar
+  preenchimento"/"Atualizar campo") agora listam **todos os campos do processo** —
+  os do formulário inicial **e** os campos específicos criados dentro de qualquer
+  etapa (`camposExtras`) — não só os do formulário inicial. Um campo criado só na
+  etapa "Análise do Financeiro", por exemplo, já aparece disponível para condicionar
+  uma automação.
+- **Botão "Salvar automação".** Fica fixo no topo do editor de automação, ao lado de
+  "Voltar para Automações", e confirma com um toast ("Automação salva.") ao ser
+  clicado.
+- **Evento vira dropdown.** A antiga listagem com um cartão por evento (Item Criado,
+  Campo Alterado, Item Excluído...) foi substituída por um único campo do tipo
+  seleção (`<select>`), com a descrição do evento escolhido logo abaixo. Isso deixa
+  claro, de forma compacta, o que precisa ser respondido para aquele evento
+  específico (ex: qual campo, qual etapa, qual ação) sem uma lista longa sempre
+  aberta ocupando o painel.
+- **Grupos condicionais com E/OU.** Um bloco "Se" deixou de ter uma lista simples de
+  condições sempre combinadas com E. Agora existem **grupos de condições**: dentro de
+  um grupo, todas as condições continuam sendo combinadas com E; entre um grupo e o
+  próximo, é possível escolher **E ou OU** através de um seletor visual entre os
+  grupos (ex: *(Valor total ≥ R$ 5.000 E Departamento = Financeiro) OU (Tipo de
+  solicitação = Urgente)*). Dá para adicionar quantos grupos forem necessários e
+  remover qualquer um deles.
+
+**Na aba de etapas:**
+
+- **Renomeada de "Fluxo" para "Etapas"** no menu do editor do processo.
+- **Visão kanban.** As etapas deixaram de ficar empilhadas verticalmente com setas de
+  conexão e passaram a ser exibidas como **caixas lado a lado, na horizontal**, com
+  rolagem lateral quando não cabem todas na tela — a mesma leitura da esquerda para a
+  direita de um quadro kanban, mais fácil de comparar etapas entre si.
+- **Ícones de tipo removidos.** Cada caixinha de etapa não mostra mais o ícone de
+  Aprovação/Tarefa/Condição — só as etapas do sistema (Formulário enviado, Finalizado)
+  mantêm seu ícone de identificação. O campo de tipo continua existindo internamente
+  (ele decide se a etapa tem responsável humano, SLA e aba de Ações), só não é mais
+  exposto visualmente no card.
+- **Seletor de tipo removido da criação de etapa.** A modal "Nova etapa" agora só
+  pede o nome; toda etapa nova nasce como uma etapa com responsável humano (o caso
+  mais comum), sem exigir essa decisão antecipada de quem está montando o processo.
+
 ## O que está implementado
 
 **Central de Processos (Home)** — botão "Criar do 0", caixa do HyA Builder (mockada),
@@ -270,18 +322,20 @@ o admin já entra direto no construtor de formulário.
 
 **Editor do processo** — cabeçalho fixo com identidade do processo (nome e descrição
 editáveis via popover), status, "Testar fluxo" e "Publicar", e cinco abas: Formulário,
-Fluxo, Automações, Indicadores, Permissões.
+Etapas, Automações, Indicadores, Permissões.
 
 - **Formulário** — construtor drag-and-drop: paleta à esquerda, canvas central,
   inspetor de configuração à direita.
-- **Fluxo** — canvas vertical de etapas com resumo de regras visível em cada nó,
-  ocupando a largura toda. Clicar numa etapa abre uma modal com abas Geral /
-  Responsável / SLA / Campos / Ações (incluindo campos específicos daquela etapa e as
-  quatro ações estruturadas — Aprovar, Reprovar, Mover Etapa, Devolver para o
-  Solicitante — descritas em "O que mudou na v7"). As regras de saída de cada etapa
-  aparecem no resumo do nó e no "Testar fluxo".
+- **Etapas** — etapas em caixas lado a lado (kanban) com resumo de regras visível em
+  cada card, ocupando a largura toda com rolagem lateral. Clicar numa etapa abre uma
+  modal com abas Geral / Responsável / SLA / Campos / Ações (incluindo campos
+  específicos daquela etapa e as quatro ações estruturadas — Aprovar, Reprovar, Mover
+  Etapa, Devolver para o Solicitante — descritas em "O que mudou na v7"). As regras de
+  saída de cada etapa aparecem no resumo do card e no "Testar fluxo".
 - **Automações** — evento → condição → ação para todo o processo (não por etapa),
-  num canvas com nó de gatilho e blocos adicionáveis. Ver "O que mudou na v6".
+  num canvas com nó de gatilho e blocos adicionáveis, evento como dropdown, grupos de
+  condições com E/OU e botão "Salvar automação". Ver "O que mudou na v6" e
+  "O que mudou na v8".
 - **Indicadores** — KPIs e gráficos simples de funil/barras, adicionáveis via galeria.
 - **Permissões** — tabela de grupos/cargos × (Criar, Visualizar, Editar, Administrar,
   Acompanhar).

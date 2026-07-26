@@ -249,11 +249,10 @@
   .section-head p{font-size:12px;color:var(--ink-faint);margin-top:3px}
 
   /* ---------- form builder ---------- */
-  .fb-layout{display:grid;grid-template-columns:225px 1fr 300px;min-height:560px;border-top:1px solid var(--border)}
+  .fb-layout{display:grid;grid-template-columns:225px 1fr;min-height:560px;border-top:1px solid var(--border)}
   .fb-col{padding:20px}
   .fb-palette{border-right:1px solid var(--border);background:var(--surface)}
-  .fb-canvas-col{background:var(--bg);border-right:1px solid var(--border)}
-  .fb-inspector{background:var(--surface)}
+  .fb-canvas-col{background:var(--bg)}
   .fb-group-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin:16px 0 8px}
   .fb-group-label:first-child{margin-top:0}
   .palette-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);font-size:12.5px;font-weight:600;margin-bottom:7px;cursor:grab;color:var(--ink)}
@@ -265,7 +264,6 @@
   .fb-empty .fe-ic{width:48px;height:48px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
   .field-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 13px;background:var(--surface);cursor:pointer;display:flex;align-items:center;gap:10px}
   .field-card:hover{border-color:var(--navy-400)}
-  .field-card.selected{border-color:var(--ink);box-shadow:0 0 0 2px var(--info-50)}
   .field-card .fc-drag{color:var(--ink-faint);cursor:grab;flex:none}
   .field-card .fc-ic{width:30px;height:30px;border-radius:7px;background:var(--muted);display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
   .field-card .fc-text{flex:1;min-width:0}
@@ -273,6 +271,21 @@
   .field-card .fc-type{font-size:11px;color:var(--ink-faint);margin-top:1px}
   .field-card .fc-actions{display:flex;gap:2px;flex:none}
   .fb-inspector-empty{color:var(--ink-faint);font-size:12.5px;padding-top:8px}
+  .form-layout-header,.form-layout-lateral{border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:14px;margin-bottom:16px;background:var(--surface)}
+  .form-layout-lateral{display:flex;gap:16px;align-items:flex-start}
+  .form-preview-capa{height:96px;border-radius:var(--radius-md);background:var(--muted);color:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;gap:6px;margin-bottom:12px;background-size:cover;background-position:center}
+  .form-layout-lateral .form-preview-capa{width:160px;height:100%;min-height:150px;flex:none;margin-bottom:0}
+  .form-layout-lateral .form-preview-main{flex:1;min-width:0}
+  .form-preview-name{font-size:16px;font-weight:800;color:var(--ink)}
+  .form-preview-desc{font-size:12.5px;color:var(--ink-faint);margin-top:3px;margin-bottom:14px}
+  .cover-upload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);padding:20px;color:var(--ink-muted);font-weight:700;font-size:12.5px;cursor:pointer;text-align:center}
+  .cover-upload:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
+  .cover-preview{height:110px;border-radius:var(--radius-md);background-size:cover;background-position:center;margin-bottom:8px;border:1px solid var(--border)}
+  .layout-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .layout-opt{border:1.5px solid var(--border);border-radius:var(--radius-md);padding:11px;text-align:left;color:var(--ink-muted)}
+  .layout-opt .lo-title{font-size:12.5px;font-weight:700;color:var(--ink)}
+  .layout-opt .lo-desc{font-size:11px;margin-top:2px}
+  .layout-opt.selected{border-color:var(--primary);background:var(--primary-50)}
 
   /* ---------- workflow canvas ---------- */
   .wf-layout{display:flex;min-height:600px;border-top:1px solid var(--border)}
@@ -308,9 +321,20 @@
   .wf-gap{height:22px}
   .wf-add{width:100%;display:flex;align-items:center;justify-content:center;gap:7px;border:1.5px dashed var(--border-strong);border-radius:var(--radius-lg);padding:12px;color:var(--ink-muted);font-weight:700;font-size:12.5px;background:var(--surface)}
   .wf-add:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
-  .steps-board{display:flex;flex-direction:row;align-items:flex-start;gap:16px;overflow-x:auto;padding:6px 2px 26px}
+  .steps-board{display:flex;flex-direction:row;align-items:flex-start;gap:16px;overflow-x:auto;padding:6px 2px 64px}
   .step-card{width:250px;flex:none}
   .steps-board .wf-add{width:220px;flex:none;align-self:flex-start}
+  .step-card-menu{position:absolute;top:10px;right:10px;z-index:2}
+  .step-menu-btn{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--ink-faint)}
+  .step-menu-btn:hover{background:var(--muted);color:var(--ink)}
+  .step-menu-dropdown{position:absolute;top:26px;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);min-width:150px;overflow:hidden;z-index:3}
+  .step-menu-dropdown button{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;font-size:12.5px;font-weight:600;color:var(--ink);text-align:left}
+  .step-menu-dropdown button:hover{background:var(--muted)}
+  .step-menu-dropdown button.danger{color:var(--error)}
+  .color-swatch-custom{position:relative;overflow:hidden;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)}
+  .color-swatch-custom input{position:absolute;inset:0;opacity:0;border:none;padding:0;cursor:pointer}
+  .color-swatch-none{background:var(--surface);border:2px dashed var(--border-strong);position:relative}
+  .color-swatch-none::after{content:'';position:absolute;inset:6px;border-top:2px solid var(--ink-faint);transform:rotate(45deg)}
 
   /* ---------- config panel (right side of workflow) — single flat panel, no sub-tabs ---------- */
   .wf-panel{width:392px;flex:none;border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column}
@@ -486,7 +510,7 @@
   .auto-add-choice+.auto-add-choice{border-left:1px solid var(--border)}
 
   @media (max-width:1100px){
-    .fb-layout{grid-template-columns:195px 1fr 260px}
+    .fb-layout{grid-template-columns:195px 1fr}
     .widget-grid{grid-template-columns:repeat(2,1fr)}
     .chart-card{grid-column:span 2}
   }
@@ -523,6 +547,8 @@ function ic(name, size){
     plus:'<path d="M12 5v14M5 12h14"/>',
     arrowLeft:'<path d="M19 12H5"/><path d="m11 18-6-6 6-6"/>',
     transfer:'<path d="M4 8h13"/><path d="m13 4 4 4-4 4"/><path d="M20 16H7"/><path d="m11 12-4 4 4 4"/>',
+    more:'<circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>',
+    image:'<rect x="3" y="4.5" width="18" height="15" rx="1.5"/><circle cx="9" cy="10" r="1.7"/><path d="m4 17 5-5 4 4 3-3 4 4"/>',
     eye:'<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/>',
     chevronDown:'<polyline points="6 9 12 15 18 9"/>',
     x:'<path d="M18 6 6 18"/><path d="M6 6l12 12"/>',
@@ -744,6 +770,7 @@ function richProcessData(){
   ];
   return {
     formFields:[f1,f2,f3,f4,f5],
+    formConfig:{nome:'', descricao:'', capa:null, posicao:'header'},
     steps:[start, s2, sFin, s3, end],
     widgets:[
       {id:uid(),type:'kpi',label:'Total de solicitações',value:'128',trend:'+12% no mês'},
@@ -777,6 +804,7 @@ function richProcessData(){
 function emptyProcessData(){
   return {
     formFields:[],
+    formConfig:{nome:'', descricao:'', capa:null, posicao:'header'},
     steps:[{id:'s_start',name:'Formulário enviado',system:true,initial:true,kind:'sistema'},{id:'s_end',name:'Finalizado',system:true,final:true,kind:'sistema'}],
     widgets:[],
     permissions:[
@@ -816,11 +844,13 @@ var state = {
   selectedStepId:null,
   stepModalOpen:null,
   stepModalTab:'geral',
-  selectedFieldId:null,
+  fieldModalOpen:null,
+  formSettingsOpen:false,
   editGeneralOpen:false,
   openAutomationAdder:null, // {stepId, regraId}
   openNewStepFor:null, // {stepId, regraId}
   openCondAdderFor:null, // regraId
+  openStepMenuFor:null, // stepId
   stepFieldAdderOpen:false,
   addStepOpen:false,
   newStep:{name:'',kind:'aprovacao'},
@@ -1040,6 +1070,7 @@ function editorHTML(){
 /* ---- Form builder tab ---- */
 function formTabHTML(){
   var d = currentData();
+  var cfg = d.formConfig || (d.formConfig = {nome:'', descricao:'', capa:null, posicao:'header'});
   var palette = FIELD_TYPES.map(function(g){
     return '<div class="fb-group-label">'+g.group+'</div>'+g.items.map(function(it){
       return '<div class="palette-item" draggable="true" data-fieldtype="'+it.type+'" data-action="palette-drag"><div class="pi-ic">'+ic(it.icon,13)+'</div>'+it.label+'</div>';
@@ -1048,7 +1079,7 @@ function formTabHTML(){
 
   var canvasInner = d.formFields.length ? d.formFields.map(function(f){
     var meta = fieldTypeMeta(f.type);
-    return '<div class="field-card'+(state.selectedFieldId===f.id?' selected':'')+'" draggable="true" data-action="select-field" data-id="'+f.id+'">'+
+    return '<div class="field-card" draggable="true" data-action="open-field-modal" data-id="'+f.id+'">'+
       '<span class="fc-drag">'+ic('drag',15)+'</span>'+
       '<div class="fc-ic">'+ic(meta.icon,14)+'</div>'+
       '<div class="fc-text"><div class="fc-label"><span id="fc-label-'+f.id+'">'+esc(f.label)+'</span>'+(f.required?' <span style="color:var(--error)">*</span>':'')+'</div><div class="fc-type">'+meta.label+'</div></div>'+
@@ -1056,15 +1087,20 @@ function formTabHTML(){
     '</div>';
   }).join('') : '<div class="fb-empty"><div class="fe-ic">'+ic('doc',22)+'</div><div style="font-weight:700;color:var(--ink)">Arraste um componente aqui</div><div style="max-width:260px">Escolha um campo na paleta à esquerda e solte no formulário para começar.</div></div>';
 
-  var field = d.formFields.find(function(f){return f.id===state.selectedFieldId;});
-  var inspector = field ? fieldInspectorHTML(field) : '<div class="fb-inspector-empty">Selecione um campo no formulário para configurar rótulo, obrigatoriedade e visibilidade condicional.</div>';
+  var capaStyle = cfg.capa ? ' style="background-image:url('+cfg.capa+')"' : '';
+  var capaBlock = '<div class="form-preview-capa"'+capaStyle+'>'+(cfg.capa?'':ic('image',18)+' Sem capa')+'</div>';
+  var headText = '<div class="form-preview-name">'+esc(cfg.nome||'Nome do formulário')+'</div>'+(cfg.descricao?'<div class="form-preview-desc">'+esc(cfg.descricao)+'</div>':'<div class="form-preview-desc">Descrição do formulário (opcional)</div>');
+  var canvasEl = '<div class="fb-canvas" id="fb-canvas" data-action="canvas-dropzone">'+canvasInner+'</div>';
+  var formPreview = cfg.posicao==='lateral' ?
+    '<div class="form-layout-lateral">'+capaBlock+'<div class="form-preview-main">'+headText+canvasEl+'</div></div>' :
+    '<div class="form-layout-header">'+capaBlock+headText+canvasEl+'</div>';
 
   return '<div class="fb-layout">'+
     '<div class="fb-col fb-palette"><div class="fb-group-label" style="margin-top:0">Paleta de componentes</div>'+palette+'</div>'+
-    '<div class="fb-col fb-canvas-col"><div class="section-head" style="margin-bottom:12px"><div><h3>Construtor de formulário</h3><p>Este formulário é a etapa "Formulário enviado" do workflow.</p></div></div>'+
-      '<div class="fb-canvas" id="fb-canvas" data-action="canvas-dropzone">'+canvasInner+'</div>'+
+    '<div class="fb-col fb-canvas-col"><div class="section-head" style="margin-bottom:12px"><div><h3>Construtor de formulário</h3><p>Este formulário é a etapa "Formulário enviado" do workflow. Clique num campo para configurá-lo.</p></div>'+
+      '<button class="btn btn-outline btn-sm" data-action="open-formsettings">'+ic('image',14)+'Personalizar formulário</button></div>'+
+      formPreview+
     '</div>'+
-    '<div class="fb-col fb-inspector"><div class="fb-group-label" style="margin-top:0">Configuração do componente</div>'+inspector+'</div>'+
   '</div>';
 }
 function fieldInspectorHTML(f){
@@ -1075,8 +1111,45 @@ function fieldInspectorHTML(f){
     '<div class="field-row"><label class="field-label">Placeholder</label><input class="input" data-bind="field.placeholder" data-id="'+f.id+'" value="'+esc(f.placeholder||'')+'" placeholder="Opcional"/></div>'+
     '<div class="switch-row"><div class="sr-text"><div class="sr-title">Campo obrigatório</div><div class="sr-sub">Impede o envio sem preenchimento</div></div>'+switchHTML('field.required', f.id, !!f.required)+'</div>'+
     '<div class="switch-row"><div class="sr-text"><div class="sr-title">Visibilidade condicional</div><div class="sr-sub">Mostrar apenas quando outra condição for atendida</div></div>'+switchHTML('field.conditional', f.id, !!f.conditional)+'</div>'+
-    (f.conditional ? '<div class="cond-row"><span style="font-size:11.5px;color:var(--ink-faint);white-space:nowrap">Mostrar se</span><select class="select"><option>Tipo de solicitação</option></select><select class="select"><option>igual a</option></select><input class="input" placeholder="Urgente"/></div>' : '')+
-    '<button class="btn btn-danger-ghost btn-sm" style="margin-top:10px" data-action="delete-field" data-id="'+f.id+'">'+ic('trash',14)+'Excluir campo</button>';
+    (f.conditional ? '<div class="cond-row"><span style="font-size:11.5px;color:var(--ink-faint);white-space:nowrap">Mostrar se</span><select class="select"><option>Tipo de solicitação</option></select><select class="select"><option>igual a</option></select><input class="input" placeholder="Urgente"/></div>' : '');
+}
+function formSettingsModalHTML(){
+  var d = currentData();
+  var cfg = d.formConfig;
+  var capaField = cfg.capa ?
+    '<div class="cover-preview" style="background-image:url('+cfg.capa+')"></div><button class="btn btn-danger-ghost btn-sm" data-action="remove-cover">'+ic('trash',13)+'Remover capa</button>' :
+    '<label class="cover-upload"><input type="file" id="cover-file-input" accept="image/*" style="display:none"/>'+ic('image',20)+'Enviar imagem de capa</label>';
+  return '<div class="overlay" data-action="close-formsettings-overlay"><div class="modal modal-md">'+
+    '<div class="modal-head"><div><h3>Personalizar formulário</h3><p>Nome, descrição, capa e layout de exibição do formulário</p></div><button class="icon-btn" data-action="close-formsettings">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+
+      '<div class="field-row"><label class="field-label">Nome do formulário</label><input class="input" data-bind="formcfg.nome" value="'+esc(cfg.nome||'')+'" placeholder="Ex: Solicitação de férias"/></div>'+
+      '<div class="field-row"><label class="field-label">Descrição</label><textarea class="textarea" data-bind="formcfg.descricao" placeholder="Opcional">'+esc(cfg.descricao||'')+'</textarea></div>'+
+      '<div class="field-row"><label class="field-label">Capa</label>'+capaField+'</div>'+
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Posição do formulário</label><div class="layout-picker">'+
+        formLayoutOptionHTML('header','Cabeçalho','Capa no topo, em largura total')+
+        formLayoutOptionHTML('lateral','Lateral','Capa fixa ao lado do formulário')+
+      '</div></div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn btn-primary" data-action="close-formsettings">'+ic('check',14)+'Concluído</button></div>'+
+  '</div></div>';
+}
+function formLayoutOptionHTML(val, label, desc){
+  var cfg = currentData().formConfig;
+  var active = (cfg.posicao||'header')===val;
+  return '<button type="button" class="layout-opt'+(active?' selected':'')+'" data-action="set-form-posicao" data-posicao="'+val+'"><div class="lo-title">'+label+'</div><div class="lo-desc">'+desc+'</div></button>';
+}
+function fieldModalHTML(){
+  var d = currentData();
+  var f = d.formFields.find(function(x){return x.id===state.fieldModalOpen;});
+  if (!f){ return ''; }
+  return '<div class="overlay" data-action="close-fieldmodal-overlay"><div class="modal modal-md">'+
+    '<div class="modal-head"><div><div class="dh-eyebrow" style="margin-bottom:4px">Configurar campo</div><h3>'+esc(f.label||'Campo sem rótulo')+'</h3><p>Rótulo, obrigatoriedade e visibilidade condicional</p></div><button class="icon-btn" data-action="close-fieldmodal">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+fieldInspectorHTML(f)+'</div>'+
+    '<div class="modal-foot" style="justify-content:space-between">'+
+      '<button class="btn btn-danger-ghost btn-sm" data-action="delete-field" data-id="'+f.id+'">'+ic('trash',14)+'Excluir campo</button>'+
+      '<button class="btn btn-primary btn-sm" data-action="close-fieldmodal">'+ic('check',14)+'Concluído</button>'+
+    '</div>'+
+  '</div></div>';
 }
 function switchHTML(bind,id,checked){
   return '<label class="switch"><input type="checkbox" data-bind="'+bind+'" data-id="'+(id||'')+'" '+(checked?'checked':'')+'/><span class="track"><span class="thumb"></span></span></label>';
@@ -1119,9 +1192,18 @@ function workflowTabHTML(){
       }).join('')+(rules.length>2 ? '<div class="wfr-more">+'+(rules.length-2)+' regra(s)</div>' : '')+'</div>';
     }
     var icon = stepIcon(s);
-    return '<div class="wf-node step-card'+(selected?' selected':'')+(s.system?' system':'')+(s.final?' final':'')+'" data-action="select-step" data-id="'+s.id+'">'+
+    var colorStyle = s.cor ? ' style="border-left:4px solid '+esc(s.cor)+'"' : '';
+    var menu = !s.system ? '<div class="step-card-menu">'+
+      '<button class="icon-btn step-menu-btn" data-action="toggle-step-menu" data-id="'+s.id+'" title="Mais opções">'+ic('more',15)+'</button>'+
+      (state.openStepMenuFor===s.id ? '<div class="step-menu-dropdown">'+
+        '<button data-action="select-step" data-id="'+s.id+'">'+ic('edit',13)+'Editar Etapa</button>'+
+        '<button class="danger" data-action="delete-step" data-id="'+s.id+'">'+ic('trash',13)+'Excluir Etapa</button>'+
+      '</div>' : '')+
+    '</div>' : '';
+    return '<div class="wf-node step-card'+(selected?' selected':'')+(s.system?' system':'')+(s.final?' final':'')+'" data-action="select-step" data-id="'+s.id+'"'+colorStyle+'>'+
       (s.initial?'<span class="wf-tag">Etapa inicial</span>':'')+
       (s.final?'<span class="wf-tag-final">Etapa final</span>':'')+
+      menu+
       '<div class="wf-node-top">'+(icon?'<div class="wf-ic">'+icon+'</div>':'')+
       '<div class="wf-text"><div class="wf-name" id="wf-name-'+s.id+'">'+esc(s.name)+'</div><div class="wf-sub">'+(s.system?'Etapa do sistema':(needsHuman(s.kind)&&s.responsavel?respLabel(s.responsavel):(s.kind==='condicao'?'Decisão automática':'Sem responsável definido')))+'</div></div></div>'+
       rulesPreview+
@@ -1153,7 +1235,15 @@ function stepModalGeralHTML(step){
     '<div class="switch-row"><div class="sr-text"><div class="sr-title">Etapa final do processo</div><div class="sr-sub">Encerra a solicitação quando alcançada</div></div>'+
       (isSystem ? disabledSwitchHTML() : '<label class="switch" data-action="toggle-final" data-stepid="'+step.id+'"><input type="checkbox" '+(step.final?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>')+
     '</div>'+
-    (isSystem ? '<div class="field-hint" style="margin-top:10px">'+(step.initial?'Esta etapa é criada automaticamente quando o formulário é enviado — não pode ser alterada.':'Esta etapa do sistema encerra a solicitação — não pode ser alterada.')+'</div>' : '');
+    (isSystem ? '<div class="field-hint" style="margin-top:10px">'+(step.initial?'Esta etapa é criada automaticamente quando o formulário é enviado — não pode ser alterada.':'Esta etapa do sistema encerra a solicitação — não pode ser alterada.')+'</div>' : stepColorPickerHTML(step));
+}
+function stepColorPickerHTML(step){
+  var isPreset = COLOR_OPTIONS.some(function(c){return c.v===step.cor;});
+  var customActive = !!step.cor && !isPreset;
+  var swatches = '<button type="button" class="color-swatch color-swatch-none'+(!step.cor?' selected':'')+'" title="Sem cor" data-action="set-step-color" data-stepid="'+step.id+'" data-color=""></button>'+
+    COLOR_OPTIONS.map(function(c){return '<button type="button" class="color-swatch'+(c.v===step.cor?' selected':'')+'" style="background:'+c.v+'" title="'+c.name+'" data-action="set-step-color" data-stepid="'+step.id+'" data-color="'+c.v+'"></button>';}).join('')+
+    '<label class="color-swatch color-swatch-custom'+(customActive?' selected':'')+'"'+(customActive?' style="background:'+esc(step.cor)+'"':'')+' title="Cor personalizada"><input type="color" data-bind="step.cor" data-stepid="'+step.id+'" value="'+(step.cor||'#8EA1C7')+'"/></label>';
+  return '<div class="field-row" style="margin-top:6px;margin-bottom:0"><label class="field-label">Cor da etapa</label><div class="color-grid">'+swatches+'</div></div>';
 }
 function stepModalResponsavelHTML(step){
   var r = step.responsavel || {tipo:RESPONSAVEL_TYPES[0].tipo, valor:RESPONSAVEL_TYPES[0].options[0]};
@@ -1627,6 +1717,8 @@ function renderModal(){
   if (state.addWidgetOpen){ root.innerHTML = addWidgetModalHTML(); return; }
   if (state.editGeneralOpen){ root.innerHTML = editGeneralModalHTML(); return; }
   if (state.stepModalOpen){ root.innerHTML = stepModalHTML(); return; }
+  if (state.fieldModalOpen){ root.innerHTML = fieldModalHTML(); return; }
+  if (state.formSettingsOpen){ root.innerHTML = formSettingsModalHTML(); return; }
   root.innerHTML='';
 }
 function wizardModalHTML(){
@@ -1800,6 +1892,7 @@ document.addEventListener('click', function(e){
   if (!t) return;
   var action = t.dataset.action;
   if (/-overlay$/.test(action) && e.target !== t) return;
+  if (state.openStepMenuFor && action!=='toggle-step-menu') state.openStepMenuFor = null;
   var handled = true;
   switch(action){
     case 'noop': e.preventDefault(); break;
@@ -1840,20 +1933,25 @@ document.addEventListener('click', function(e){
       showToast('HyA Builder (IA) chega em breve — isso aqui é só uma prévia visual.');
       break;
     }
-    case 'set-etab': state.editorTab = t.dataset.tab; state.selectedFieldId=null; break;
+    case 'set-etab': state.editorTab = t.dataset.tab; state.fieldModalOpen=null; break;
     case 'open-edit-general': state.editGeneralOpen=true; break;
     case 'close-editgeneral': case 'close-editgeneral-overlay': state.editGeneralOpen=false; break;
     case 'set-icon': currentProcess().icon = t.dataset.icon; break;
     case 'set-color': currentProcess().color = t.dataset.color; break;
 
     /* form builder */
-    case 'select-field': state.selectedFieldId = t.dataset.id; break;
+    case 'open-field-modal': state.fieldModalOpen = t.dataset.id; break;
+    case 'close-fieldmodal': case 'close-fieldmodal-overlay': state.fieldModalOpen=null; break;
     case 'delete-field': {
       var dd = currentData(); dd.formFields = dd.formFields.filter(function(f){return f.id!==t.dataset.id;});
-      if (state.selectedFieldId===t.dataset.id) state.selectedFieldId=null;
+      if (state.fieldModalOpen===t.dataset.id) state.fieldModalOpen=null;
       break;
     }
     case 'palette-drag': break;
+    case 'open-formsettings': state.formSettingsOpen=true; break;
+    case 'close-formsettings': case 'close-formsettings-overlay': state.formSettingsOpen=false; break;
+    case 'remove-cover': currentData().formConfig.capa=null; break;
+    case 'set-form-posicao': currentData().formConfig.posicao=t.dataset.posicao; break;
 
     /* workflow: step selection & basics */
     case 'select-step': {
@@ -1861,6 +1959,11 @@ document.addEventListener('click', function(e){
       state.stepModalOpen = t.dataset.id;
       state.stepModalTab = 'geral';
       state.openNewStepFor=null; state.openAutomationAdder=null; state.stepFieldAdderOpen=false; state.openCondAdderFor=null;
+      state.openStepMenuFor=null;
+      break;
+    }
+    case 'toggle-step-menu': {
+      state.openStepMenuFor = state.openStepMenuFor===t.dataset.id ? null : t.dataset.id;
       break;
     }
     case 'close-stepmodal': case 'close-stepmodal-overlay': {
@@ -1893,11 +1996,13 @@ document.addEventListener('click', function(e){
       break;
     }
     case 'toggle-final': { var stf=findStep(t.dataset.stepid); stf.final = !stf.final; break; }
+    case 'set-step-color': { var stc=findStep(t.dataset.stepid); stc.cor = t.dataset.color || null; break; }
     case 'set-stepkind': { var st=findStep(t.dataset.stepid); st.kind=t.dataset.kind; if (needsHuman(st.kind) && !st.responsavel) st.responsavel={tipo:'Estrutura Organizacional', valor:'Recursos Humanos'}; if (needsHuman(st.kind) && !st.sla) st.sla={prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}; break; }
     case 'delete-step': {
       var dd2=currentData(); dd2.steps = dd2.steps.filter(function(s){return s.id!==t.dataset.id;});
       state.selectedStepId=null;
       state.stepModalOpen=null;
+      state.openStepMenuFor=null;
       break;
     }
     case 'set-fieldvis': {
@@ -2107,9 +2212,18 @@ document.addEventListener('click', function(e){
 });
 
 document.addEventListener('change', function(e){
+  if (e.target.id==='cover-file-input'){
+    var file = e.target.files && e.target.files[0];
+    if (file){
+      var reader = new FileReader();
+      reader.onload = function(ev){ currentData().formConfig.capa = ev.target.result; render(); };
+      reader.readAsDataURL(file);
+    }
+    return;
+  }
   var el = e.target.closest('[data-bind]');
   if (!el) return;
-  if (el.tagName==='INPUT' && el.type!=='checkbox') return;
+  if (el.tagName==='INPUT' && el.type!=='checkbox' && el.type!=='color') return;
   if (el.tagName==='TEXTAREA') return;
   var bind = el.dataset.bind;
   var val = el.type==='checkbox' ? el.checked : el.value;
@@ -2120,6 +2234,7 @@ document.addEventListener('change', function(e){
   else if (bind==='step.resp_valor') { var s2=findStep(el.dataset.stepid); s2.responsavel.valor=val; }
   else if (bind==='step.sla_unidade') { var s3=findStep(el.dataset.stepid); s3.sla=s3.sla||{}; s3.sla.unidade=val; }
   else if (bind==='step.sla_vencer') { var s4=findStep(el.dataset.stepid); s4.sla.aoVencer=val; }
+  else if (bind==='step.cor') { var s5=findStep(el.dataset.stepid); s5.cor=val||null; }
   else if (bind==='field.required') { var f=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f.required=val; }
   else if (bind==='field.conditional') { var f2=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f2.conditional=val; }
   else if (bind==='rule.destino') { var r=findRegra(el.dataset.stepid, el.dataset.regraid); r.destinoStepId=val||null; }
@@ -2167,6 +2282,8 @@ document.addEventListener('input', function(e){
     else if (bind==='automacao.condVal'){ var bV=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); var gV=bV.grupos.find(function(g){return g.id===el.dataset.groupid;}); gV.condicoes[+el.dataset.idx].valor=val; }
     else if (bind==='automacao.acaoExtra'){ var bE=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); bE.extra=val; }
     else if (bind==='automacao.acaoAlvo'){ var bA=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(bA) bA.alvo=val; }
+    else if (bind==='formcfg.nome'){ currentData().formConfig.nome=val; }
+    else if (bind==='formcfg.descricao'){ currentData().formConfig.descricao=val; }
     return;
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }
@@ -2193,7 +2310,7 @@ document.addEventListener('drop', function(e){
     var meta = fieldTypeMeta(type);
     var f = {id:uid(), type:type, label:meta.label, required:false};
     currentData().formFields.push(f);
-    state.selectedFieldId = f.id;
+    state.fieldModalOpen = f.id;
     render();
   }
 });

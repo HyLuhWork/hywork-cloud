@@ -47,6 +47,13 @@ próprio switch de "Exigir justificativa/motivo", e a "Ação personalizada" pas
 poder exigir o preenchimento de um campo específico do processo, além de (ou em vez
 de) mudar de etapa. Ver "O que mudou na v9" abaixo.
 
+**v10** — no Formulário, clicar num campo abre uma modal (em vez do painel lateral) e
+foi adicionado "Personalizar formulário" (nome, descrição, capa real via upload e
+posição Cabeçalho/Lateral). Nas Etapas, cada card ganhou um menu de três pontinhos
+(Editar/Excluir), uma cor personalizável (predefinida ou color picker) visível no
+próprio card, e o scroll horizontal do kanban ganhou mais respiro antes da barra de
+rolagem. Ver "O que mudou na v10" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -335,6 +342,40 @@ tipos de ação introduzidos na v7:
   mas agora é opcional ("Não mudar de etapa…") — uma ação personalizada pode só exigir
   o campo, sem mover a solicitação.
 
+## O que mudou na v10
+
+**No Formulário:**
+
+- **Clicar num campo abre uma modal**, no lugar do painel de inspeção que ficava fixo
+  à direita do canvas. O canvas agora ocupa a largura toda (paleta + canvas, sem a
+  terceira coluna); o rótulo, texto de ajuda, obrigatoriedade e visibilidade
+  condicional do campo continuam exatamente os mesmos, só que dentro de uma modal com
+  "Excluir campo" e "Concluído" no rodapé — o mesmo padrão já usado na modal de etapa.
+  Arrastar um novo campo da paleta para o canvas já abre a modal dele direto, para
+  configurar na hora.
+- **Botão "Personalizar formulário"**, no cabeçalho do construtor, abre uma modal com:
+  **Nome** e **Descrição** do formulário (o que a pessoa que for preencher vê no
+  topo); **Capa** — upload real de uma imagem (via `FileReader`, sem precisar de
+  backend: a imagem é lida como data URL e já aparece de verdade no canvas, não é um
+  mockup); e **Posição do formulário**, com dois layouts à escolha — **Cabeçalho**
+  (capa em largura total, no topo, formulário abaixo) e **Lateral** (capa fixa ao
+  lado, formulário rolando ao lado dela) — o canvas do construtor já muda de layout
+  de verdade ao trocar a opção, refletindo como o formulário ficaria.
+
+**Nas Etapas:**
+
+- **Menu de três pontinhos em cada card** (etapas que não são do sistema), com
+  **Editar Etapa** (abre a mesma modal de configuração de sempre) e **Excluir Etapa**
+  (remove direto, sem precisar abrir a modal primeiro).
+- **Cor personalizável por etapa**, configurada na aba Geral da modal: paleta com as
+  cores da marca, uma opção "Sem cor" e um seletor de **cor personalizada** (abre o
+  color picker nativo do navegador). A cor escolhida aparece no próprio card, como uma
+  barra na borda esquerda — dá para diferenciar etapas visualmente à primeira vista,
+  sem abrir nada.
+- **Mais espaço antes da barra de rolagem horizontal** do kanban de etapas — o
+  scroll estava colado nas caixinhas; agora há um respiro bem maior entre elas e a
+  barra.
+
 ## O que está implementado
 
 **Central de Processos (Home)** — botão "Criar do 0", caixa do HyA Builder (mockada),
@@ -349,8 +390,9 @@ o admin já entra direto no construtor de formulário.
 editáveis via popover), status, "Testar fluxo" e "Publicar", e cinco abas: Formulário,
 Etapas, Automações, Indicadores, Permissões.
 
-- **Formulário** — construtor drag-and-drop: paleta à esquerda, canvas central,
-  inspetor de configuração à direita.
+- **Formulário** — construtor drag-and-drop: paleta à esquerda, canvas central com
+  pré-visualização de capa/nome/descrição (Cabeçalho ou Lateral); clicar num campo
+  abre uma modal de configuração.
 - **Etapas** — etapas em caixas lado a lado (kanban) com resumo de regras visível em
   cada card, ocupando a largura toda com rolagem lateral. Clicar numa etapa abre uma
   modal com abas Geral / Responsável / SLA / Campos / Ações (incluindo campos

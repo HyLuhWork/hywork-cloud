@@ -2,8 +2,10 @@
 
 Protótipo navegável de alta fidelidade da experiência de **construção** de processos
 internos na Hywork Cloud (férias, reembolso, compras, chamados, onboarding, aprovações
-etc). Cobre apenas a jornada do **Administrador**; as telas do Colaborador e do
-Responsável pela etapa ficam para uma segunda fase, conforme escopo do briefing.
+etc), do ponto de vista do **Administrador**. A partir da v11, o protótipo também inclui
+a **visão operacional de um processo publicado** (quadro Kanban, lista e detalhe de
+solicitação com ações) — não é a tela de login do Colaborador/Responsável, mas mostra
+como o processo construído se comporta em uso, com dados de exemplo.
 
 **v2** — revisado a partir de um vídeo de referência do produto real e de feedback
 direto sobre a lógica de construção do workflow. Ver "O que mudou na v2" abaixo.
@@ -53,6 +55,14 @@ posição Cabeçalho/Lateral). Nas Etapas, cada card ganhou um menu de três pon
 (Editar/Excluir), uma cor personalizável (predefinida ou color picker) visível no
 próprio card, e o scroll horizontal do kanban ganhou mais respiro antes da barra de
 rolagem. Ver "O que mudou na v10" abaixo.
+
+**v11** — clicar em "Publicar" agora mostra um loading animado (etapas, responsáveis e
+barra de progresso surgindo em sequência) antes de abrir a **visão do processo
+publicado**: header com capa/nome/descrição e abas Kanban / List / Dashboard, com
+solicitações de exemplo distribuídas pelas etapas. Clicar numa solicitação abre uma
+modal de detalhes (formulário enviado, histórico, anexos) com as ações da etapa atual
+numa lateral — Aprovar, Reprovar, Mover Etapa e Devolver para o Solicitante realmente
+funcionam e movem a solicitação entre etapas. Ver "O que mudou na v11" abaixo.
 
 ## Como abrir
 
@@ -376,6 +386,60 @@ tipos de ação introduzidos na v7:
   scroll estava colado nas caixinhas; agora há um respiro bem maior entre elas e a
   barra.
 
+## O que mudou na v11
+
+A maior mudança desta rodada: o protótipo deixou de terminar no botão "Publicar" e
+passou a mostrar, de verdade, como o processo publicado se comporta.
+
+**Loading animado ao publicar.** Clicar em "Publicar" (com o checklist já confirmado)
+não aplica o status na hora — abre uma tela cheia com uma sequência de três estágios,
+cada um com ~1s: *"Montando as etapas do workflow…"* (as etapas reais do processo
+aparecem uma a uma, com transição), *"Definindo responsáveis por etapa…"* (avatares
+com as iniciais de cada responsável configurado surgem por baixo das etapas) e
+*"Publicando o processo…"* (barra de progresso preenchendo). Ao terminar, o processo é
+publicado de fato e o admin já cai direto na visão do processo.
+
+**Visão do processo publicado**, acessível pelo botão "Ver processo" (ao lado de
+"Testar fluxo"/"Publicar", só aparece para processos já publicados) ou automaticamente
+após o loading:
+
+- **Header** — capa do formulário (a mesma configurada em "Personalizar formulário";
+  sem capa, mostra um gradiente de marca), nome e descrição.
+- **Aba Kanban** — uma coluna por etapa do processo (incluindo "Formulário enviado" e
+  "Finalizado"), com a cor configurada na etapa aparecendo na borda superior da
+  coluna, e um card por solicitação parada ali. Rola horizontalmente como um quadro
+  Pipefy/Kissflow.
+- **Aba List** — as mesmas solicitações em formato de tabela (solicitante, etapa
+  atual, data de criação, valor), para quem prefere uma visão densa em vez de colunas.
+- **Aba Dashboard** — reaproveita os indicadores configurados na aba Indicadores do
+  construtor, em modo somente leitura (sem os botões de adicionar/remover daqui).
+
+**Modal de detalhes da solicitação**, ao clicar em qualquer card (Kanban ou List):
+
+- **Coluna principal** — os valores enviados no formulário inicial (rótulo + valor,
+  read-only), o histórico de atividades (quem fez o quê, em ordem cronológica reversa)
+  e os anexos da solicitação (mockados).
+- **Coluna lateral** — a etapa atual em destaque e, logo abaixo, **as ações
+  configuradas para essa etapa** (as mesmas Aprovar / Reprovar / Mover Etapa /
+  Devolver para o Solicitante / Ação personalizada configuradas na aba Ações da
+  etapa) — cada uma já com a configuração certa: Aprovar mostra para onde avança
+  (resolvendo automaticamente qual das regras condicionais se aplica ao valor real da
+  solicitação, do mesmo jeito que o "Testar fluxo" já fazia); Reprovar e Devolver para
+  o Solicitante pedem a justificativa quando configurado assim; Mover Etapa pede que
+  quem está executando escolha a etapa de destino ali mesmo; e uma Ação personalizada
+  com "Exigir preenchimento de campo" mostra o campo direto na lateral para preencher
+  antes de confirmar. Se a etapa tiver campos específicos dela (`camposExtras`), eles
+  também aparecem editáveis na lateral, acima das ações.
+- **As ações funcionam de verdade** — confirmar uma ação move a solicitação para a
+  etapa de destino (refletido na hora no Kanban/List), registra uma entrada no
+  histórico e, se o destino for uma etapa final, fecha a modal sozinha. Confirmar sem
+  preencher o que é obrigatório (justificativa, destino ou campo) mostra um toast de
+  erro em vez de executar.
+
+Foram incluídas seis solicitações de exemplo (`solicitacoes` em `richProcessData`)
+distribuídas por etapas diferentes — incluindo uma já finalizada como reprovada, com
+motivo registrado no histórico — para o Kanban/List não começarem vazios.
+
 ## O que está implementado
 
 **Central de Processos (Home)** — botão "Criar do 0", caixa do HyA Builder (mockada),
@@ -410,7 +474,9 @@ Etapas, Automações, Indicadores, Permissões.
 **Testar fluxo** — cenários de exemplo com valores de campo diferentes, mostrando o
 caminho (etapa por etapa, com a regra que disparou) que a solicitação percorreria.
 
-**Publicação** — drawer com checklist de prontidão antes de confirmar.
+**Publicação** — drawer com checklist de prontidão antes de confirmar, seguido de um
+loading animado e da visão do processo publicado (Kanban / List / Dashboard + modal de
+detalhes da solicitação com ações funcionais). Ver "O que mudou na v11".
 
 ## Decisões de UX
 

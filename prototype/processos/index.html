@@ -336,6 +336,49 @@
   .color-swatch-none{background:var(--surface);border:2px dashed var(--border-strong);position:relative}
   .color-swatch-none::after{content:'';position:absolute;inset:6px;border-top:2px solid var(--ink-faint);transform:rotate(45deg)}
 
+  /* ---------- process view (visão do processo publicado) ---------- */
+  .pv-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .pv-hero{margin-top:6px}
+  .pv-hero-capa{height:150px;border-radius:var(--radius-lg);background-size:cover;background-position:center;background-image:linear-gradient(135deg,var(--primary),var(--navy-800))}
+  .pv-hero-info{margin-top:14px}
+  .pv-hero-name{font-size:22px;font-weight:800;color:var(--ink)}
+  .pv-hero-desc{font-size:13px;color:var(--ink-faint);margin-top:4px;max-width:680px}
+  .pv-body{border-top:1px solid var(--border)}
+  .pv-board{display:flex;gap:14px;overflow-x:auto;align-items:flex-start;padding:20px 28px 56px;max-width:1180px;margin:0 auto}
+  .pv-column{width:270px;flex:none;background:var(--muted);border-radius:var(--radius-lg);display:flex;flex-direction:column;max-height:calc(100vh - 320px)}
+  .pv-col-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-top:4px solid var(--border-strong);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+  .pv-col-name{font-size:13px;font-weight:800;color:var(--ink)}
+  .pv-col-count{background:var(--surface);border-radius:var(--radius-full);padding:1px 9px;font-size:11px;font-weight:700;color:var(--ink-faint)}
+  .pv-col-body{flex:1;overflow-y:auto;padding:0 10px 10px;display:flex;flex-direction:column;gap:8px}
+  .pv-col-empty{padding:18px 10px;text-align:center;font-size:11.5px;color:var(--ink-faint)}
+  .pv-request-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:11px 12px;cursor:pointer;box-shadow:var(--shadow-sm)}
+  .pv-request-card:hover{border-color:var(--navy-400)}
+  .pv-req-name{font-size:12.5px;font-weight:700;color:var(--ink)}
+  .pv-req-meta{font-size:11px;color:var(--ink-faint);margin-top:3px}
+
+  /* ---------- modal de detalhes da solicitação ---------- */
+  .request-modal{max-width:960px}
+  .request-modal-body{display:flex;flex:1;min-height:0;overflow:hidden}
+  .request-modal-main{flex:1;min-width:0;overflow-y:auto;padding:20px 24px}
+  .request-modal-side{width:300px;flex:none;border-left:1px solid var(--border);overflow-y:auto;padding:20px}
+  .req-field-row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+  .req-field-row:last-of-type{border-bottom:none;margin-bottom:14px}
+  .req-field-label{color:var(--ink-faint);font-weight:600}
+  .req-field-value{font-weight:700;color:var(--ink);text-align:right}
+  .req-hist-list{display:flex;flex-direction:column;gap:12px;margin-bottom:6px}
+  .req-hist-item{display:flex;gap:10px;align-items:flex-start}
+  .req-hist-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);margin-top:5px;flex:none}
+  .req-hist-text{font-size:12.5px;color:var(--ink)}
+  .req-hist-date{font-size:11px;color:var(--ink-faint);margin-top:2px}
+  .req-anexos-row{display:flex;flex-wrap:wrap;gap:8px}
+  .req-anexo-chip{display:inline-flex;align-items:center;gap:6px;background:var(--muted);border-radius:var(--radius-sm);padding:6px 10px;font-size:11.5px;font-weight:600}
+  .req-anexo-size{color:var(--ink-faint);font-weight:500}
+  .req-step-badge{display:inline-flex;align-items:center;background:var(--primary-50);color:var(--primary-dark);border-radius:var(--radius-sm);padding:6px 10px;font-size:12.5px;font-weight:700}
+  .req-action-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;margin-bottom:10px;background:var(--surface)}
+  .req-action-top{display:flex;align-items:center;gap:7px;font-size:12.5px;margin-bottom:8px;color:var(--navy-800)}
+  .req-action-top svg{color:var(--primary)}
+  .req-action-card textarea{width:100%;font-size:12px;padding:8px;margin-top:4px;min-height:60px}
+
   /* ---------- config panel (right side of workflow) — single flat panel, no sub-tabs ---------- */
   .wf-panel{width:392px;flex:none;border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column}
   .wf-panel-head{padding:18px 20px;border-bottom:1px solid var(--border);flex:none}
@@ -465,6 +508,22 @@
   @keyframes toastIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
   .toast .t-ic{color:var(--success)}
 
+  /* ---------- publicar: loading animado ---------- */
+  .publish-anim-overlay{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease}
+  .publish-anim-card{width:min(520px,92vw);display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+  .panim-spinner{width:44px;height:44px;border-radius:50%;border:3.5px solid var(--border);border-top-color:var(--primary);animation:panimSpin .8s linear infinite}
+  @keyframes panimSpin{to{transform:rotate(360deg)}}
+  .panim-stage-label{font-size:15px;font-weight:800;color:var(--ink)}
+  .panim-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:480px}
+  .panim-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-full);padding:7px 14px;font-size:12.5px;font-weight:700;color:var(--ink);box-shadow:var(--shadow-sm);opacity:0;animation:panimPop .35s ease forwards}
+  .panim-chip svg{color:var(--primary)}
+  .panim-avatars{margin-top:2px}
+  .panim-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;opacity:0;animation:panimPop .35s ease forwards;box-shadow:var(--shadow-sm)}
+  @keyframes panimPop{from{opacity:0;transform:translateY(8px) scale(.85)}to{opacity:1;transform:none}}
+  .panim-progress{width:280px;height:6px;border-radius:var(--radius-full);background:var(--muted);overflow:hidden;margin-top:4px}
+  .panim-progress-bar{height:100%;background:var(--primary);border-radius:var(--radius-full);width:0;animation:panimFill .9s ease forwards}
+  @keyframes panimFill{to{width:100%}}
+
   /* ---------- drawers (publish, testar fluxo) ---------- */
   .drawer-overlay{position:fixed;inset:0;background:rgba(15,15,17,.4);z-index:70;display:flex;justify-content:flex-end}
   .drawer{width:min(440px,92vw);height:100%;background:var(--surface);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;animation:slideIn .18s ease}
@@ -520,6 +579,7 @@
 <div id="modal-root"></div>
 <div id="drawer-root"></div>
 <div id="toast-root"></div>
+<div id="publish-anim-root"></div>
 
 <script>
 (function(){
@@ -768,10 +828,46 @@ function richProcessData(){
     makeRegra({tipo:'aprovar', label:'Aprovar', destinoStepId:'s_end'}),
     makeRegra({tipo:'reprovar', label:'Reprovar', isDefault:true, destinoStepId:'s_end', exigirJustificativa:true})
   ];
+  var solicitacoes = [
+    makeSolicitacao({stepId:s2.id, solicitante:'Ana Souza', criadoEm:'24/07/2026',
+      valores:(function(){var o={}; o[f1.id]='10/08/2026'; o[f2.id]='20/08/2026'; o[f3.id]='R$ 1.200,00'; o[f4.id]='Férias de verão em família.'; o[f5.id]='Padrão'; return o;})(),
+      historico:[{data:'24/07/2026 09:14', texto:'Ana Souza enviou a solicitação.'}]}),
+    makeSolicitacao({stepId:s2.id, solicitante:'Bruno Lima', criadoEm:'23/07/2026',
+      valores:(function(){var o={}; o[f1.id]='01/09/2026'; o[f2.id]='15/09/2026'; o[f3.id]='R$ 7.800,00'; o[f4.id]='Viagem internacional programada.'; o[f5.id]='Urgente'; return o;})(),
+      historico:[{data:'23/07/2026 14:02', texto:'Bruno Lima enviou a solicitação.'}]}),
+    makeSolicitacao({stepId:sFin.id, solicitante:'Carla Menezes', criadoEm:'20/07/2026',
+      valores:(function(){var o={}; o[f1.id]='05/08/2026'; o[f2.id]='12/08/2026'; o[f3.id]='R$ 6.500,00'; o[f4.id]='Acompanhamento médico de familiar.'; o[f5.id]='Urgente'; return o;})(),
+      historico:[
+        {data:'20/07/2026 10:00', texto:'Carla Menezes enviou a solicitação.'},
+        {data:'22/07/2026 11:30', texto:'Gestor direto do solicitante aprovou em "Análise do Gestor". Avançou para "Análise do Financeiro".'}
+      ],
+      anexos:[{nome:'comprovante-medico.pdf', tamanho:'182 KB'}]}),
+    makeSolicitacao({stepId:s3.id, solicitante:'Diego Ferreira', criadoEm:'19/07/2026',
+      valores:(function(){var o={}; o[f1.id]='02/09/2026'; o[f2.id]='22/09/2026'; o[f3.id]='R$ 12.000,00'; o[f4.id]='Férias de 20 dias corridos.'; o[f5.id]='Padrão'; return o;})(),
+      historico:[
+        {data:'19/07/2026 08:40', texto:'Diego Ferreira enviou a solicitação.'},
+        {data:'21/07/2026 16:12', texto:'Gestor direto do solicitante aprovou em "Análise do Gestor". Avançou para "Análise do RH".'}
+      ]}),
+    makeSolicitacao({stepId:'s_end', solicitante:'Elaine Prado', criadoEm:'14/07/2026',
+      valores:(function(){var o={}; o[f1.id]='01/08/2026'; o[f2.id]='08/08/2026'; o[f3.id]='R$ 2.300,00'; o[f4.id]='Férias de aniversário.'; o[f5.id]='Padrão'; return o;})(),
+      historico:[
+        {data:'14/07/2026 09:05', texto:'Elaine Prado enviou a solicitação.'},
+        {data:'15/07/2026 10:20', texto:'Gestor direto do solicitante aprovou em "Análise do Gestor". Avançou para "Análise do Financeiro".'},
+        {data:'16/07/2026 15:47', texto:'Financeiro aprovou em "Análise do Financeiro". Avançou para "Finalizado".'}
+      ]}),
+    makeSolicitacao({stepId:'s_end', solicitante:'Fábio Nogueira', criadoEm:'12/07/2026',
+      valores:(function(){var o={}; o[f1.id]='20/08/2026'; o[f2.id]='30/08/2026'; o[f3.id]='R$ 9.400,00'; o[f4.id]='Viagem de férias em família.'; o[f5.id]='Padrão'; return o;})(),
+      historico:[
+        {data:'12/07/2026 13:15', texto:'Fábio Nogueira enviou a solicitação.'},
+        {data:'13/07/2026 09:30', texto:'Gestor direto do solicitante aprovou em "Análise do Gestor". Avançou para "Análise do RH".'},
+        {data:'14/07/2026 17:02', texto:'Recursos Humanos reprovou em "Análise do RH". Motivo: Orçamento do trimestre já esgotado. Movido para "Finalizado".'}
+      ]})
+  ];
   return {
     formFields:[f1,f2,f3,f4,f5],
     formConfig:{nome:'', descricao:'', capa:null, posicao:'header'},
     steps:[start, s2, sFin, s3, end],
+    solicitacoes: solicitacoes,
     widgets:[
       {id:uid(),type:'kpi',label:'Total de solicitações',value:'128',trend:'+12% no mês'},
       {id:uid(),type:'kpi',label:'Tempo médio de conclusão',value:'1,8 dias',trend:'−0,4 dia vs. mês anterior'},
@@ -807,6 +903,7 @@ function emptyProcessData(){
     formConfig:{nome:'', descricao:'', capa:null, posicao:'header'},
     steps:[{id:'s_start',name:'Formulário enviado',system:true,initial:true,kind:'sistema'},{id:'s_end',name:'Finalizado',system:true,final:true,kind:'sistema'}],
     widgets:[],
+    solicitacoes:[],
     permissions:[
       {id:uid(),group:'Todos os colaboradores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:false}
     ],
@@ -863,6 +960,11 @@ var state = {
   automacaoSelectedBlockId:null, // 'trigger' or a bloco id
   automacaoAddChoiceOpen:false,
   automacoesSubTab:'automacao', // 'automacao' | 'logs'
+  publishAnimating:false,
+  publishAnimStage:0,
+  processViewTab:'kanban', // 'kanban' | 'list' | 'dashboard'
+  requestModalOpen:null, // solicitacao id
+  reqActionDrafts:{}, // tipo -> {justificativa, destino}
 };
 
 function currentProcess(){ return state.processes.find(function(p){return p.id===state.currentProcessId;}); }
@@ -876,6 +978,32 @@ function allProcessFields(){
   return out;
 }
 function otherSteps(stepId){ return currentData().steps.filter(function(s){return s.id!==stepId;}); }
+function findSolicitacao(id){ var d=currentData(); return d && (d.solicitacoes||[]).find(function(s){return s.id===id;}); }
+function solicitacoesInStep(stepId){ var d=currentData(); return (d.solicitacoes||[]).filter(function(s){return s.stepId===stepId;}); }
+function solicitacaoValoresPorLabel(sol){
+  var out = {};
+  allProcessFields().forEach(function(f){ if (sol.valores[f.id]!=null && sol.valores[f.id]!=='') out[f.label] = sol.valores[f.id]; });
+  return out;
+}
+function resolveRegraForTipo(step, tipo, sol){
+  var candidates = (step.regras||[]).filter(function(r){return r.tipo===tipo;});
+  if (!candidates.length) return null;
+  var values = solicitacaoValoresPorLabel(sol);
+  var matched = candidates.find(function(r){ return !r.isDefault && r.condicoes && r.condicoes.length && r.condicoes[0].valor && condPasses(r.condicoes[0], values); });
+  if (matched) return matched;
+  return candidates.find(function(r){return r.isDefault;}) || candidates.find(function(r){return !r.condicoes || !r.condicoes.length || !r.condicoes[0].valor;}) || candidates[0];
+}
+function nowStr(){
+  var d = new Date();
+  function pad(n){ return (n<10?'0':'')+n; }
+  return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+function makeSolicitacao(o){
+  return Object.assign({
+    id: uid(), stepId:'s_start', solicitante:'Solicitante', criadoEm:'', valores:{},
+    historico:[], anexos:[]
+  }, o);
+}
 function findAutomacao(id){ var d=currentData(); return d && (d.automacoes||[]).find(function(a){return a.id===id;}); }
 function findAutomacaoBloco(autoId, blocoId){ var a=findAutomacao(autoId); return a && a.blocos.find(function(b){return b.id===blocoId;}); }
 
@@ -886,6 +1014,7 @@ function render(){
   renderModal();
   renderDrawer();
   renderToast();
+  renderPublishAnim();
 }
 
 function renderShell(){
@@ -942,6 +1071,7 @@ function updateThemeToggle(){
 function renderScreen(){
   var root = qs('#screen-root');
   if (state.screen==='home') root.innerHTML = homeHTML();
+  else if (state.screen==='processview') root.innerHTML = processViewHTML();
   else root.innerHTML = editorHTML();
 }
 
@@ -1058,6 +1188,7 @@ function editorHTML(){
           '<div class="editor-meta">v'+(p.version||2)+' · última edição por '+lastEditor+'</div></div>'+
         '</div>'+
         '<div class="editor-actions">'+
+          (p.status==='published' ? '<button class="btn btn-outline btn-sm" data-action="open-processview" data-id="'+p.id+'">'+ic('grid',14)+'Ver processo</button>' : '')+
           '<button class="btn btn-outline btn-sm" data-action="open-testflow">'+ic('play',14)+'Testar fluxo</button>'+
           '<button class="btn btn-primary btn-sm" data-action="open-publish">'+ic('bolt',15)+'Publicar</button>'+
         '</div>'+
@@ -1456,8 +1587,8 @@ function dashboardTabHTML(){
       '<div class="empty-state"><div class="es-ic">'+ic('chart',22)+'</div><div class="es-title">Nenhum indicador configurado</div><div class="es-sub">Indicadores são opcionais, mas ajudam o time a acompanhar volume, SLA e gargalos.</div><button class="btn btn-primary" style="margin-top:6px" data-action="open-add-widget">'+ic('plus',14)+'Adicionar Indicador</button></div>')+
   '</div>';
 }
-function widgetHTML(w){
-  var remove = '<button class="icon-btn widget-remove" data-action="remove-widget" data-id="'+w.id+'" title="Remover">'+ic('x',14)+'</button>';
+function widgetHTML(w, readonly){
+  var remove = readonly ? '' : '<button class="icon-btn widget-remove" data-action="remove-widget" data-id="'+w.id+'" title="Remover">'+ic('x',14)+'</button>';
   if (w.type==='kpi'){
     return '<div class="kpi-card widget-shell">'+remove+'<div class="kc-label">'+esc(w.label)+'</div><div class="kc-value">'+esc(w.value)+'</div><div class="kc-trend">'+esc(w.trend)+'</div></div>';
   }
@@ -1469,6 +1600,170 @@ function widgetHTML(w){
   var max2 = Math.max.apply(null, w.data.map(function(x){return x.value;}));
   var cols = w.data.map(function(x){ return '<div class="bc-col"><div class="bc-val">'+x.value+'</div><div class="bc-bar" style="height:'+Math.round(x.value/max2*100)+'%"></div><div class="bc-label">'+esc(x.name)+'</div></div>'; }).join('');
   return '<div class="chart-card widget-shell">'+remove+'<div class="cc-label">'+esc(w.label)+'</div><div class="bar-chart">'+cols+'</div></div>';
+}
+
+/* ============ PROCESS VIEW (visão do processo publicado) ============ */
+function processViewHTML(){
+  var p = currentProcess(); if(!p){ state.screen='home'; return homeHTML(); }
+  var d = currentData();
+  var cfg = d.formConfig || {};
+  var capaStyle = cfg.capa ? ' style="background-image:url('+cfg.capa+')"' : '';
+  var tabs = [['kanban','Kanban','grid'],['list','List','doc'],['dashboard','Dashboard','chart']];
+  var tabsHTML = tabs.map(function(t){
+    return '<button class="mtab'+(state.processViewTab===t[0]?' active':'')+'" data-action="set-processview-tab" data-tab="'+t[0]+'">'+ic(t[2],14)+esc(t[1])+'</button>';
+  }).join('');
+  var body;
+  if (state.processViewTab==='list') body = processViewListHTML();
+  else if (state.processViewTab==='dashboard') body = processViewDashboardHTML();
+  else body = processViewKanbanHTML();
+
+  return '<div class="screen-inner" style="padding-bottom:0">'+
+      '<div class="pv-topbar">'+
+        '<a href="#" class="back-link" style="margin-bottom:0" data-action="go-home">'+ic('arrowLeft',14)+'Voltar para Processos</a>'+
+        '<button class="btn btn-outline btn-sm" data-action="back-to-editor">'+ic('edit',14)+'Editar processo</button>'+
+      '</div>'+
+      '<div class="pv-hero">'+
+        '<div class="pv-hero-capa'+(cfg.capa?'':' empty')+'"'+capaStyle+'></div>'+
+        '<div class="pv-hero-info"><div class="pv-hero-name">'+esc(cfg.nome||p.name)+'</div><div class="pv-hero-desc">'+esc(cfg.descricao||p.description)+'</div></div>'+
+      '</div>'+
+      '<div class="mtabs" style="margin-top:8px">'+tabsHTML+'</div>'+
+    '</div>'+
+    '<div class="pv-body">'+body+'</div>';
+}
+function solicitacaoKeyValor(sol){
+  var f = currentData().formFields.find(function(x){return x.label==='Valor total';});
+  return f ? sol.valores[f.id] : null;
+}
+function requestCardHTML(sol){
+  var valor = solicitacaoKeyValor(sol);
+  return '<div class="pv-request-card" data-action="open-request-modal" data-id="'+sol.id+'">'+
+    '<div class="pv-req-name">'+esc(sol.solicitante)+'</div>'+
+    '<div class="pv-req-meta">'+esc(sol.criadoEm)+(valor?' · '+esc(valor):'')+'</div>'+
+  '</div>';
+}
+function processViewKanbanHTML(){
+  var d = currentData();
+  var cols = d.steps.map(function(s){
+    var items = solicitacoesInStep(s.id);
+    var borderStyle = s.cor ? ' style="border-top-color:'+esc(s.cor)+'"' : '';
+    return '<div class="pv-column">'+
+      '<div class="pv-col-head"'+borderStyle+'><span class="pv-col-name">'+esc(s.name)+'</span><span class="pv-col-count">'+items.length+'</span></div>'+
+      '<div class="pv-col-body">'+(items.length ? items.map(requestCardHTML).join('') : '<div class="pv-col-empty">Nenhuma solicitação aqui</div>')+'</div>'+
+    '</div>';
+  }).join('');
+  return '<div class="pv-board">'+cols+'</div>';
+}
+function processViewListHTML(){
+  var d = currentData();
+  var sols = d.solicitacoes || [];
+  var rows = sols.map(function(sol){
+    var step = findStep(sol.stepId);
+    var valor = solicitacaoKeyValor(sol);
+    return '<tr data-action="open-request-modal" data-id="'+sol.id+'" style="cursor:pointer">'+
+      '<td style="text-align:left;padding-left:16px">'+esc(sol.solicitante)+'</td>'+
+      '<td style="text-align:left">'+esc(step?step.name:'—')+'</td>'+
+      '<td style="text-align:left">'+esc(sol.criadoEm)+'</td>'+
+      '<td style="text-align:left">'+(valor?esc(valor):'—')+'</td>'+
+    '</tr>';
+  }).join('');
+  return '<div class="screen-inner" style="padding-top:20px">'+
+    (sols.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Solicitante</th><th style="text-align:left">Etapa atual</th><th style="text-align:left">Criado em</th><th style="text-align:left">Valor total</th></tr></thead><tbody>'+rows+'</tbody></table></div>' :
+      '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nenhuma solicitação ainda</div><div class="es-sub">Assim que alguém enviar o formulário, as solicitações aparecem aqui.</div></div>')+
+  '</div>';
+}
+function processViewDashboardHTML(){
+  var d = currentData();
+  var widgets = (d.widgets||[]).map(function(w){ return widgetHTML(w, true); }).join('');
+  return '<div class="screen-inner" style="padding-top:20px">'+
+    (d.widgets.length ? '<div class="widget-grid">'+widgets+'</div>' :
+      '<div class="empty-state"><div class="es-ic">'+ic('chart',22)+'</div><div class="es-title">Nenhum indicador configurado</div><div class="es-sub">Adicione indicadores na aba Indicadores do construtor do processo.</div></div>')+
+  '</div>';
+}
+
+/* ---- Modal de detalhes da solicitação ---- */
+function requestModalHTML(){
+  var sol = findSolicitacao(state.requestModalOpen);
+  if (!sol) return '';
+  var d = currentData();
+  var step = findStep(sol.stepId) || {};
+
+  var formRows = d.formFields.map(function(f){
+    var val = sol.valores[f.id];
+    return '<div class="req-field-row"><div class="req-field-label">'+esc(f.label)+'</div><div class="req-field-value">'+(val?esc(val):'<em>—</em>')+'</div></div>';
+  }).join('');
+
+  var historico = (sol.historico||[]).slice().reverse();
+  var historicoHTML = historico.length ? '<div class="req-hist-list">'+historico.map(function(h){
+    return '<div class="req-hist-item"><div class="req-hist-dot"></div><div><div class="req-hist-text">'+esc(h.texto)+'</div><div class="req-hist-date">'+esc(h.data)+'</div></div></div>';
+  }).join('')+'</div>' : '<div class="field-hint">Nenhum histórico ainda.</div>';
+
+  var anexosHTML = (sol.anexos&&sol.anexos.length) ? '<div class="req-anexos-row">'+sol.anexos.map(function(a){
+    return '<div class="req-anexo-chip">'+ic('doc',13)+'<span>'+esc(a.nome)+'</span><span class="req-anexo-size">'+esc(a.tamanho||'')+'</span></div>';
+  }).join('')+'</div>' : '<div class="field-hint">Nenhum anexo.</div>';
+
+  var extraFieldsHTML = (step.camposExtras||[]).length ? step.camposExtras.map(function(f){
+    return '<div class="field-row"><label class="field-label">'+esc(f.label)+'</label><input class="input" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'" value="'+esc(sol.valores[f.id]||'')+'"/></div>';
+  }).join('') : '';
+
+  return '<div class="overlay" data-action="close-requestmodal-overlay"><div class="modal modal-lg request-modal">'+
+    '<div class="modal-head"><div><div class="dh-eyebrow" style="margin-bottom:4px">Solicitação de '+esc(sol.solicitante)+'</div><h3>'+esc(step.name||'—')+'</h3><p>Enviada em '+esc(sol.criadoEm)+'</p></div><button class="icon-btn" data-action="close-requestmodal">'+ic('x',16)+'</button></div>'+
+    '<div class="request-modal-body">'+
+      '<div class="request-modal-main">'+
+        '<div class="rule-mini-label" style="margin-top:0">Formulário enviado</div>'+formRows+
+        '<div class="rule-mini-label">Histórico de atividades</div>'+historicoHTML+
+        '<div class="rule-mini-label">Anexos</div>'+anexosHTML+
+      '</div>'+
+      '<div class="request-modal-side">'+requestSidePanelHTML(sol, step, extraFieldsHTML)+'</div>'+
+    '</div>'+
+  '</div></div>';
+}
+function requestSidePanelHTML(sol, step, extraFieldsHTML){
+  if (step.system){
+    return '<div class="rule-mini-label" style="margin-top:0">Etapa atual</div><div class="req-step-badge">'+esc(step.name)+'</div>'+
+      '<div class="field-hint" style="margin-top:10px">'+(step.final?'Esta solicitação já foi finalizada.':'Aguardando o fluxo seguir automaticamente.')+'</div>';
+  }
+  var tipos = {}; (step.regras||[]).forEach(function(r){ tipos[r.tipo]=true; });
+  var order = ['aprovar','reprovar','mover_etapa','devolver_solicitante','personalizada'];
+  var cards = order.filter(function(t){return tipos[t];}).map(function(tipo){ return requestActionCardHTML(sol, step, tipo); }).join('');
+  return '<div class="rule-mini-label" style="margin-top:0">Etapa atual</div><div class="req-step-badge">'+esc(step.name)+'</div>'+
+    (extraFieldsHTML ? '<div class="rule-mini-label">Campos desta etapa</div>'+extraFieldsHTML : '')+
+    '<div class="rule-mini-label">Ações disponíveis</div>'+
+    (cards || '<div class="field-hint">Nenhuma ação configurada para esta etapa.</div>');
+}
+function requestActionCardHTML(sol, step, tipo){
+  var meta = acaoTipoMeta(tipo);
+  var regra = resolveRegraForTipo(step, tipo, sol);
+  if (!regra) return '';
+  var draft = state.reqActionDrafts[tipo] || (state.reqActionDrafts[tipo] = {});
+  var body = '';
+  if (tipo==='aprovar'){
+    var dest = findStep(regra.destinoStepId);
+    body = '<div class="field-hint" style="margin:0 0 8px">Avança para <b>'+(dest?esc(dest.name):'—')+'</b></div>';
+  } else if (tipo==='reprovar' || tipo==='devolver_solicitante'){
+    var dest2 = findStep(regra.destinoStepId);
+    body = '<div class="field-hint" style="margin:0 0 8px">'+(tipo==='reprovar'?'Move para ':'Retorna para ')+'<b>'+(dest2?esc(dest2.name):'—')+'</b></div>';
+    if (regra.exigirJustificativa){
+      body += '<textarea class="textarea" placeholder="Justificativa/motivo" data-bind="reqdraft.justificativa" data-tipo="'+tipo+'">'+esc(draft.justificativa||'')+'</textarea>';
+    }
+  } else if (tipo==='mover_etapa'){
+    var opts = otherSteps(step.id).map(function(s){return '<option value="'+s.id+'"'+(draft.destino===s.id?' selected':'')+'>'+esc(s.name)+'</option>';}).join('');
+    body = '<select class="select" data-bind="reqdraft.destino" data-tipo="mover_etapa"><option value="">Escolher etapa…</option>'+opts+'</select>';
+  } else {
+    if (regra.exigirPreenchimento && regra.campoPreenchimentoId){
+      var f = allProcessFields().find(function(x){return x.id===regra.campoPreenchimentoId;});
+      var curVal = sol.valores[regra.campoPreenchimentoId] || '';
+      body += '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+esc(f?f.label:'Campo')+'</label><input class="input" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+regra.campoPreenchimentoId+'" value="'+esc(curVal)+'"/></div>';
+    }
+    if (regra.destinoStepId){
+      var dest3 = findStep(regra.destinoStepId);
+      body += '<div class="field-hint" style="margin:0 0 8px">Avança para <b>'+esc(dest3.name)+'</b></div>';
+    }
+  }
+  return '<div class="req-action-card">'+
+    '<div class="req-action-top">'+ic(meta.icon,14)+'<b>'+esc(meta.label)+'</b></div>'+
+    body+
+    '<button class="btn btn-primary btn-sm" style="width:100%;margin-top:2px" data-action="execute-request-action" data-solid="'+sol.id+'" data-tipo="'+tipo+'">'+ic('check',13)+'Confirmar</button>'+
+  '</div>';
 }
 
 /* ---- Automações tab ---- */
@@ -1719,6 +2014,7 @@ function renderModal(){
   if (state.stepModalOpen){ root.innerHTML = stepModalHTML(); return; }
   if (state.fieldModalOpen){ root.innerHTML = fieldModalHTML(); return; }
   if (state.formSettingsOpen){ root.innerHTML = formSettingsModalHTML(); return; }
+  if (state.requestModalOpen){ root.innerHTML = requestModalHTML(); return; }
   root.innerHTML='';
 }
 function wizardModalHTML(){
@@ -1885,6 +2181,53 @@ function renderToast(){
   root.innerHTML = '<div class="toast"><span class="t-ic">'+ic('check',15)+'</span>'+esc(state.toast)+'</div>';
 }
 function showToast(msg){ state.toast = msg; renderToast(); clearTimeout(showToast._t); showToast._t = setTimeout(function(){ state.toast=null; renderToast(); }, 2600); }
+
+/* ============ PUBLICAR: loading animado ============ */
+function runPublishAnimation(){
+  render();
+  clearTimeout(runPublishAnimation._t1); clearTimeout(runPublishAnimation._t2); clearTimeout(runPublishAnimation._t3);
+  runPublishAnimation._t1 = setTimeout(function(){ state.publishAnimStage=1; render(); }, 1000);
+  runPublishAnimation._t2 = setTimeout(function(){ state.publishAnimStage=2; render(); }, 2000);
+  runPublishAnimation._t3 = setTimeout(function(){
+    currentProcess().status='published';
+    currentProcess().version=(currentProcess().version||1)+1;
+    state.publishAnimating=false;
+    state.screen='processview';
+    state.processViewTab='kanban';
+    showToast('Processo publicado com sucesso!');
+    render();
+  }, 3000);
+}
+function renderPublishAnim(){
+  var root = qs('#publish-anim-root');
+  if (!state.publishAnimating){ if(root.innerHTML) root.innerHTML=''; return; }
+  root.innerHTML = publishAnimHTML();
+}
+function publishAnimHTML(){
+  var d = currentData();
+  var stage = state.publishAnimStage;
+  var steps = d.steps.filter(function(s){return !s.system;});
+  var stepChips = steps.map(function(s,i){
+    return '<div class="panim-chip" style="animation-delay:'+(i*160)+'ms">'+ic('flow',12)+esc(s.name)+'</div>';
+  }).join('');
+  var respSteps = steps.filter(function(s){return needsHuman(s.kind)&&s.responsavel;});
+  var respChips = respSteps.map(function(s,i){
+    var label = s.responsavel.valor || s.responsavel.tipo;
+    return '<div class="panim-avatar" style="animation-delay:'+(i*160)+'ms" title="'+esc(label)+' · '+esc(s.name)+'">'+esc(label.slice(0,2).toUpperCase())+'</div>';
+  }).join('');
+  var labels = ['Montando as etapas do workflow…','Definindo responsáveis por etapa…','Publicando o processo…'];
+  var stageLabel = labels[stage] || labels[labels.length-1];
+  var body = '<div class="panim-row">'+stepChips+'</div>';
+  if (stage>=1) body += '<div class="panim-row panim-avatars">'+respChips+'</div>';
+  if (stage>=2) body += '<div class="panim-progress"><div class="panim-progress-bar"></div></div>';
+  return '<div class="publish-anim-overlay">'+
+    '<div class="publish-anim-card">'+
+      '<div class="panim-spinner"></div>'+
+      '<div class="panim-stage-label">'+esc(stageLabel)+'</div>'+
+      body+
+    '</div>'+
+  '</div>';
+}
 
 /* ============ EVENTS ============ */
 document.addEventListener('click', function(e){
@@ -2117,6 +2460,43 @@ document.addEventListener('click', function(e){
 
     /* automações */
     case 'set-automacoes-subtab': state.automacoesSubTab = t.dataset.tab; break;
+    case 'set-processview-tab': state.processViewTab = t.dataset.tab; break;
+    case 'open-request-modal': state.requestModalOpen = t.dataset.id; state.reqActionDrafts = {}; break;
+    case 'close-requestmodal': case 'close-requestmodal-overlay': state.requestModalOpen=null; state.reqActionDrafts={}; break;
+    case 'execute-request-action': {
+      var sol6=findSolicitacao(t.dataset.solid);
+      var step6=findStep(sol6.stepId);
+      var tipo6=t.dataset.tipo;
+      var regra6=resolveRegraForTipo(step6, tipo6, sol6);
+      var draft6=state.reqActionDrafts[tipo6]||{};
+      if (!regra6) break;
+      if ((tipo6==='reprovar'||tipo6==='devolver_solicitante') && regra6.exigirJustificativa && (!draft6.justificativa || !draft6.justificativa.trim())){
+        showToast('Escreva a justificativa antes de confirmar.'); break;
+      }
+      if (tipo6==='mover_etapa' && !draft6.destino){
+        showToast('Escolha a etapa de destino antes de confirmar.'); break;
+      }
+      if (tipo6==='personalizada' && regra6.exigirPreenchimento && regra6.campoPreenchimentoId){
+        var curVal6 = sol6.valores[regra6.campoPreenchimentoId];
+        if (!curVal6 || !String(curVal6).trim()){ showToast('Preencha o campo obrigatório antes de confirmar.'); break; }
+      }
+      var destinoId6 = tipo6==='mover_etapa' ? draft6.destino : regra6.destinoStepId;
+      var destStep6 = findStep(destinoId6);
+      var actorLabel6 = needsHuman(step6.kind) && step6.responsavel ? respLabel(step6.responsavel) : 'Responsável';
+      var histText6 = '';
+      if (tipo6==='aprovar') histText6 = actorLabel6+' aprovou em "'+step6.name+'".'+(destStep6?' Avançou para "'+destStep6.name+'".':'');
+      else if (tipo6==='reprovar') histText6 = actorLabel6+' reprovou em "'+step6.name+'".'+(draft6.justificativa?' Motivo: '+draft6.justificativa+'.':'')+(destStep6?' Movido para "'+destStep6.name+'".':'');
+      else if (tipo6==='mover_etapa') histText6 = actorLabel6+' moveu manualmente de "'+step6.name+'" para "'+(destStep6?destStep6.name:'—')+'".';
+      else if (tipo6==='devolver_solicitante') histText6 = actorLabel6+' devolveu para o solicitante.'+(draft6.justificativa?' Motivo: '+draft6.justificativa+'.':'');
+      else histText6 = 'Ação personalizada concluída em "'+step6.name+'".'+(destStep6?' Avançou para "'+destStep6.name+'".':'');
+      sol6.historico = sol6.historico || [];
+      sol6.historico.push({data: nowStr(), texto: histText6});
+      if (destinoId6) sol6.stepId = destinoId6;
+      state.reqActionDrafts = {};
+      showToast('Ação executada com sucesso.');
+      if (destStep6 && destStep6.final) state.requestModalOpen = null;
+      break;
+    }
     case 'new-automacao': {
       var d8=currentData(); d8.automacoes = d8.automacoes||[];
       var na = makeAutomacao({});
@@ -2200,12 +2580,18 @@ document.addEventListener('click', function(e){
     case 'open-publish': state.publishOpen=true; break;
     case 'close-publish': case 'close-publish-overlay': state.publishOpen=false; break;
     case 'confirm-publish': {
-      currentProcess().status='published';
-      currentProcess().version=(currentProcess().version||1)+1;
       state.publishOpen=false;
-      showToast('Processo publicado com sucesso!');
+      state.publishAnimating=true;
+      state.publishAnimStage=0;
+      runPublishAnimation();
       break;
     }
+    case 'open-processview': {
+      state.currentProcessId = t.dataset.id;
+      state.screen='processview'; state.processViewTab='kanban';
+      break;
+    }
+    case 'back-to-editor': state.screen='editor'; break;
     default: handled=false;
   }
   if (handled){ e.preventDefault(); render(); }
@@ -2250,6 +2636,7 @@ document.addEventListener('change', function(e){
   else if (bind==='automacao.condCampo') { var b1=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); var g1=b1.grupos.find(function(g){return g.id===el.dataset.groupid;}); g1.condicoes[+el.dataset.idx].campo=val; }
   else if (bind==='automacao.condOp') { var b2=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); var g2=b2.grupos.find(function(g){return g.id===el.dataset.groupid;}); g2.condicoes[+el.dataset.idx].operador=val; }
   else if (bind==='automacao.acaoAlvo') { var b3=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(b3) b3.alvo=val; }
+  else if (bind==='reqdraft.destino') { state.reqActionDrafts[el.dataset.tipo] = state.reqActionDrafts[el.dataset.tipo]||{}; state.reqActionDrafts[el.dataset.tipo].destino=val; }
   else matched = false;
   if (matched) render();
 });
@@ -2284,6 +2671,8 @@ document.addEventListener('input', function(e){
     else if (bind==='automacao.acaoAlvo'){ var bA=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(bA) bA.alvo=val; }
     else if (bind==='formcfg.nome'){ currentData().formConfig.nome=val; }
     else if (bind==='formcfg.descricao'){ currentData().formConfig.descricao=val; }
+    else if (bind==='sol.campo'){ var sol7=findSolicitacao(el.dataset.solid); sol7.valores[el.dataset.fieldid]=val; }
+    else if (bind==='reqdraft.justificativa'){ state.reqActionDrafts[el.dataset.tipo] = state.reqActionDrafts[el.dataset.tipo]||{}; state.reqActionDrafts[el.dataset.tipo].justificativa=val; }
     return;
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }

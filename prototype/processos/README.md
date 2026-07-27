@@ -132,6 +132,14 @@ novas criadas pelo construtor e para as duas etapas de sistema (Formulário
 enviado/Finalizado). O seletor de cor continua funcionando normalmente para trocar ou
 remover a cor de qualquer etapa não-sistema.
 
+**v20** — a modal de detalhes da solicitação voltou a ter **2 colunas** em vez de 3 (a
+pedido, inspirada num layout de referência): a coluna da esquerda ficou só com
+**Formulário Inicial** e **Anexos**; a da direita passou a reunir **Etapa atual**
+(com os campos específicos daquela etapa) e **Ações disponíveis**, empilhados um
+abaixo do outro. Cabeçalho, progresso horizontal e as abas de Histórico/Comentários no
+rodapé continuam exatamente como na v18/v19 — só a divisão das 3 colunas centrais em 2
+mudou. Ver "O que mudou na v20" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -684,6 +692,20 @@ Administrador, agora sensíveis ao papel de quem está vendo):
   comentário.
 - **"Fase atual" → "Etapa atual"** — só o texto do rótulo na coluna do meio, sem mudança
   de comportamento.
+
+## O que mudou na v20
+
+- **De 3 para 2 colunas** — a modal de detalhes, que na v17 tinha ganhado 3 colunas
+  lado a lado (Formulário Inicial / Etapa atual / Ações disponíveis), voltou a ter só
+  2, num layout inspirado numa referência de painel de detalhes com lista compacta à
+  esquerda e conteúdo mais largo à direita:
+  - **Esquerda** — Formulário Inicial (campos enviados) e Anexos, como antes.
+  - **Direita** — Etapa atual (selo + campos específicos da etapa) e, logo abaixo,
+    separado por uma linha divisória, Ações disponíveis — as duas seções que antes
+    ocupavam colunas próprias agora ficam empilhadas na mesma coluna, mais larga.
+  - Nenhuma funcionalidade foi removida: cabeçalho com ícone/título/descrição do
+    processo, progresso horizontal no topo e as abas Histórico de
+    atividades/Comentários no rodapé continuam iguais à v18/v19.
 
 ## O que está implementado
 

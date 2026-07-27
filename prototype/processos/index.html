@@ -411,11 +411,11 @@
   .req-modal-head-left{display:flex;align-items:center;gap:14px}
   .req-modal-meta{font-size:11.5px;color:var(--ink-faint);margin-top:6px}
   .req-tracker-wrap{padding:14px 24px;border-bottom:1px solid var(--border);flex:none}
-  .request-modal-3col{display:flex;flex:1;min-height:0;overflow:hidden}
+  .request-modal-2col{display:flex;flex:1;min-height:0;overflow:hidden}
   .req-col{overflow-y:auto;padding:20px 24px}
-  .req-col-form{flex:1.3;min-width:0}
-  .req-col-fase{flex:1;min-width:0;border-left:1px solid var(--border)}
-  .req-col-acoes{width:300px;flex:none;border-left:1px solid var(--border)}
+  .req-col-form{flex:1;min-width:0}
+  .req-col-info{flex:1.15;min-width:0;border-left:1px solid var(--border)}
+  .req-info-section+.req-info-section{margin-top:22px;padding-top:20px;border-top:1px solid var(--border)}
   .req-fase-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
   .request-modal-footer{border-top:1px solid var(--border);padding:16px 24px 18px;overflow-y:auto;max-height:260px;flex:none}
   .req-detail-tabs{display:flex;gap:20px;border-bottom:1px solid var(--border);margin-bottom:14px}
@@ -2299,16 +2299,16 @@ function requestModalHTML(){
       '<button class="icon-btn" data-action="close-requestmodal">'+ic('x',16)+'</button>'+
     '</div>'+
     '<div class="req-tracker-wrap">'+stepTrackerHTML(sol)+'</div>'+
-    '<div class="request-modal-3col">'+
+    '<div class="request-modal-2col">'+
       '<div class="req-col req-col-form">'+
         '<div class="rule-mini-label" style="margin-top:0">Formulário Inicial</div>'+
         formRows+
         '<div class="rule-mini-label">Anexos</div>'+anexosHTML+
       '</div>'+
-      '<div class="req-col req-col-fase">'+
-        requestFaseColumnHTML(step, extraFieldsHTML)+
+      '<div class="req-col req-col-info">'+
+        '<div class="req-info-section">'+requestFaseColumnHTML(step, extraFieldsHTML)+'</div>'+
+        '<div class="req-info-section">'+requestAcoesColumnHTML(sol, step)+'</div>'+
       '</div>'+
-      '<div class="req-col req-col-acoes">'+requestAcoesColumnHTML(sol, step)+'</div>'+
     '</div>'+
     '<div class="request-modal-footer">'+
       '<div class="req-detail-tabs">'+

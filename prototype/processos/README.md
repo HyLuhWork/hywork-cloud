@@ -95,6 +95,19 @@ inline, um editor com Nome da seção, Descrição e botões de atalho para já 
 dentro dela — sem precisar arrastar da paleta e configurar pela modal. Ver "O que mudou
 na v15" abaixo.
 
+**v16** — redesenho completo da visão do processo publicado (Kanban/List/Dashboard),
+inspirado num quadro de referência: colunas com bolinha colorida + contador, cards com
+selo de etapa, campos configuráveis, avatar do solicitante, data, selo de prioridade e
+ícones de atividade/anexos/campos preenchidos. Ganhou uma barra de busca e filtro por
+etapa, além de Agrupar (Etapa/Solicitante) e Ordenar (Recentes/Solicitante) no Kanban e
+na List. Administradores agora têm um botão "Personalizar visualização" para escolher
+quais campos aparecem nos cards do Kanban e nas colunas da List, e o agrupamento/
+ordenação padrão. O banner de capa foi removido de todas as abas (Kanban, List e
+Dashboard) e, no lugar, o cabeçalho passou a mostrar o ícone do processo, igual ao da
+tela de construção. E no Colaborador, a opção de ver o quadro Kanban foi removida — só
+sobrou a List, tanto ao abrir pelo card do processo quanto pelo botão do rastreador após
+enviar uma solicitação. Ver "O que mudou na v16" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -575,6 +588,39 @@ Administrador, agora sensíveis ao papel de quem está vendo):
   de criar a seção. Campos adicionados pelos atalhos são inseridos logo após a seção
   correspondente (e antes da próxima seção, se houver), não sempre no fim do
   formulário.
+
+## O que mudou na v16
+
+**Visão do processo publicado (Kanban/List/Dashboard):**
+
+- **Redesenho do Kanban** — colunas passaram a mostrar uma bolinha colorida (a cor da
+  etapa, quando definida) + nome + contador, num cabeçalho mais limpo; para
+  administradores, um botão "..." em cada coluna abre "Editar etapa", que leva direto
+  para a etapa correspondente na aba Etapas do construtor. Os cards ganharam: selo da
+  etapa atual (colorido) no topo, os campos configurados do formulário, uma linha
+  "Solicitante:" com avatar de iniciais, data de criação, um selo de prioridade (a
+  partir do campo "Tipo de solicitação", quando existir no formulário) e um rodapé com
+  contadores de atividades, anexos e campos preenchidos.
+- **Busca e filtro** — Kanban e List ganharam um campo de busca (por nome do
+  solicitante) e um filtro por etapa, ambos na barra logo abaixo das abas.
+- **Agrupar e Ordenar** — no Kanban dá para agrupar por Etapa (padrão) ou por
+  Solicitante (uma coluna por pessoa); Kanban e List têm Ordenar por Mais recentes
+  (padrão) ou Solicitante (A-Z).
+- **Personalizar visualização (só administrador)** — um ícone de engrenagem na barra
+  abre uma modal para escolher quais campos do formulário aparecem nos cards do Kanban
+  ou como colunas extras na List, além do agrupamento e ordenação padrão. Essas
+  escolhas ficam salvas no processo e valem para quem mais acessar aquela visão.
+- **Sem banner, ícone do processo no cabeçalho** — a foto de capa foi removida de todas
+  as abas (antes só não aparecia no Kanban; agora também não aparece na List nem no
+  Dashboard). No lugar dela, o cabeçalho mostra o mesmo selo colorido com o ícone do
+  processo usado na tela de construção.
+
+**Colaborador:**
+
+- **Sem acesso ao Kanban** — a aba Kanban não aparece mais para o colaborador (só
+  List); o botão "Ver quadro" no rastreador de solicitação enviada foi removido, e o
+  ícone de atalho no card do processo na Central de Processos agora abre direto a List
+  ("Ver solicitações").
 
 ## O que está implementado
 

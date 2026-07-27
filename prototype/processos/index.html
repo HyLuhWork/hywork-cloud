@@ -145,8 +145,10 @@
   .badge-muted{background:var(--muted-strong);color:var(--ink-muted)}
   .badge-warning{background:var(--warning-50);color:var(--warning)}
   .badge-info{background:var(--info-50);color:var(--info)}
+  .badge-danger{background:var(--error-50);color:var(--error)}
   .badge-primary{background:var(--primary-50);color:var(--primary-dark)}
   .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius-full);border:1px solid var(--border-strong);background:var(--surface);font-size:12.5px;font-weight:700;color:var(--ink-muted)}
+  .chip-selected{background:var(--primary-50);border-color:var(--primary);color:var(--primary-dark)}
   .chip.active{background:var(--ink);border-color:var(--ink);color:var(--surface)}
   .chip-row{display:flex;gap:8px;flex-wrap:wrap}
 
@@ -355,26 +357,54 @@
 
   /* ---------- process view (visão do processo publicado) ---------- */
   .pv-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .pv-hero{margin-top:6px}
-  .pv-hero-capa{height:150px;border-radius:var(--radius-lg);background-size:cover;background-position:center;background-image:linear-gradient(135deg,var(--primary),var(--navy-800))}
-  .pv-hero-info{margin-top:14px}
-  .pv-hero-name{font-size:22px;font-weight:800;color:var(--ink)}
-  .pv-hero-desc{font-size:13px;color:var(--ink-faint);margin-top:4px;max-width:680px}
+  .pv-hero{margin-top:14px;display:flex;align-items:center;gap:14px}
+  .pv-hero-info{margin-top:0}
+  .pv-hero-name{font-size:20px;font-weight:800;color:var(--ink)}
+  .pv-hero-desc{font-size:13px;color:var(--ink-faint);margin-top:3px;max-width:680px}
   .pv-body{border-top:1px solid var(--border)}
+  .pv-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 28px;border-bottom:1px solid var(--border)}
+  .pv-toolbar-search{max-width:260px;padding:6px 10px}
+  .pv-toolbar-right{display:flex;align-items:center;gap:2px}
+  .pv-toolbar-menu-wrap{position:relative}
+  .pv-toolbar-btn{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:var(--radius-md);font-size:12.5px;font-weight:600;color:var(--ink-muted)}
+  .pv-toolbar-btn:hover{background:var(--muted);color:var(--ink)}
+  .pv-toolbar-btn.active{background:var(--primary-50);color:var(--primary-dark)}
+  .pv-toolbar-dropdown{position:absolute;top:36px;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);min-width:200px;padding:10px 12px;z-index:6}
+  .pv-toolbar-dropdown-label{font-size:11px;font-weight:700;color:var(--ink-muted);margin-bottom:6px}
+  .pv-toolbar-dropdown-item{display:flex;align-items:center;gap:8px;width:100%;padding:8px 6px;font-size:12.5px;font-weight:600;color:var(--ink);text-align:left;border-radius:var(--radius-sm)}
+  .pv-toolbar-dropdown-item:hover{background:var(--muted)}
+  .pv-toolbar-dropdown-item.selected{color:var(--primary-dark);font-weight:800}
+  .pv-filter-check{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink);padding:5px 2px;cursor:pointer}
   .pv-board{display:flex;gap:14px;overflow-x:auto;align-items:flex-start;padding:20px 28px 56px;max-width:1180px;margin:0 auto}
   .pv-column{width:270px;flex:none;background:var(--muted);border-radius:var(--radius-lg);display:flex;flex-direction:column;max-height:calc(100vh - 320px)}
-  .pv-col-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-top:4px solid var(--border-strong);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
-  .pv-col-name{font-size:13px;font-weight:800;color:var(--ink)}
-  .pv-col-count{background:var(--surface);border-radius:var(--radius-full);padding:1px 9px;font-size:11px;font-weight:700;color:var(--ink-faint)}
+  .pv-col-head{display:flex;align-items:center;justify-content:space-between;padding:14px 10px 10px 14px}
+  .pv-col-head-left{display:flex;align-items:center;gap:8px;min-width:0}
+  .pv-col-dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .pv-col-name{font-size:13.5px;font-weight:800;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pv-col-count{background:var(--surface);border-radius:var(--radius-full);padding:1px 8px;font-size:11px;font-weight:700;color:var(--ink-faint);flex:none}
+  .pv-col-menu-wrap{position:relative;flex:none}
+  .pv-col-menu-btn{width:24px;height:24px;color:var(--ink-faint)}
+  .pv-col-menu-btn:hover{background:var(--surface);color:var(--ink)}
+  .pv-col-menu-dropdown{position:absolute;top:26px;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);min-width:160px;overflow:hidden;z-index:5}
+  .pv-col-menu-dropdown button{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;font-size:12.5px;font-weight:600;color:var(--ink);text-align:left}
+  .pv-col-menu-dropdown button:hover{background:var(--muted)}
   .pv-col-body{flex:1;overflow-y:auto;padding:0 10px 10px;display:flex;flex-direction:column;gap:8px}
   .pv-col-empty{padding:18px 10px;text-align:center;font-size:11.5px;color:var(--ink-faint)}
-  .pv-request-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:11px 12px;cursor:pointer;box-shadow:var(--shadow-sm)}
+  .pv-request-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 13px;cursor:pointer;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:8px}
   .pv-request-card:hover{border-color:var(--navy-400)}
-  .pv-req-name{font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:6px}
-  .pv-req-meta{font-size:10.5px;color:var(--ink-faint);margin-top:6px;display:flex;align-items:center;gap:5px}
-  .pv-card-field{margin-bottom:6px}
-  .pv-card-field-label{display:flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-faint)}
-  .pv-card-field-value{font-size:12px;font-weight:600;color:var(--ink);margin-top:1px}
+  .pv-status-pill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;padding:3px 9px 3px 7px;border-radius:var(--radius-full)}
+  .pv-status-dot{width:6px;height:6px;border-radius:50%;flex:none}
+  .pv-req-name{font-size:13px;font-weight:800;color:var(--ink)}
+  .pv-card-fields{display:flex;flex-direction:column;gap:2px}
+  .pv-card-line{font-size:11.5px;color:var(--ink-muted);line-height:1.4}
+  .pv-card-line b{color:var(--ink);font-weight:700}
+  .pv-card-assignee-row{display:flex;align-items:center;justify-content:space-between}
+  .pv-card-assignee-label{font-size:10.5px;color:var(--ink-faint);font-weight:600}
+  .pv-card-avatar{width:24px;height:24px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;flex:none}
+  .pv-card-meta-row{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border)}
+  .pv-card-date{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-faint);font-weight:600}
+  .pv-card-icons-row{display:flex;align-items:center;gap:12px}
+  .pv-card-icon-stat{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--ink-faint);font-weight:600}
 
   /* ---------- modal de detalhes da solicitação ---------- */
   .request-modal{max-width:960px}
@@ -691,6 +721,9 @@ function ic(name, size){
     play:'<path d="M6 4.5v15l14-7.5Z"/>',
     flag:'<path d="M5 21V4"/><path d="M5 4h13l-3 4.5L18 13H5"/>',
     send:'<path d="M4 12 20 4 13 20l-2-7-7-1Z"/>',
+    filter:'<path d="M4 6h16M7 12h10M10 18h4"/>',
+    sort:'<path d="M7 17V4M7 4 3.5 7.5M7 4l3.5 3.5M17 7v13M17 20l3.5-3.5M17 20l-3.5-3.5"/>',
+    layers:'<path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
   };
   var body = p[name] || p.info;
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+body+'</svg>';
@@ -916,6 +949,7 @@ function richProcessData(){
   return {
     formFields:[f1,f2,f3,f4,f5],
     formConfig:{nome:'', descricao:'', capa:null, posicao:'header', colunas:1},
+    viewConfig: defaultViewConfig([f1,f2,f3,f4,f5]),
     steps:[start, s2, sFin, s3, end],
     solicitacoes: solicitacoes,
     widgets:[
@@ -951,6 +985,7 @@ function emptyProcessData(){
   return {
     formFields:[],
     formConfig:{nome:'', descricao:'', capa:null, posicao:'header', colunas:1},
+    viewConfig: defaultViewConfig([]),
     steps:[{id:'s_start',name:'Formulário enviado',system:true,initial:true,kind:'sistema'},{id:'s_end',name:'Finalizado',system:true,final:true,kind:'sistema'}],
     widgets:[],
     solicitacoes:[],
@@ -959,6 +994,25 @@ function emptyProcessData(){
     ],
     automacoes:[]
   };
+}
+function defaultViewConfig(fields){
+  var fillable = (fields||[]).filter(function(f){return f.type!=='section';});
+  var valorField = fillable.find(function(f){return f.label==='Valor total';});
+  return {
+    cardFields: fillable.slice(0,2).map(function(f){return f.id;}),
+    tableFields: valorField ? [valorField.id] : [],
+    defaultSort:'recent',
+    defaultGroupBy:'etapa'
+  };
+}
+function ensureViewConfig(d){
+  if (!d.viewConfig) d.viewConfig = defaultViewConfig(d.formFields);
+  return d.viewConfig;
+}
+function resetPvSessionState(d){
+  var vc = ensureViewConfig(d);
+  state.pvSearch=''; state.pvFilterSteps=null; state.pvGroupBy=vc.defaultGroupBy; state.pvSort=vc.defaultSort;
+  state.pvToolbarMenu=null; state.pvColMenuFor=null;
 }
 
 function seedProcesses(){
@@ -1023,6 +1077,14 @@ var state = {
   novaSolicitacaoDraft:null, // {valores:{}}
   trackerModalOpen:null, // solicitacao id
   openSectionEditorId:null, // section field id being edited inline in the form canvas
+  pvSearch:'',
+  pvFilterSteps:null, // null = todas as etapas; array de stepIds quando filtrado
+  pvGroupBy:'etapa', // 'etapa' | 'solicitante'
+  pvSort:'recent', // 'recent' | 'solicitante'
+  pvToolbarMenu:null, // 'filter' | 'sort' | 'group' | 'more' | null
+  pvColMenuFor:null, // chave da coluna (stepId ou nome do solicitante) com o menu "..." aberto
+  pvCustomizeOpen:null, // 'kanban' | 'list' | null
+  pvCustomizeDraft:null, // rascunho em edição na modal de personalizar visualização
 };
 var CURRENT_USER_NAME = 'Luiza Vieira';
 
@@ -1797,18 +1859,36 @@ function widgetHTML(w, readonly){
 }
 
 /* ============ PROCESS VIEW (visão do processo publicado) ============ */
+function parseDataBR(s){
+  if (!s) return 0;
+  var parts = s.split('/');
+  if (parts.length!==3) return 0;
+  return new Date(+parts[2], +parts[1]-1, +parts[0]).getTime();
+}
+function tipoSolicitacaoField(d){ return d.formFields.find(function(f){return f.label==='Tipo de solicitação';}); }
+function pvFilteredSortedSolicitacoes(d){
+  var sols = (d.solicitacoes||[]).filter(function(sol){
+    if (state.pvFilterSteps && state.pvFilterSteps.indexOf(sol.stepId)===-1) return false;
+    if (state.pvSearch && sol.solicitante.toLowerCase().indexOf(state.pvSearch.toLowerCase())===-1) return false;
+    return true;
+  });
+  sols = sols.slice();
+  if (state.pvSort==='solicitante') sols.sort(function(a,b){ return a.solicitante.localeCompare(b.solicitante); });
+  else sols.sort(function(a,b){ return parseDataBR(b.criadoEm)-parseDataBR(a.criadoEm); });
+  return sols;
+}
 function processViewHTML(){
   var p = currentProcess(); if(!p){ state.screen='home'; return homeHTML(); }
   var d = currentData();
-  var cfg = d.formConfig || {};
+  ensureViewConfig(d);
   var role = state.processViewRole;
-  var showCapa = state.processViewTab!=='kanban';
-  var capaStyle = (showCapa && cfg.capa) ? ' style="background-image:url('+cfg.capa+')"' : '';
+  if (role==='colaborador' && state.processViewTab!=='list') state.processViewTab = 'list';
   var allTabs = [['kanban','Kanban','grid'],['list','List','doc'],['dashboard','Dashboard','chart']];
-  var tabs = role==='colaborador' ? allTabs.filter(function(t){return t[0]!=='dashboard';}) : allTabs;
+  var tabs = role==='colaborador' ? allTabs.filter(function(t){return t[0]==='list';}) : allTabs;
   var tabsHTML = tabs.map(function(t){
     return '<button class="mtab'+(state.processViewTab===t[0]?' active':'')+'" data-action="set-processview-tab" data-tab="'+t[0]+'">'+ic(t[2],14)+esc(t[1])+'</button>';
   }).join('');
+  var showToolbar = state.processViewTab==='kanban' || state.processViewTab==='list';
   var body;
   if (state.processViewTab==='list') body = processViewListHTML();
   else if (state.processViewTab==='dashboard' && role!=='colaborador') body = processViewDashboardHTML();
@@ -1824,57 +1904,152 @@ function processViewHTML(){
         actionsRight+
       '</div>'+
       '<div class="pv-hero">'+
-        (showCapa ? '<div class="pv-hero-capa'+(cfg.capa?'':' empty')+'"'+capaStyle+'></div>' : '')+
-        '<div class="pv-hero-info"><div class="pv-hero-name">'+esc(cfg.nome||p.name)+'</div><div class="pv-hero-desc">'+esc(cfg.descricao||p.description)+'</div></div>'+
+        '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+p.icon+'</div>'+
+        '<div class="pv-hero-info"><div class="pv-hero-name">'+esc(d.formConfig.nome||p.name)+'</div><div class="pv-hero-desc">'+esc(d.formConfig.descricao||p.description)+'</div></div>'+
       '</div>'+
       '<div class="mtabs" style="margin-top:8px">'+tabsHTML+'</div>'+
+      (showToolbar ? processViewToolbarHTML() : '')+
     '</div>'+
-    '<div class="pv-body">'+body+'</div>';
+    '<div class="pv-body" id="pv-body-area">'+body+'</div>';
 }
-function solicitacaoKeyValor(sol){
-  var f = currentData().formFields.find(function(x){return x.label==='Valor total';});
-  return f ? sol.valores[f.id] : null;
+function refreshProcessViewBodyArea(){
+  var area = qs('#pv-body-area'); if (!area) return;
+  var body;
+  if (state.processViewTab==='list') body = processViewListHTML();
+  else if (state.processViewTab==='dashboard' && state.processViewRole!=='colaborador') body = processViewDashboardHTML();
+  else body = processViewKanbanHTML();
+  area.innerHTML = body;
 }
-function requestCardHTML(sol){
+function processViewToolbarHTML(){
   var d = currentData();
-  var fieldRows = d.formFields.filter(function(f){ return f.type!=='section' && sol.valores[f.id]; }).slice(0,2).map(function(f){
-    var meta = fieldTypeMeta(f.type);
-    return '<div class="pv-card-field"><div class="pv-card-field-label">'+ic(meta.icon,11)+esc(f.label)+'</div><div class="pv-card-field-value">'+esc(sol.valores[f.id])+'</div></div>';
+  var isAdmin = state.processViewRole!=='colaborador';
+  var isKanban = state.processViewTab==='kanban';
+  var filterActive = state.pvFilterSteps && state.pvFilterSteps.length ? ' active' : '';
+  var groupLabel = state.pvGroupBy==='solicitante' ? 'Solicitante' : 'Etapa';
+  var sortLabel = state.pvSort==='solicitante' ? 'Solicitante (A-Z)' : 'Recentes';
+
+  var filterDropdown = state.pvToolbarMenu==='filter' ? '<div class="pv-toolbar-dropdown">'+
+      '<div class="pv-toolbar-dropdown-label">Filtrar por etapa</div>'+
+      d.steps.map(function(s){
+        var checked = !state.pvFilterSteps || state.pvFilterSteps.indexOf(s.id)!==-1;
+        return '<label class="pv-filter-check"><input type="checkbox" data-action="pv-toggle-filter-step" data-stepid="'+s.id+'"'+(checked?' checked':'')+'/>'+esc(s.name)+'</label>';
+      }).join('')+
+      (state.pvFilterSteps ? '<button class="link-btn" style="margin-top:6px;font-size:11.5px" data-action="pv-clear-filter">Limpar filtro</button>' : '')+
+    '</div>' : '';
+
+  var groupDropdown = (isKanban && state.pvToolbarMenu==='group') ? '<div class="pv-toolbar-dropdown">'+
+      '<button class="pv-toolbar-dropdown-item'+(state.pvGroupBy==='etapa'?' selected':'')+'" data-action="pv-set-group" data-group="etapa">Etapa</button>'+
+      '<button class="pv-toolbar-dropdown-item'+(state.pvGroupBy==='solicitante'?' selected':'')+'" data-action="pv-set-group" data-group="solicitante">Solicitante</button>'+
+    '</div>' : '';
+
+  var sortDropdown = state.pvToolbarMenu==='sort' ? '<div class="pv-toolbar-dropdown">'+
+      '<button class="pv-toolbar-dropdown-item'+(state.pvSort==='recent'?' selected':'')+'" data-action="pv-set-sort" data-sort="recent">Mais recentes</button>'+
+      '<button class="pv-toolbar-dropdown-item'+(state.pvSort==='solicitante'?' selected':'')+'" data-action="pv-set-sort" data-sort="solicitante">Solicitante (A-Z)</button>'+
+    '</div>' : '';
+
+  var moreDropdown = state.pvToolbarMenu==='more' ? '<div class="pv-toolbar-dropdown">'+
+      '<button class="pv-toolbar-dropdown-item" data-action="pv-mock-export">'+ic('doc',13)+'Exportar CSV</button>'+
+    '</div>' : '';
+
+  return '<div class="pv-toolbar">'+
+    '<div class="topbar-search pv-toolbar-search">'+ic('search',14)+'<input type="text" id="pv-search-input" placeholder="Pesquisar solicitações..." value="'+esc(state.pvSearch)+'"/></div>'+
+    '<div class="pv-toolbar-right">'+
+      '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn'+filterActive+'" data-action="toggle-pv-menu" data-menu="filter">'+ic('filter',13)+'Filtrar'+ic('chevronDown',12)+'</button>'+filterDropdown+'</div>'+
+      (isKanban ? '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn" data-action="toggle-pv-menu" data-menu="group">'+ic('layers',13)+'Agrupar: '+groupLabel+ic('chevronDown',12)+'</button>'+groupDropdown+'</div>' : '')+
+      '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn" data-action="toggle-pv-menu" data-menu="sort">'+ic('sort',13)+'Ordenar: '+sortLabel+ic('chevronDown',12)+'</button>'+sortDropdown+'</div>'+
+      '<div class="pv-toolbar-menu-wrap"><button class="icon-btn" data-action="toggle-pv-menu" data-menu="more" title="Mais opções">'+ic('more',15)+'</button>'+moreDropdown+'</div>'+
+      (isAdmin ? '<button class="icon-btn" data-action="open-pv-customize" title="Personalizar visualização">'+ic('gear',15)+'</button>' : '')+
+    '</div>'+
+  '</div>';
+}
+function requestCardHTML(sol, d){
+  d = d || currentData();
+  var vc = ensureViewConfig(d);
+  var step = findStep(sol.stepId);
+  var stepColor = step && step.cor;
+  var statusPill = step ? '<span class="pv-status-pill" style="background:'+(stepColor?stepColor+'1f':'var(--muted-strong)')+';color:'+(stepColor||'var(--ink-muted)')+'"><span class="pv-status-dot" style="background:'+(stepColor||'var(--ink-faint)')+'"></span>'+esc(step.name)+'</span>' : '';
+
+  var fieldIds = (vc.cardFields && vc.cardFields.length) ? vc.cardFields : d.formFields.filter(function(f){return f.type!=='section';}).slice(0,2).map(function(f){return f.id;});
+  var fieldRows = fieldIds.map(function(fid){
+    var f = d.formFields.find(function(x){return x.id===fid;});
+    if (!f || !sol.valores[f.id]) return '';
+    return '<div class="pv-card-line"><b>'+esc(f.label)+':</b> '+esc(sol.valores[f.id])+'</div>';
   }).join('');
+
+  var tipoField = tipoSolicitacaoField(d);
+  var tipoVal = tipoField ? sol.valores[tipoField.id] : null;
+  var priorityPill = tipoVal ? '<span class="badge '+(/urgente/i.test(tipoVal)?'badge-danger':'badge-info')+'">'+esc(tipoVal)+'</span>' : '';
+
+  var initials = sol.solicitante.split(' ').filter(Boolean).slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
+  var historicoCount = (sol.historico||[]).length;
+  var anexosCount = (sol.anexos||[]).length;
+  var fillable = d.formFields.filter(function(f){return f.type!=='section';});
+  var filledCount = fillable.filter(function(f){return sol.valores[f.id];}).length;
+
   return '<div class="pv-request-card" data-action="open-request-modal" data-id="'+sol.id+'">'+
+    (statusPill ? '<div class="pv-card-top">'+statusPill+'</div>' : '')+
     '<div class="pv-req-name">'+esc(sol.solicitante)+'</div>'+
-    fieldRows+
-    '<div class="pv-req-meta">'+ic('calendar',10)+esc(sol.criadoEm)+'</div>'+
+    (fieldRows ? '<div class="pv-card-fields">'+fieldRows+'</div>' : '')+
+    '<div class="pv-card-assignee-row"><span class="pv-card-assignee-label">Solicitante:</span><span class="pv-card-avatar" title="'+esc(sol.solicitante)+'">'+esc(initials)+'</span></div>'+
+    '<div class="pv-card-meta-row"><span class="pv-card-date">'+ic('flag',11)+esc(sol.criadoEm)+'</span>'+priorityPill+'</div>'+
+    '<div class="pv-card-icons-row">'+
+      '<span class="pv-card-icon-stat" title="Atividades">'+ic('forum',12)+historicoCount+'</span>'+
+      '<span class="pv-card-icon-stat" title="Anexos">'+ic('upload',12)+anexosCount+'</span>'+
+      '<span class="pv-card-icon-stat" title="Campos preenchidos">'+ic('doc',12)+filledCount+'/'+fillable.length+'</span>'+
+    '</div>'+
   '</div>';
 }
 function processViewKanbanHTML(){
   var d = currentData();
-  var cols = d.steps.map(function(s){
-    var items = solicitacoesInStep(s.id);
-    var borderStyle = s.cor ? ' style="border-top-color:'+esc(s.cor)+'"' : '';
-    var nameStyle = s.cor ? ' style="color:'+esc(s.cor)+'"' : '';
+  var sols = pvFilteredSortedSolicitacoes(d);
+  var groups;
+  if (state.pvGroupBy==='solicitante'){
+    var byName = {};
+    sols.forEach(function(sol){ (byName[sol.solicitante] = byName[sol.solicitante]||[]).push(sol); });
+    groups = Object.keys(byName).sort(function(a,b){return a.localeCompare(b);}).map(function(name){
+      return {key:'nome-'+name, label:name, cor:null, items:byName[name], stepId:null};
+    });
+  } else {
+    groups = d.steps.map(function(s){
+      return {key:s.id, label:s.name, cor:s.cor, items: sols.filter(function(sol){return sol.stepId===s.id;}), stepId:s.id};
+    });
+  }
+  var cols = groups.map(function(g){
+    var menu = (state.processViewRole!=='colaborador' && g.stepId) ?
+      '<div class="pv-col-menu-wrap">'+
+        '<button class="icon-btn pv-col-menu-btn" data-action="toggle-pv-col-menu" data-key="'+esc(g.key)+'" title="Mais opções">'+ic('more',14)+'</button>'+
+        (state.pvColMenuFor===g.key ? '<div class="pv-col-menu-dropdown">'+
+          '<button data-action="pv-col-edit-etapa" data-stepid="'+g.stepId+'">'+ic('edit',13)+'Editar etapa</button>'+
+        '</div>' : '')+
+      '</div>' : '';
     return '<div class="pv-column">'+
-      '<div class="pv-col-head"'+borderStyle+'><span class="pv-col-name"'+nameStyle+'>'+esc(s.name)+'</span><span class="pv-col-count">'+items.length+'</span></div>'+
-      '<div class="pv-col-body">'+(items.length ? items.map(requestCardHTML).join('') : '<div class="pv-col-empty">Nenhuma solicitação aqui</div>')+'</div>'+
+      '<div class="pv-col-head">'+
+        '<div class="pv-col-head-left"><span class="pv-col-dot" style="background:'+(g.cor||'var(--ink-faint)')+'"></span><span class="pv-col-name">'+esc(g.label)+'</span><span class="pv-col-count">'+g.items.length+'</span></div>'+
+        menu+
+      '</div>'+
+      '<div class="pv-col-body">'+(g.items.length ? g.items.map(function(sol){return requestCardHTML(sol, d);}).join('') : '<div class="pv-col-empty">Nenhuma solicitação aqui</div>')+'</div>'+
     '</div>';
   }).join('');
   return '<div class="pv-board">'+cols+'</div>';
 }
 function processViewListHTML(){
   var d = currentData();
-  var sols = d.solicitacoes || [];
+  ensureViewConfig(d);
+  var sols = pvFilteredSortedSolicitacoes(d);
+  var extraFields = (d.viewConfig.tableFields||[]).map(function(fid){ return d.formFields.find(function(f){return f.id===fid;}); }).filter(Boolean);
+  var headExtra = extraFields.map(function(f){ return '<th style="text-align:left">'+esc(f.label)+'</th>'; }).join('');
   var rows = sols.map(function(sol){
     var step = findStep(sol.stepId);
-    var valor = solicitacaoKeyValor(sol);
+    var extraCells = extraFields.map(function(f){ var v = sol.valores[f.id]; return '<td style="text-align:left">'+(v?esc(v):'—')+'</td>'; }).join('');
     return '<tr data-action="open-request-modal" data-id="'+sol.id+'" style="cursor:pointer">'+
       '<td style="text-align:left;padding-left:16px">'+esc(sol.solicitante)+'</td>'+
       '<td style="text-align:left">'+esc(step?step.name:'—')+'</td>'+
       '<td style="text-align:left">'+esc(sol.criadoEm)+'</td>'+
-      '<td style="text-align:left">'+(valor?esc(valor):'—')+'</td>'+
+      extraCells+
     '</tr>';
   }).join('');
   return '<div class="screen-inner" style="padding-top:20px">'+
-    (sols.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Solicitante</th><th style="text-align:left">Etapa atual</th><th style="text-align:left">Criado em</th><th style="text-align:left">Valor total</th></tr></thead><tbody>'+rows+'</tbody></table></div>' :
+    (sols.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Solicitante</th><th style="text-align:left">Etapa atual</th><th style="text-align:left">Criado em</th>'+headExtra+'</tr></thead><tbody>'+rows+'</tbody></table></div>' :
       '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nenhuma solicitação ainda</div><div class="es-sub">Assim que alguém enviar o formulário, as solicitações aparecem aqui.</div></div>')+
   '</div>';
 }
@@ -1885,6 +2060,39 @@ function processViewDashboardHTML(){
     (d.widgets.length ? '<div class="widget-grid">'+widgets+'</div>' :
       '<div class="empty-state"><div class="es-ic">'+ic('chart',22)+'</div><div class="es-title">Nenhum indicador configurado</div><div class="es-sub">Adicione indicadores na aba Indicadores do construtor do processo.</div></div>')+
   '</div>';
+}
+function pvCustomizeModalHTML(){
+  var d = currentData();
+  var draft = state.pvCustomizeDraft;
+  if (!draft) return '';
+  var isKanban = state.pvCustomizeOpen==='kanban';
+  var listKey = isKanban ? 'cardFields' : 'tableFields';
+  var fillable = d.formFields.filter(function(f){return f.type!=='section';});
+  var fieldsChecklist = fillable.length ? fillable.map(function(f){
+    var checked = draft[listKey].indexOf(f.id)!==-1;
+    return '<label class="pv-filter-check"><input type="checkbox" data-action="pv-toggle-customize-field" data-fieldid="'+f.id+'"'+(checked?' checked':'')+'/>'+esc(f.label)+'</label>';
+  }).join('') : '<div class="field-hint">Nenhum campo no formulário ainda.</div>';
+
+  var groupSection = isKanban ? '<div class="rule-mini-label">Agrupar por (padrão)</div>'+
+    '<div class="quick-rule-row">'+
+      '<button class="chip'+(draft.defaultGroupBy==='etapa'?' chip-selected':'')+'" data-action="pv-set-customize-group" data-group="etapa">Etapa</button>'+
+      '<button class="chip'+(draft.defaultGroupBy==='solicitante'?' chip-selected':'')+'" data-action="pv-set-customize-group" data-group="solicitante">Solicitante</button>'+
+    '</div>' : '';
+
+  return '<div class="overlay" data-action="close-pv-customize-overlay"><div class="modal modal-md">'+
+    '<div class="modal-head"><div><h3>Personalizar visualização — '+(isKanban?'Kanban':'List')+'</h3><p>Só administradores veem esta opção. Vale para quem acessar este processo.</p></div><button class="icon-btn" data-action="close-pv-customize">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+
+      '<div class="rule-mini-label" style="margin-top:0">'+(isKanban?'Campos exibidos no card':'Colunas extras da tabela')+'</div>'+
+      '<div class="quick-rule-row">'+fieldsChecklist+'</div>'+
+      groupSection+
+      '<div class="rule-mini-label">Ordenar por (padrão)</div>'+
+      '<div class="quick-rule-row">'+
+        '<button class="chip'+(draft.defaultSort==='recent'?' chip-selected':'')+'" data-action="pv-set-customize-sort" data-sort="recent">Mais recentes</button>'+
+        '<button class="chip'+(draft.defaultSort==='solicitante'?' chip-selected':'')+'" data-action="pv-set-customize-sort" data-sort="solicitante">Solicitante (A-Z)</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn btn-ghost" data-action="close-pv-customize">Cancelar</button><button class="btn btn-primary" data-action="save-pv-customize">'+ic('check',14)+'Salvar</button></div>'+
+  '</div></div>';
 }
 
 /* ============ INTRANET (visão do Colaborador) ============ */
@@ -1933,7 +2141,7 @@ function intranetProcessCardHTML(p){
     '<div class="ipc-desc">'+esc(p.description)+'</div>'+
     '<div class="ipc-foot"><span>'+stepCount+' Etapas</span>'+
       '<div style="display:flex;gap:6px">'+
-        '<button class="icon-btn" data-action="open-processview-colab" data-id="'+p.id+'" title="Ver quadro">'+ic('grid',14)+'</button>'+
+        '<button class="icon-btn" data-action="open-processview-colab" data-id="'+p.id+'" title="Ver solicitações">'+ic('doc',14)+'</button>'+
         '<button class="btn btn-primary btn-xs" data-action="open-nova-solicitacao" data-id="'+p.id+'">'+ic('plus',12)+'Iniciar Solicitação</button>'+
       '</div>'+
     '</div>'+
@@ -2005,7 +2213,7 @@ function trackerModalHTML(){
   return '<div class="overlay" data-action="close-tracker-overlay"><div class="modal modal-md">'+
     '<div class="modal-head"><div><h3>Solicitação enviada!</h3><p>'+esc(p?p.name:'')+'</p></div><button class="icon-btn" data-action="close-tracker">'+ic('x',16)+'</button></div>'+
     '<div class="modal-body">'+stepTrackerHTML(sol)+'</div>'+
-    '<div class="modal-foot"><button class="btn btn-ghost" data-action="close-tracker">Fechar</button><button class="btn btn-primary" data-action="tracker-ver-quadro">'+ic('grid',14)+'Ver quadro</button></div>'+
+    '<div class="modal-foot"><button class="btn btn-primary" data-action="close-tracker">Fechar</button></div>'+
   '</div></div>';
 }
 
@@ -2363,6 +2571,7 @@ function renderModal(){
   if (state.requestModalOpen){ root.innerHTML = requestModalHTML(); return; }
   if (state.novaSolicitacaoOpen){ root.innerHTML = novaSolicitacaoModalHTML(); return; }
   if (state.trackerModalOpen){ root.innerHTML = trackerModalHTML(); return; }
+  if (state.pvCustomizeOpen){ root.innerHTML = pvCustomizeModalHTML(); return; }
   root.innerHTML='';
 }
 function wizardModalHTML(){
@@ -2584,6 +2793,8 @@ document.addEventListener('click', function(e){
   var action = t.dataset.action;
   if (/-overlay$/.test(action) && e.target !== t) return;
   if (state.openStepMenuFor && action!=='toggle-step-menu') state.openStepMenuFor = null;
+  if (state.pvToolbarMenu && !/^(toggle-pv-menu|pv-toggle-filter-step|pv-clear-filter|pv-set-group|pv-set-sort|pv-mock-export)$/.test(action)) state.pvToolbarMenu = null;
+  if (state.pvColMenuFor && action!=='toggle-pv-col-menu') state.pvColMenuFor = null;
   var handled = true;
   switch(action){
     case 'noop': e.preventDefault(); break;
@@ -2835,7 +3046,55 @@ document.addEventListener('click', function(e){
 
     /* automações */
     case 'set-automacoes-subtab': state.automacoesSubTab = t.dataset.tab; break;
-    case 'set-processview-tab': state.processViewTab = t.dataset.tab; break;
+    case 'set-processview-tab': state.processViewTab = t.dataset.tab; state.pvToolbarMenu=null; state.pvColMenuFor=null; break;
+    case 'toggle-pv-menu': { var pvm = t.dataset.menu; state.pvToolbarMenu = state.pvToolbarMenu===pvm ? null : pvm; break; }
+    case 'toggle-pv-col-menu': { var pvk = t.dataset.key; state.pvColMenuFor = state.pvColMenuFor===pvk ? null : pvk; break; }
+    case 'pv-col-edit-etapa': {
+      state.screen = 'editor'; state.editorTab = 'workflow';
+      state.selectedStepId = t.dataset.stepid;
+      state.stepModalOpen = t.dataset.stepid;
+      state.stepModalTab = 'geral';
+      state.pvColMenuFor = null;
+      break;
+    }
+    case 'pv-toggle-filter-step': {
+      var dPvf = currentData();
+      var allStepIds = dPvf.steps.map(function(s){return s.id;});
+      var curSteps = state.pvFilterSteps ? state.pvFilterSteps.slice() : allStepIds.slice();
+      var sidx = curSteps.indexOf(t.dataset.stepid);
+      if (sidx===-1) curSteps.push(t.dataset.stepid); else curSteps.splice(sidx,1);
+      state.pvFilterSteps = (curSteps.length===allStepIds.length) ? null : curSteps;
+      break;
+    }
+    case 'pv-clear-filter': state.pvFilterSteps = null; break;
+    case 'pv-set-group': state.pvGroupBy = t.dataset.group; state.pvToolbarMenu=null; break;
+    case 'pv-set-sort': state.pvSort = t.dataset.sort; state.pvToolbarMenu=null; break;
+    case 'pv-mock-export': showToast('Exportação disponível em breve.'); state.pvToolbarMenu=null; break;
+    case 'open-pv-customize': {
+      var dPvc = currentData(); ensureViewConfig(dPvc);
+      state.pvCustomizeOpen = state.processViewTab==='list' ? 'list' : 'kanban';
+      state.pvCustomizeDraft = JSON.parse(JSON.stringify(dPvc.viewConfig));
+      break;
+    }
+    case 'close-pv-customize': case 'close-pv-customize-overlay': state.pvCustomizeOpen=null; state.pvCustomizeDraft=null; break;
+    case 'pv-toggle-customize-field': {
+      var listKeyT = state.pvCustomizeOpen==='kanban' ? 'cardFields' : 'tableFields';
+      var arrT = state.pvCustomizeDraft[listKeyT];
+      var fidx = arrT.indexOf(t.dataset.fieldid);
+      if (fidx===-1) arrT.push(t.dataset.fieldid); else arrT.splice(fidx,1);
+      break;
+    }
+    case 'pv-set-customize-group': state.pvCustomizeDraft.defaultGroupBy = t.dataset.group; break;
+    case 'pv-set-customize-sort': state.pvCustomizeDraft.defaultSort = t.dataset.sort; break;
+    case 'save-pv-customize': {
+      var dPvs = currentData();
+      dPvs.viewConfig = state.pvCustomizeDraft;
+      state.pvSort = dPvs.viewConfig.defaultSort;
+      state.pvGroupBy = dPvs.viewConfig.defaultGroupBy;
+      state.pvCustomizeOpen = null; state.pvCustomizeDraft = null;
+      showToast('Visualização personalizada salva.');
+      break;
+    }
     case 'open-request-modal': state.requestModalOpen = t.dataset.id; state.reqActionDrafts = {}; break;
     case 'close-requestmodal': case 'close-requestmodal-overlay': state.requestModalOpen=null; state.reqActionDrafts={}; break;
     case 'execute-request-action': {
@@ -2964,6 +3223,7 @@ document.addEventListener('click', function(e){
     case 'open-processview': {
       state.currentProcessId = t.dataset.id;
       state.screen='processview'; state.processViewTab='kanban'; state.processViewRole='admin';
+      resetPvSessionState(currentData());
       break;
     }
     case 'back-to-editor': state.screen='editor'; break;
@@ -2973,8 +3233,9 @@ document.addEventListener('click', function(e){
     case 'open-processview-colab': {
       state.currentProcessId = t.dataset.id;
       state.processViewRole = 'colaborador';
-      state.processViewTab = 'kanban';
+      state.processViewTab = 'list';
       state.screen = 'processview';
+      resetPvSessionState(currentData());
       break;
     }
     case 'open-request-from-list': {
@@ -3018,13 +3279,6 @@ document.addEventListener('click', function(e){
       break;
     }
     case 'close-tracker': case 'close-tracker-overlay': state.trackerModalOpen=null; break;
-    case 'tracker-ver-quadro': {
-      state.trackerModalOpen = null;
-      state.processViewTab = 'kanban';
-      state.processViewRole = 'colaborador';
-      state.screen = 'processview';
-      break;
-    }
     default: handled=false;
   }
   if (handled){ e.preventDefault(); render(); }
@@ -3115,6 +3369,7 @@ document.addEventListener('input', function(e){
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }
   if (e.target.id==='intranet-search'){ state.intranetSearch = e.target.value; refreshIntranetGridArea(); }
+  if (e.target.id==='pv-search-input'){ state.pvSearch = e.target.value; refreshProcessViewBodyArea(); }
 });
 function setText(sel, val){ var n = document.querySelector(sel); if (n) n.textContent = val; }
 

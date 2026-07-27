@@ -156,6 +156,17 @@ ficava só no cabeçalho da modal e agora vive ali. Também aumentei o painel la
 construtor de **Automações** (de 392px para 460px), porque a linha de condição (campo +
 operador + valor) estava apertada demais nesse espaço.
 
+**v23** — a **List** da visão do processo publicado ficou bem mais interativa: a
+**Etapa atual** agora aparece como um badge colorido (em vez de texto simples); uma
+nova coluna **Responsável** mostra o avatar + nome de quem responde pela etapa atual;
+uma coluna **Progresso** mostra uma barrinha + "N/total" com o avanço da solicitação
+até a conclusão; e o **Agrupar** (que já existia no Kanban) passou a valer também na
+List, com uma terceira opção — Etapa, Solicitante ou **Responsável** — cada grupo
+vira uma linha de cabeçalho recolhível (com contador) dentro da própria tabela.
+Também mudei o clique nos processos em "Seus Processos" (Home): processos
+**publicados** agora abrem direto no **Kanban**, em vez de cair na tela de edição —
+rascunhos continuam abrindo a edição, já que não têm nada publicado para ver.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -739,6 +750,33 @@ Administrador, agora sensíveis ao papel de quem está vendo):
 - **Painel de Automações mais largo** — o painel lateral "Se... / Então..." do
   construtor de Automações cresceu de 392px para 460px, para a linha de condição
   (campo + operador + valor) parar de ficar espremida.
+
+## O que mudou na v23
+
+**List da visão do processo (mais interativa, inspirada num quadro de referência):**
+
+- **Etapa atual como badge** — a coluna deixou de mostrar só o nome da etapa em texto
+  simples; agora é um badge colorido (usa a cor da etapa, quando configurada), igual
+  ao selo já usado nos cards do Kanban.
+- **Coluna Responsável** — mostra um avatar com iniciais + o nome/vínculo configurado
+  na etapa atual (ex.: "Gestor direto do solicitante", "Financeiro"). Fica "—" para
+  etapas de sistema, que não têm responsável configurado.
+- **Coluna Progresso** — uma barrinha colorida (na cor da etapa atual) + "N/total"
+  mostrando quantas etapas já foram percorridas até a conclusão do processo.
+- **Agrupar também na List** — o menu "Agrupar" (que já existia no Kanban) passou a
+  funcionar na List também, com uma terceira opção que só faz sentido em lista:
+  **Etapa**, **Solicitante** ou **Responsável**. Cada grupo vira uma linha de
+  cabeçalho dentro da própria tabela, com contador e seta para recolher/expandir —
+  clicar no cabeçalho do grupo esconde ou mostra as linhas dele.
+
+**Central de Processos (Home):**
+
+- **Clicar num processo publicado abre o Kanban direto** — antes, clicar em qualquer
+  processo na lista "Seus Processos" (ou nos cards) sempre caía na tela de edição.
+  Agora, processos **publicados** abrem direto na visão do processo (aba Kanban);
+  **rascunhos** continuam abrindo a edição normalmente, já que ainda não têm nada
+  publicado para visualizar. O botão "Editar processo" dentro da visão do processo
+  continua disponível para voltar à edição a qualquer momento.
 
 ## O que está implementado
 

@@ -584,6 +584,16 @@
   .perm-avatar{width:26px;height:26px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex:none}
   .perm-note{display:flex;gap:10px;background:var(--info-50);border-radius:var(--radius-md);padding:12px 14px;margin-top:16px;font-size:12px;color:var(--navy-800)}
   .table-wrap{overflow-x:auto;border-radius:var(--radius-lg)}
+  .perm-table tbody tr.pv-list-group-row td{background:var(--muted);cursor:pointer;font-weight:800}
+  .pv-list-group-chevron{display:flex;color:var(--ink-faint);transition:transform .12s;flex:none}
+  .pv-list-group-chevron.collapsed{transform:rotate(-90deg)}
+  .pv-list-group-name{font-size:12.5px;font-weight:800;color:var(--ink)}
+  .pv-table-resp{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink)}
+  .pv-table-resp-avatar{width:22px;height:22px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;flex:none}
+  .pv-progress-cell{display:flex;align-items:center;gap:8px}
+  .pv-progress-bar{width:70px;height:6px;border-radius:999px;background:var(--muted-strong);overflow:hidden;flex:none}
+  .pv-progress-fill{height:100%;border-radius:999px}
+  .pv-progress-text{font-size:11px;color:var(--ink-faint);font-weight:600;white-space:nowrap}
 
   /* ---------- publish drawer ---------- */
   .checklist-item{display:flex;align-items:flex-start;gap:11px;padding:12px 0;border-bottom:1px solid var(--border)}
@@ -1052,7 +1062,7 @@ function ensureViewConfig(d){
 function resetPvSessionState(d){
   var vc = ensureViewConfig(d);
   state.pvSearch=''; state.pvFilterSteps=null; state.pvGroupBy=vc.defaultGroupBy; state.pvSort=vc.defaultSort;
-  state.pvToolbarMenu=null; state.pvColMenuFor=null;
+  state.pvToolbarMenu=null; state.pvColMenuFor=null; state.pvListCollapsed={};
 }
 
 function seedProcesses(){
@@ -1121,12 +1131,13 @@ var state = {
   openSectionEditorId:null, // section field id being edited inline in the form canvas
   pvSearch:'',
   pvFilterSteps:null, // null = todas as etapas; array de stepIds quando filtrado
-  pvGroupBy:'etapa', // 'etapa' | 'solicitante'
+  pvGroupBy:'etapa', // 'etapa' | 'solicitante' | 'responsavel'
   pvSort:'recent', // 'recent' | 'solicitante'
   pvToolbarMenu:null, // 'filter' | 'sort' | 'group' | 'more' | null
   pvColMenuFor:null, // chave da coluna (stepId ou nome do solicitante) com o menu "..." aberto
   pvCustomizeOpen:null, // 'kanban' | 'list' | null
   pvCustomizeDraft:null, // rascunho em edição na modal de personalizar visualização
+  pvListCollapsed:{}, // chave do grupo -> true quando recolhido na List
 };
 var CURRENT_USER_NAME = 'Luiza Vieira';
 
@@ -1363,7 +1374,7 @@ function processRowHTML(p){
   var statusArea = isDraft
     ? '<span class="badge badge-muted">Rascunho</span>'
     : '<span class="pr-status-text">Ativo</span><label class="switch" data-action="toggle-active" data-id="'+p.id+'"><input type="checkbox" '+(p.active!==false?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>';
-  return '<div class="process-row" data-action="open-editor" data-id="'+p.id+'">'+
+  return '<div class="process-row" data-action="'+(p.status==='published'?'open-processview':'open-editor')+'" data-id="'+p.id+'">'+
     '<div class="pr-badge" style="background:'+p.color+'">'+esc(monogram(p.name))+'</div>'+
     '<div class="pr-name">'+esc(p.name)+'</div>'+
     '<div class="pr-status">'+statusArea+'</div>'+
@@ -1371,7 +1382,7 @@ function processRowHTML(p){
 }
 function processCardHTML(p){
   var statusBadge = p.status==='published' ? '<span class="badge badge-success">'+ic('check',10)+' Publicado</span>' : '<span class="badge badge-muted">Rascunho</span>';
-  return '<button class="process-card" data-action="open-editor" data-id="'+p.id+'">'+
+  return '<button class="process-card" data-action="'+(p.status==='published'?'open-processview':'open-editor')+'" data-id="'+p.id+'">'+
     '<div class="pc-top"><div class="pc-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+p.icon+'</div>'+statusBadge+'</div>'+
     '<div><div class="pc-name">'+esc(p.name)+'</div><div class="pc-desc">'+esc(p.description)+'</div></div>'+
     '<div class="pc-cta">'+(p.status==='published' ? 'Abrir workflow' : 'Continuar montagem')+ic('arrowLeft',12).replace('19 12H5','5 12H19').replace('m11 18-6-6 6-6','m13 18 6-6-6-6')+'</div>'+
@@ -1971,8 +1982,9 @@ function processViewToolbarHTML(){
   var d = currentData();
   var isAdmin = state.processViewRole!=='colaborador';
   var isKanban = state.processViewTab==='kanban';
+  var isList = state.processViewTab==='list';
   var filterActive = state.pvFilterSteps && state.pvFilterSteps.length ? ' active' : '';
-  var groupLabel = state.pvGroupBy==='solicitante' ? 'Solicitante' : 'Etapa';
+  var groupLabel = state.pvGroupBy==='solicitante' ? 'Solicitante' : (state.pvGroupBy==='responsavel' ? 'Responsável' : 'Etapa');
   var sortLabel = state.pvSort==='solicitante' ? 'Solicitante (A-Z)' : 'Recentes';
 
   var filterDropdown = state.pvToolbarMenu==='filter' ? '<div class="pv-toolbar-dropdown">'+
@@ -1984,9 +1996,10 @@ function processViewToolbarHTML(){
       (state.pvFilterSteps ? '<button class="link-btn" style="margin-top:6px;font-size:11.5px" data-action="pv-clear-filter">Limpar filtro</button>' : '')+
     '</div>' : '';
 
-  var groupDropdown = (isKanban && state.pvToolbarMenu==='group') ? '<div class="pv-toolbar-dropdown">'+
+  var groupDropdown = ((isKanban||isList) && state.pvToolbarMenu==='group') ? '<div class="pv-toolbar-dropdown">'+
       '<button class="pv-toolbar-dropdown-item'+(state.pvGroupBy==='etapa'?' selected':'')+'" data-action="pv-set-group" data-group="etapa">Etapa</button>'+
       '<button class="pv-toolbar-dropdown-item'+(state.pvGroupBy==='solicitante'?' selected':'')+'" data-action="pv-set-group" data-group="solicitante">Solicitante</button>'+
+      (isList ? '<button class="pv-toolbar-dropdown-item'+(state.pvGroupBy==='responsavel'?' selected':'')+'" data-action="pv-set-group" data-group="responsavel">Responsável</button>' : '')+
     '</div>' : '';
 
   var sortDropdown = state.pvToolbarMenu==='sort' ? '<div class="pv-toolbar-dropdown">'+
@@ -2002,7 +2015,7 @@ function processViewToolbarHTML(){
     '<div class="topbar-search pv-toolbar-search">'+ic('search',14)+'<input type="text" id="pv-search-input" placeholder="Pesquisar solicitações..." value="'+esc(state.pvSearch)+'"/></div>'+
     '<div class="pv-toolbar-right">'+
       '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn'+filterActive+'" data-action="toggle-pv-menu" data-menu="filter">'+ic('filter',13)+'Filtrar'+ic('chevronDown',12)+'</button>'+filterDropdown+'</div>'+
-      (isKanban ? '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn" data-action="toggle-pv-menu" data-menu="group">'+ic('layers',13)+'Agrupar: '+groupLabel+ic('chevronDown',12)+'</button>'+groupDropdown+'</div>' : '')+
+      ((isKanban||isList) ? '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn" data-action="toggle-pv-menu" data-menu="group">'+ic('layers',13)+'Agrupar: '+groupLabel+ic('chevronDown',12)+'</button>'+groupDropdown+'</div>' : '')+
       '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn" data-action="toggle-pv-menu" data-menu="sort">'+ic('sort',13)+'Ordenar: '+sortLabel+ic('chevronDown',12)+'</button>'+sortDropdown+'</div>'+
       '<div class="pv-toolbar-menu-wrap"><button class="icon-btn" data-action="toggle-pv-menu" data-menu="more" title="Mais opções">'+ic('more',15)+'</button>'+moreDropdown+'</div>'+
       (isAdmin ? '<button class="icon-btn" data-action="open-pv-customize" title="Personalizar visualização">'+ic('gear',15)+'</button>' : '')+
@@ -2046,21 +2059,33 @@ function requestCardHTML(sol, d){
     '</div>'+
   '</div>';
 }
-function processViewKanbanHTML(){
-  var d = currentData();
-  var sols = pvFilteredSortedSolicitacoes(d);
-  var groups;
+function pvGroupedSolicitacoes(d, sols){
   if (state.pvGroupBy==='solicitante'){
     var byName = {};
     sols.forEach(function(sol){ (byName[sol.solicitante] = byName[sol.solicitante]||[]).push(sol); });
-    groups = Object.keys(byName).sort(function(a,b){return a.localeCompare(b);}).map(function(name){
+    return Object.keys(byName).sort(function(a,b){return a.localeCompare(b);}).map(function(name){
       return {key:'nome-'+name, label:name, cor:null, items:byName[name], stepId:null};
     });
-  } else {
-    groups = d.steps.map(function(s){
-      return {key:s.id, label:s.name, cor:s.cor, items: sols.filter(function(sol){return sol.stepId===s.id;}), stepId:s.id};
+  }
+  if (state.pvGroupBy==='responsavel'){
+    var byResp = {};
+    sols.forEach(function(sol){
+      var step = findStep(sol.stepId);
+      var label = (step && step.responsavel && step.responsavel.valor) || 'Sem responsável';
+      (byResp[label] = byResp[label]||[]).push(sol);
+    });
+    return Object.keys(byResp).sort(function(a,b){return a.localeCompare(b);}).map(function(name){
+      return {key:'resp-'+name, label:name, cor:null, items:byResp[name], stepId:null};
     });
   }
+  return d.steps.map(function(s){
+    return {key:s.id, label:s.name, cor:s.cor, items: sols.filter(function(sol){return sol.stepId===s.id;}), stepId:s.id};
+  });
+}
+function processViewKanbanHTML(){
+  var d = currentData();
+  var sols = pvFilteredSortedSolicitacoes(d);
+  var groups = pvGroupedSolicitacoes(d, sols);
   var cols = groups.map(function(g){
     var menu = (state.processViewRole!=='colaborador' && g.stepId) ?
       '<div class="pv-col-menu-wrap">'+
@@ -2085,18 +2110,44 @@ function processViewListHTML(){
   var sols = pvFilteredSortedSolicitacoes(d);
   var extraFields = (d.viewConfig.tableFields||[]).map(function(fid){ return d.formFields.find(function(f){return f.id===fid;}); }).filter(Boolean);
   var headExtra = extraFields.map(function(f){ return '<th style="text-align:left">'+esc(f.label)+'</th>'; }).join('');
-  var rows = sols.map(function(sol){
+  var totalSteps = d.steps.length;
+  var colCount = 5 + extraFields.length;
+
+  function rowHTML(sol){
     var step = findStep(sol.stepId);
+    var stepBadge = step ? '<span class="badge" style="background:'+(step.cor?step.cor+'22':'var(--muted-strong)')+';color:'+(step.cor||'var(--ink-muted)')+'">'+esc(step.name)+'</span>' : '—';
+    var respName = step && step.responsavel && step.responsavel.valor;
+    var respCell = respName ? '<div class="pv-table-resp"><span class="pv-table-resp-avatar">'+esc(initials(respName))+'</span>'+esc(respName)+'</div>' : '<span class="field-hint" style="margin:0">—</span>';
+    var stepIdx = d.steps.findIndex(function(s){return s.id===sol.stepId;});
+    var stepNum = stepIdx<0 ? 0 : stepIdx+1;
+    var pct = totalSteps ? Math.round(stepNum/totalSteps*100) : 0;
+    var progressCell = '<div class="pv-progress-cell"><div class="pv-progress-bar"><div class="pv-progress-fill" style="width:'+pct+'%;background:'+(step&&step.cor?step.cor:'var(--primary)')+'"></div></div><span class="pv-progress-text">'+stepNum+'/'+totalSteps+'</span></div>';
     var extraCells = extraFields.map(function(f){ var v = sol.valores[f.id]; return '<td style="text-align:left">'+(v?esc(v):'—')+'</td>'; }).join('');
     return '<tr data-action="open-request-modal" data-id="'+sol.id+'" style="cursor:pointer">'+
       '<td style="text-align:left;padding-left:16px">'+esc(sol.solicitante)+'</td>'+
-      '<td style="text-align:left">'+esc(step?step.name:'—')+'</td>'+
+      '<td style="text-align:left">'+stepBadge+'</td>'+
+      '<td style="text-align:left">'+respCell+'</td>'+
+      '<td style="text-align:left">'+progressCell+'</td>'+
       '<td style="text-align:left">'+esc(sol.criadoEm)+'</td>'+
       extraCells+
     '</tr>';
+  }
+
+  var groups = pvGroupedSolicitacoes(d, sols);
+  var bodyRows = groups.map(function(g){
+    if (!g.items.length) return '';
+    var collapsed = !!state.pvListCollapsed[g.key];
+    var groupRow = '<tr class="pv-list-group-row" data-action="toggle-pv-list-group" data-key="'+esc(g.key)+'"><td colspan="'+colCount+'">'+
+      '<span class="pv-list-group-chevron'+(collapsed?' collapsed':'')+'">'+ic('chevronDown',13)+'</span>'+
+      '<span class="pv-col-dot" style="background:'+(g.cor||'var(--ink-faint)')+'"></span>'+
+      '<span class="pv-list-group-name">'+esc(g.label)+'</span>'+
+      '<span class="pv-col-count">'+g.items.length+'</span>'+
+    '</td></tr>';
+    return groupRow+(collapsed ? '' : g.items.map(rowHTML).join(''));
   }).join('');
+
   return '<div class="screen-inner" style="padding-top:20px">'+
-    (sols.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Solicitante</th><th style="text-align:left">Etapa atual</th><th style="text-align:left">Criado em</th>'+headExtra+'</tr></thead><tbody>'+rows+'</tbody></table></div>' :
+    (sols.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Solicitante</th><th style="text-align:left">Etapa atual</th><th style="text-align:left">Responsável</th><th style="text-align:left">Progresso</th><th style="text-align:left">Criado em</th>'+headExtra+'</tr></thead><tbody>'+bodyRows+'</tbody></table></div>' :
       '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nenhuma solicitação ainda</div><div class="es-sub">Assim que alguém enviar o formulário, as solicitações aparecem aqui.</div></div>')+
   '</div>';
 }
@@ -3168,7 +3219,8 @@ document.addEventListener('click', function(e){
       break;
     }
     case 'pv-clear-filter': state.pvFilterSteps = null; break;
-    case 'pv-set-group': state.pvGroupBy = t.dataset.group; state.pvToolbarMenu=null; break;
+    case 'pv-set-group': state.pvGroupBy = t.dataset.group; state.pvToolbarMenu=null; state.pvListCollapsed={}; break;
+    case 'toggle-pv-list-group': { var pvlk = t.dataset.key; state.pvListCollapsed[pvlk] = !state.pvListCollapsed[pvlk]; break; }
     case 'pv-set-sort': state.pvSort = t.dataset.sort; state.pvToolbarMenu=null; break;
     case 'pv-mock-export': showToast('Exportação disponível em breve.'); state.pvToolbarMenu=null; break;
     case 'open-pv-customize': {

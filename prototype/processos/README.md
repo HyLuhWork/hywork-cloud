@@ -140,6 +140,12 @@ abaixo do outro. Cabeçalho, progresso horizontal e as abas de Histórico/Coment
 rodapé continuam exatamente como na v18/v19 — só a divisão das 3 colunas centrais em 2
 mudou. Ver "O que mudou na v20" abaixo.
 
+**v21** — o menu lateral e o header passaram a usar um **cinza bem clarinho**
+(`#F0F1F3` no tema claro) como fundo, em vez de branco puro, para ficar mais próximo
+do produto real da Hywork. O conteúdo das telas continua branco — só a "moldura" do
+app (menu + topo) mudou de tom, o que também faz o card do seletor de workspace no
+topo do menu se destacar mais. Sem mudança no tema escuro.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

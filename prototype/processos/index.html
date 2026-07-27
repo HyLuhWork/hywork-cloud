@@ -20,7 +20,7 @@
     --navy-900:#0B2233; --navy-800:#104A74; --navy-600:#1E72A1; --navy-400:#6492B7; --navy-200:#8EA1C7;
     --success:#1E9E5A; --success-50:#E9F7EF; --warning:#B8860B; --warning-50:#FBF3E1; --error:#C43D3D; --error-50:#FCEBEB; --info:#1E72A1; --info-50:#EAF3F8;
     --bg:#FFFFFF; --surface:#FFFFFF; --surface-raised:#FFFFFF; --muted:#F4F4F5; --muted-strong:#EAEAEC;
-    --canvas-bg:#F3F6FA;
+    --canvas-bg:#F3F6FA; --shell-bg:#F0F1F3;
     --border:#E7E7E9; --border-strong:#D6D6D9;
     --ink:#18181B; --ink-muted:#63636B; --ink-faint:#96969E;
     --radius-sm:6px; --radius-md:9px; --radius-lg:13px; --radius-xl:18px; --radius-full:999px;
@@ -30,7 +30,7 @@
   }
   :root[data-theme="dark"]{
     --bg:#111114; --surface:#18181C; --surface-raised:#1D1D22; --muted:#212126; --muted-strong:#28282E;
-    --canvas-bg:#191E26;
+    --canvas-bg:#191E26; --shell-bg:#18181C;
     --border:#2C2C33; --border-strong:#37373F;
     --ink:#F4F4F6; --ink-muted:#A6A6AF; --ink-faint:#75757F;
     --primary-50:#2A1712; --success-50:#0F251A; --warning-50:#26200E; --error-50:#2A1414; --info-50:#0F2029;
@@ -39,7 +39,7 @@
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#111114; --surface:#18181C; --surface-raised:#1D1D22; --muted:#212126; --muted-strong:#28282E;
-      --canvas-bg:#191E26;
+      --canvas-bg:#191E26; --shell-bg:#18181C;
       --border:#2C2C33; --border-strong:#37373F;
       --ink:#F4F4F6; --ink-muted:#A6A6AF; --ink-faint:#75757F;
       --primary-50:#2A1712; --success-50:#0F251A; --warning-50:#26200E; --error-50:#2A1414; --info-50:#0F2029;
@@ -60,7 +60,7 @@
 
   /* ---------- app shell ---------- */
   .app{display:flex;min-height:100vh;width:100%;overflow-x:hidden}
-  .sidebar{width:var(--sidebar-w);flex:0 0 auto;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px;gap:2px}
+  .sidebar{width:var(--sidebar-w);flex:0 0 auto;background:var(--shell-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px;gap:2px}
   .brand{display:flex;align-items:center;gap:9px;padding:6px 8px 14px}
   .brand-mark{width:26px;height:26px;border-radius:7px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex:none}
   .brand-name{font-weight:800;font-size:16px;letter-spacing:-.01em}
@@ -78,7 +78,7 @@
   .sidebar-foot{margin-top:auto;padding-top:10px}
 
   .app-main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
-  .topbar{height:58px;flex:none;display:flex;align-items:center;gap:14px;padding:0 22px;border-bottom:1px solid var(--border);background:var(--surface)}
+  .topbar{height:58px;flex:none;display:flex;align-items:center;gap:14px;padding:0 22px;border-bottom:1px solid var(--border);background:var(--shell-bg)}
   .topbar-search{flex:1;max-width:360px;display:flex;align-items:center;gap:8px;background:var(--muted);border:1px solid transparent;border-radius:var(--radius-md);padding:7px 11px;color:var(--ink-faint)}
   .topbar-search input{background:none;border:none;outline:none;width:100%;color:var(--ink);font-size:13px}
   .topbar-search svg{flex:none}

@@ -116,6 +116,15 @@ Reprovar em vermelho, Devolver em âmbar, Mover Etapa em azul, Ação personaliz
 neutro). O Histórico de atividades virou uma faixa de rodapé com largura total. Ver "O
 que mudou na v17" abaixo.
 
+**v18** — cinco ajustes na modal de detalhes da solicitação, a partir de feedback direto
+sobre a v17: o cabeçalho ganhou o **ícone, título e descrição do processo** (como no
+resto do módulo); a coluna de **Ações disponíveis** ficou mais minimalista (sem fundo
+colorido, só um card neutro com o ícone e o botão "Confirmar" coloridos); o **Progresso**
+virou uma faixa **horizontal** no topo da modal, acima das 3 colunas; a faixa de rodapé
+agora tem duas abas — **Histórico de atividades** e **Comentários** (com campo para
+escrever e enviar um novo comentário); e o rótulo "Fase atual" virou **"Etapa atual"**.
+Ver "O que mudou na v18" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -649,6 +658,25 @@ Administrador, agora sensíveis ao papel de quem está vendo):
     das 3 colunas, em vez de ficar empilhado dentro da coluna da esquerda.
   - Para o Colaborador, a coluna da direita continua mostrando só o status (sem ações),
     como antes.
+
+## O que mudou na v18
+
+- **Cabeçalho com identidade do processo** — o ícone colorido do processo (o mesmo da
+  tela de construção) passou a aparecer ao lado do título e da descrição do processo no
+  topo da modal; o nome do solicitante e a data de envio viraram uma linha de metadados
+  menor logo abaixo ("Solicitação de X · Enviada em dd/mm/aaaa").
+- **Ações disponíveis mais minimalistas** — os cards de ação perderam o fundo colorido
+  por tipo (verde/vermelho/âmbar/azul); agora usam o mesmo fundo neutro para todos, com
+  só o ícone do topo e o botão "Confirmar" mantendo a cor de cada tipo de ação.
+- **Progresso horizontal no topo** — a faixa de progresso das etapas saiu da coluna do
+  meio e virou uma barra horizontal logo abaixo do cabeçalho, ocupando a largura toda da
+  modal (etapas lado a lado com bolinha + linha conectora, em vez de uma lista vertical).
+- **Aba de Comentários** — a faixa de rodapé (antes só o Histórico de atividades) agora
+  tem duas abas: "Histórico de atividades" e "Comentários", esta última com a lista de
+  comentários (autor, data e texto) e um campo para escrever e enviar um novo
+  comentário.
+- **"Fase atual" → "Etapa atual"** — só o texto do rótulo na coluna do meio, sem mudança
+  de comportamento.
 
 ## O que está implementado
 

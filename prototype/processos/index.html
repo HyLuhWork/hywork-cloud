@@ -588,7 +588,6 @@
     .widget-grid{grid-template-columns:repeat(2,1fr)}
     .chart-card{grid-column:span 2}
     .intranet-process-grid{grid-template-columns:repeat(2,1fr)}
-    .pend-grid{grid-template-columns:repeat(2,1fr)}
   }
 
   /* ---------- intranet (visão do colaborador) ---------- */
@@ -602,15 +601,6 @@
   .intranet-tab:hover{color:var(--ink)}
   .intranet-tab.active{background:var(--muted);color:var(--ink)}
   .intranet-tab-badge{background:var(--error);color:#fff;font-size:10px;font-weight:800;border-radius:var(--radius-full);padding:1px 6px}
-  .pend-section{margin-top:22px}
-  .pend-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .pend-head h3{font-size:14px;font-weight:800}
-  .pend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  .pend-card{border:1px solid var(--border);border-left:3px solid var(--primary);border-radius:var(--radius-md);padding:12px 14px;background:var(--surface);cursor:pointer}
-  .pend-card:hover{border-color:var(--navy-400)}
-  .pend-proc{font-size:10.5px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.03em}
-  .pend-name{font-size:13px;font-weight:700;margin-top:4px;color:var(--ink)}
-  .pend-step{font-size:11.5px;color:var(--primary-dark);font-weight:600;margin-top:3px}
   .intranet-process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
   .intranet-process-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
   .intranet-process-card:hover{border-color:var(--navy-400);box-shadow:var(--shadow-sm)}
@@ -1802,7 +1792,7 @@ function processViewDashboardHTML(){
 /* ============ INTRANET (visão do Colaborador) ============ */
 function intranetHomeHTML(){
   var pend = filaAprovacao();
-  var tabs = [['todos','Todos os processos'],['minhas','Minhas Solicitações'],['fila','Minha fila de aprovação'],['historico','Histórico']];
+  var tabs = [['todos','Todos os processos'],['minhas','Minhas Solicitações'],['fila','Minhas Pendências'],['historico','Histórico']];
   var tabsHTML = tabs.map(function(t){
     var badge = t[0]==='fila' && pend.length ? '<span class="intranet-tab-badge">'+pend.length+'</span>' : '';
     return '<button class="intranet-tab'+(state.intranetTab===t[0]?' active':'')+'" data-action="set-intranet-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+'</button>';
@@ -1819,24 +1809,9 @@ function intranetHomeHTML(){
       '<div class="intranet-hero-sub">Abra novas solicitações, peça feedback a líderes ou pares, solicite férias, reembolsos e acompanhe o andamento de cada etapa em tempo real.</div>'+
       '<div class="topbar-search intranet-hero-search">'+ic('search',14)+'<input type="text" id="intranet-search" placeholder="Pesquise por aqui..." value="'+esc(state.intranetSearch)+'"/></div>'+
     '</div>'+
-    (state.intranetTab==='todos' ? pendenciasPreviewHTML(pend) : '')+
     '<div class="intranet-tabs">'+tabsHTML+'</div>'+
     '<div style="margin-top:18px">'+body+'</div>'+
   '</div>';
-}
-function pendenciasPreviewHTML(pend){
-  if (!pend.length) return '';
-  var shown = pend.slice(0,3);
-  var cards = shown.map(function(x){
-    var step = findStepIn(x.processo, x.sol.stepId);
-    return '<div class="pend-card" data-action="open-request-from-list" data-solid="'+x.sol.id+'" data-pid="'+x.processo.id+'">'+
-      '<div class="pend-proc">'+esc(x.processo.icon)+' '+esc(x.processo.name)+'</div>'+
-      '<div class="pend-name">'+esc(x.sol.solicitante)+'</div>'+
-      '<div class="pend-step">'+esc(step?step.name:'')+'</div>'+
-    '</div>';
-  }).join('');
-  return '<div class="pend-section"><div class="pend-head"><h3>Suas pendências</h3>'+(pend.length>3?'<button class="link-btn" data-action="set-intranet-tab" data-tab="fila">Ver todas ('+pend.length+')</button>':'')+'</div>'+
-    '<div class="pend-grid">'+cards+'</div></div>';
 }
 function refreshIntranetGridArea(){
   var area = qs('#intranet-grid-area'); if (!area) return;

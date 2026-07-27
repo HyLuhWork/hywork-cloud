@@ -68,12 +68,17 @@ funcionam e movem a solicitação entre etapas. Ver "O que mudou na v11" abaixo.
 
 **v12** — nova visão do **Colaborador**: um seletor no topo alterna para a Intranet,
 onde o item "Processos" abre uma Central de Processos própria (todos os processos
-habilitados, Minhas Solicitações, Minha fila de aprovação, Histórico e "Suas
-pendências"). "Iniciar Solicitação" abre o formulário de verdade (com a personalização
-configurada) e, ao enviar, mostra um tracker das etapas do processo. O quadro do
-processo, nessa visão, só tem Kanban e List (sem Dashboard), sem foto de capa na página
-do Kanban, e os cards foram redesenhados no estilo Pipefy. Ver "O que mudou na v12"
+habilitados, Minhas Solicitações, Minhas Pendências e Histórico). "Iniciar Solicitação"
+abre o formulário de verdade (com a personalização configurada) e, ao enviar, mostra um
+tracker das etapas do processo. O quadro do processo, nessa visão, só tem Kanban e List
+(sem Dashboard), sem foto de capa na página do Kanban, e os cards foram redesenhados no
+estilo Pipefy. Ver "O que mudou na v12"
 abaixo.
+
+**v13** — ajuste direto na Central de Processos do Colaborador: removida a prévia
+"Suas pendências" (os cartões que apareciam acima das abas); a aba antes chamada
+"Minha fila de aprovação" foi renomeada para **"Minhas Pendências"** e passa a ser o
+único lugar para ver essas solicitações.
 
 ## Como abrir
 
@@ -464,18 +469,15 @@ leva para a Central de Processos do Colaborador em vez do construtor.
 **Central de Processos (Colaborador)** — nova Home, inspirada num mock específico
 enviado (banner escuro com busca, abas e grade de processos):
 
-- **Suas pendências** — se existir alguma solicitação parada numa etapa que ainda
-  precisa de decisão (em qualquer processo), aparece aqui em destaque acima das abas,
-  com link para ver todas na aba "Minha fila de aprovação". Como o protótipo não
-  modela login/permissão por pessoa, essa fila mostra todas as solicitações pendentes
-  do workspace, não só as "do usuário atual" — está documentado aqui para não parecer
-  bug caso o número pareça alto.
-- **Abas: Todos os processos, Minhas Solicitações, Minha fila de aprovação (com
-  contador), Histórico.** "Todos os processos" lista só os processos **publicados e
-  ativos** (o que o administrador habilitou), com busca por nome; as outras três
-  mostram solicitações reais (do "usuário atual" simulado, `Luiza Vieira`, no caso de
-  Minhas Solicitações; pendentes de decisão; ou já numa etapa final) numa tabela,
-  agrupando todos os processos.
+- **Abas: Todos os processos, Minhas Solicitações, Minhas Pendências (com contador),
+  Histórico.** "Todos os processos" lista só os processos **publicados e ativos** (o
+  que o administrador habilitou), com busca por nome; as outras três mostram
+  solicitações reais (do "usuário atual" simulado, `Luiza Vieira`, no caso de Minhas
+  Solicitações; pendentes de decisão em Minhas Pendências; ou já numa etapa final em
+  Histórico) numa tabela, agrupando todos os processos. Como o protótipo não modela
+  login/permissão por pessoa, "Minhas Pendências" mostra todas as solicitações
+  pendentes do workspace, não só as "do usuário atual" — documentado aqui para não
+  parecer bug caso o número pareça alto.
 - **"Iniciar Solicitação"** em cada card de processo abre uma modal com o **formulário
   de verdade** — os mesmos campos criados no construtor, respeitando a personalização
   configurada (nome, descrição, capa, layout Cabeçalho/Lateral). Campos obrigatórios

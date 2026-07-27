@@ -18,7 +18,7 @@
     --primary:#D74326; --primary-dark:#B8371D; --primary-light:#F0A08C; --primary-50:#FCEAE4;
     --navy-900:#0B2233; --navy-800:#104A74; --navy-600:#1E72A1; --navy-400:#6492B7; --navy-200:#8EA1C7;
     --success:#1E9E5A; --success-50:#E9F7EF; --warning:#B8860B; --warning-50:#FBF3E1; --error:#C43D3D; --error-50:#FCEBEB; --info:#1E72A1; --info-50:#EAF3F8;
-    --bg:#FAFAFA; --surface:#FFFFFF; --surface-raised:#FFFFFF; --muted:#F4F4F5; --muted-strong:#EAEAEC;
+    --bg:#FFFFFF; --surface:#FFFFFF; --surface-raised:#FFFFFF; --muted:#F4F4F5; --muted-strong:#EAEAEC;
     --border:#E7E7E9; --border-strong:#D6D6D9;
     --ink:#18181B; --ink-muted:#63636B; --ink-faint:#96969E;
     --radius-sm:6px; --radius-md:9px; --radius-lg:13px; --radius-xl:18px; --radius-full:999px;
@@ -261,8 +261,15 @@
   .palette-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);font-size:12.5px;font-weight:600;margin-bottom:7px;cursor:grab;color:var(--ink)}
   .palette-item:hover{border-color:var(--navy-400);background:var(--info-50)}
   .palette-item .pi-ic{width:24px;height:24px;border-radius:6px;background:var(--muted);display:flex;align-items:center;justify-content:center;flex:none;font-size:13px}
-  .fb-canvas{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);min-height:500px;padding:18px;display:flex;flex-direction:column;gap:10px}
-  .fb-canvas.drag-over{border-color:var(--primary);background:var(--primary-50)}
+  .fb-canvas{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);min-height:500px;padding:18px;display:flex;flex-direction:column;gap:14px}
+  .fb-col-drop{display:flex;flex-direction:column;gap:10px;min-height:48px;border-radius:var(--radius-md);transition:background .1s}
+  .fb-col-drop.drag-over{background:var(--primary-50);outline:1.5px dashed var(--primary);outline-offset:2px}
+  .fb-two-col-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .fb-col-drop-empty{border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);padding:16px;text-align:center;font-size:11.5px;color:var(--ink-faint)}
+  .fb-section-block{position:relative;padding:10px 40px 12px 0;border-bottom:2px solid var(--border-strong);cursor:pointer}
+  .fb-section-title{font-size:14px;font-weight:800;color:var(--ink)}
+  .fb-section-desc{font-size:12px;color:var(--ink-faint);margin-top:3px}
+  .fb-section-delete{position:absolute;top:8px;right:0}
   .fb-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--ink-faint);text-align:center;padding:40px}
   .fb-empty .fe-ic{width:48px;height:48px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
   .field-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 13px;background:var(--surface);cursor:pointer;display:flex;align-items:center;gap:10px}
@@ -276,14 +283,14 @@
   .fb-inspector-empty{color:var(--ink-faint);font-size:12.5px;padding-top:8px}
   .form-layout-header,.form-layout-lateral{border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:14px;margin-bottom:16px;background:var(--surface)}
   .form-layout-lateral{display:flex;gap:16px;align-items:flex-start}
-  .form-preview-capa{height:96px;border-radius:var(--radius-md);background:var(--muted);color:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;gap:6px;margin-bottom:12px;background-size:cover;background-position:center}
-  .form-layout-lateral .form-preview-capa{width:160px;height:100%;min-height:150px;flex:none;margin-bottom:0}
+  .form-preview-capa{height:200px;border-radius:var(--radius-md);background:var(--muted);color:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;gap:6px;margin-bottom:12px;background-size:cover;background-position:center}
+  .form-layout-lateral .form-preview-capa{width:200px;height:100%;min-height:280px;flex:none;margin-bottom:0}
   .form-layout-lateral .form-preview-main{flex:1;min-width:0}
   .form-preview-name{font-size:16px;font-weight:800;color:var(--ink)}
   .form-preview-desc{font-size:12.5px;color:var(--ink-faint);margin-top:3px;margin-bottom:14px}
   .cover-upload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);padding:20px;color:var(--ink-muted);font-weight:700;font-size:12.5px;cursor:pointer;text-align:center}
   .cover-upload:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
-  .cover-preview{height:110px;border-radius:var(--radius-md);background-size:cover;background-position:center;margin-bottom:8px;border:1px solid var(--border)}
+  .cover-preview{height:180px;border-radius:var(--radius-md);background-size:cover;background-position:center;margin-bottom:8px;border:1px solid var(--border)}
   .layout-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .layout-opt{border:1.5px solid var(--border);border-radius:var(--radius-md);padding:11px;text-align:left;color:var(--ink-muted)}
   .layout-opt .lo-title{font-size:12.5px;font-weight:700;color:var(--ink)}
@@ -901,7 +908,7 @@ function richProcessData(){
   ];
   return {
     formFields:[f1,f2,f3,f4,f5],
-    formConfig:{nome:'', descricao:'', capa:null, posicao:'header'},
+    formConfig:{nome:'', descricao:'', capa:null, posicao:'header', colunas:1},
     steps:[start, s2, sFin, s3, end],
     solicitacoes: solicitacoes,
     widgets:[
@@ -936,7 +943,7 @@ function richProcessData(){
 function emptyProcessData(){
   return {
     formFields:[],
-    formConfig:{nome:'', descricao:'', capa:null, posicao:'header'},
+    formConfig:{nome:'', descricao:'', capa:null, posicao:'header', colunas:1},
     steps:[{id:'s_start',name:'Formulário enviado',system:true,initial:true,kind:'sistema'},{id:'s_end',name:'Finalizado',system:true,final:true,kind:'sistema'}],
     widgets:[],
     solicitacoes:[],
@@ -1017,7 +1024,7 @@ function findStep(id){ var d=currentData(); return d && d.steps.find(function(s)
 function findRegra(stepId, regraId){ var s=findStep(stepId); return s && (s.regras||[]).find(function(r){return r.id===regraId;}); }
 function allProcessFields(){
   var d = currentData(); if (!d) return [];
-  var out = d.formFields.slice();
+  var out = d.formFields.filter(function(f){ return f.type!=='section'; });
   d.steps.forEach(function(s){ (s.camposExtras||[]).forEach(function(f){ out.push(f); }); });
   return out;
 }
@@ -1295,29 +1302,67 @@ function editorHTML(){
 }
 
 /* ---- Form builder tab ---- */
+function formSegments(formFields, twoCol){
+  var segments = [];
+  var cur = {type:'fields', col1:[], col2:[]};
+  formFields.forEach(function(f){
+    if (f.type==='section'){
+      if (cur.col1.length || cur.col2.length) segments.push(cur);
+      segments.push({type:'section', field:f});
+      cur = {type:'fields', col1:[], col2:[]};
+    } else if (twoCol && (f.coluna||1)===2){
+      cur.col2.push(f);
+    } else {
+      cur.col1.push(f);
+    }
+  });
+  if (cur.col1.length || cur.col2.length) segments.push(cur);
+  return segments;
+}
+function fieldCardHTML(f){
+  var meta = fieldTypeMeta(f.type);
+  return '<div class="field-card" draggable="true" data-action="open-field-modal" data-id="'+f.id+'">'+
+    '<span class="fc-drag">'+ic('drag',15)+'</span>'+
+    '<div class="fc-ic">'+ic(meta.icon,14)+'</div>'+
+    '<div class="fc-text"><div class="fc-label"><span id="fc-label-'+f.id+'">'+esc(f.label)+'</span>'+(f.required?' <span style="color:var(--error)">*</span>':'')+'</div><div class="fc-type">'+meta.label+'</div></div>'+
+    '<div class="fc-actions"><button class="icon-btn" data-action="delete-field" data-id="'+f.id+'" title="Excluir">'+ic('trash',14)+'</button></div>'+
+  '</div>';
+}
+function sectionBlockHTML(f, editable){
+  var openAttrs = editable ? ' data-action="open-field-modal" data-id="'+f.id+'"' : '';
+  var deleteBtn = editable ? '<button class="icon-btn fb-section-delete" data-action="delete-field" data-id="'+f.id+'" title="Excluir seção">'+ic('trash',13)+'</button>' : '';
+  return '<div class="fb-section-block"'+openAttrs+'>'+deleteBtn+
+    '<div class="fb-section-title">'+esc(f.titulo||'Seção sem título')+'</div>'+
+    (f.descricao ? '<div class="fb-section-desc">'+esc(f.descricao)+'</div>' : '')+
+  '</div>';
+}
+function builderCanvasHTML(d, cfg){
+  if (!d.formFields.length){
+    return '<div class="fb-col-drop" data-action="canvas-dropzone" data-coluna="1"><div class="fb-empty">'+ic('doc',22)+'<div style="font-weight:700;color:var(--ink)">Arraste um componente aqui</div><div style="max-width:260px">Escolha um campo na paleta à esquerda e solte no formulário para começar.</div></div></div>';
+  }
+  var twoCol = (cfg.colunas||1)===2;
+  return formSegments(d.formFields, twoCol).map(function(seg){
+    if (seg.type==='section') return sectionBlockHTML(seg.field, true);
+    if (!twoCol) return '<div class="fb-col-drop" data-action="canvas-dropzone" data-coluna="1">'+seg.col1.map(fieldCardHTML).join('')+'</div>';
+    return '<div class="fb-two-col-row">'+
+      '<div class="fb-col-drop" data-action="canvas-dropzone" data-coluna="1">'+(seg.col1.length ? seg.col1.map(fieldCardHTML).join('') : '<div class="fb-col-drop-empty">Solte campos aqui</div>')+'</div>'+
+      '<div class="fb-col-drop" data-action="canvas-dropzone" data-coluna="2">'+(seg.col2.length ? seg.col2.map(fieldCardHTML).join('') : '<div class="fb-col-drop-empty">Solte campos aqui</div>')+'</div>'+
+    '</div>';
+  }).join('');
+}
 function formTabHTML(){
   var d = currentData();
-  var cfg = d.formConfig || (d.formConfig = {nome:'', descricao:'', capa:null, posicao:'header'});
+  var cfg = d.formConfig || (d.formConfig = {nome:'', descricao:'', capa:null, posicao:'header', colunas:1});
   var palette = FIELD_TYPES.map(function(g){
     return '<div class="fb-group-label">'+g.group+'</div>'+g.items.map(function(it){
       return '<div class="palette-item" draggable="true" data-fieldtype="'+it.type+'" data-action="palette-drag"><div class="pi-ic">'+ic(it.icon,13)+'</div>'+it.label+'</div>';
     }).join('');
   }).join('');
 
-  var canvasInner = d.formFields.length ? d.formFields.map(function(f){
-    var meta = fieldTypeMeta(f.type);
-    return '<div class="field-card" draggable="true" data-action="open-field-modal" data-id="'+f.id+'">'+
-      '<span class="fc-drag">'+ic('drag',15)+'</span>'+
-      '<div class="fc-ic">'+ic(meta.icon,14)+'</div>'+
-      '<div class="fc-text"><div class="fc-label"><span id="fc-label-'+f.id+'">'+esc(f.label)+'</span>'+(f.required?' <span style="color:var(--error)">*</span>':'')+'</div><div class="fc-type">'+meta.label+'</div></div>'+
-      '<div class="fc-actions"><button class="icon-btn" data-action="delete-field" data-id="'+f.id+'" title="Excluir">'+ic('trash',14)+'</button></div>'+
-    '</div>';
-  }).join('') : '<div class="fb-empty"><div class="fe-ic">'+ic('doc',22)+'</div><div style="font-weight:700;color:var(--ink)">Arraste um componente aqui</div><div style="max-width:260px">Escolha um campo na paleta à esquerda e solte no formulário para começar.</div></div>';
-
   var capaStyle = cfg.capa ? ' style="background-image:url('+cfg.capa+')"' : '';
   var capaBlock = '<div class="form-preview-capa"'+capaStyle+'>'+(cfg.capa?'':ic('image',18)+' Sem capa')+'</div>';
   var headText = '<div class="form-preview-name">'+esc(cfg.nome||'Nome do formulário')+'</div>'+(cfg.descricao?'<div class="form-preview-desc">'+esc(cfg.descricao)+'</div>':'<div class="form-preview-desc">Descrição do formulário (opcional)</div>');
-  var canvasEl = '<div class="fb-canvas" id="fb-canvas" data-action="canvas-dropzone">'+canvasInner+'</div>';
+  var canvasEl = '<div class="fb-canvas">'+builderCanvasHTML(d, cfg)+'</div>';
   var formPreview = cfg.posicao==='lateral' ?
     '<div class="form-layout-lateral">'+capaBlock+'<div class="form-preview-main">'+headText+canvasEl+'</div></div>' :
     '<div class="form-layout-header">'+capaBlock+headText+canvasEl+'</div>';
@@ -1332,13 +1377,20 @@ function formTabHTML(){
 }
 function fieldInspectorHTML(f){
   var meta = fieldTypeMeta(f.type);
+  var cfg = currentData().formConfig;
+  var colunaPicker = (cfg.colunas||1)===2 ? '<div class="field-row"><label class="field-label">Coluna</label><select class="select" data-bind="field.coluna" data-id="'+f.id+'"><option value="1"'+((f.coluna||1)===1?' selected':'')+'>Coluna 1</option><option value="2"'+((f.coluna||1)===2?' selected':'')+'>Coluna 2</option></select></div>' : '';
   return '<div style="font-size:11.5px;color:var(--ink-faint);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:6px">'+ic(meta.icon,13)+meta.label+'</div>'+
     '<div class="field-row"><label class="field-label">Rótulo do campo</label><input class="input" data-bind="field.label" data-id="'+f.id+'" value="'+esc(f.label)+'"/></div>'+
     '<div class="field-row"><label class="field-label">Texto de ajuda</label><input class="input" data-bind="field.help" data-id="'+f.id+'" value="'+esc(f.help||'')+'" placeholder="Opcional"/></div>'+
     '<div class="field-row"><label class="field-label">Placeholder</label><input class="input" data-bind="field.placeholder" data-id="'+f.id+'" value="'+esc(f.placeholder||'')+'" placeholder="Opcional"/></div>'+
+    colunaPicker+
     '<div class="switch-row"><div class="sr-text"><div class="sr-title">Campo obrigatório</div><div class="sr-sub">Impede o envio sem preenchimento</div></div>'+switchHTML('field.required', f.id, !!f.required)+'</div>'+
     '<div class="switch-row"><div class="sr-text"><div class="sr-title">Visibilidade condicional</div><div class="sr-sub">Mostrar apenas quando outra condição for atendida</div></div>'+switchHTML('field.conditional', f.id, !!f.conditional)+'</div>'+
     (f.conditional ? '<div class="cond-row"><span style="font-size:11.5px;color:var(--ink-faint);white-space:nowrap">Mostrar se</span><select class="select"><option>Tipo de solicitação</option></select><select class="select"><option>igual a</option></select><input class="input" placeholder="Urgente"/></div>' : '');
+}
+function sectionInspectorHTML(f){
+  return '<div class="field-row"><label class="field-label">Título da seção</label><input class="input" data-bind="section.titulo" data-id="'+f.id+'" value="'+esc(f.titulo||'')+'" placeholder="Ex: Dados da viagem"/></div>'+
+    '<div class="field-row" style="margin-bottom:0"><label class="field-label">Descrição da seção</label><textarea class="textarea" data-bind="section.descricao" data-id="'+f.id+'" placeholder="Opcional">'+esc(f.descricao||'')+'</textarea></div>';
 }
 function formSettingsModalHTML(){
   var d = currentData();
@@ -1352,9 +1404,13 @@ function formSettingsModalHTML(){
       '<div class="field-row"><label class="field-label">Nome do formulário</label><input class="input" data-bind="formcfg.nome" value="'+esc(cfg.nome||'')+'" placeholder="Ex: Solicitação de férias"/></div>'+
       '<div class="field-row"><label class="field-label">Descrição</label><textarea class="textarea" data-bind="formcfg.descricao" placeholder="Opcional">'+esc(cfg.descricao||'')+'</textarea></div>'+
       '<div class="field-row"><label class="field-label">Capa</label>'+capaField+'</div>'+
-      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Posição do formulário</label><div class="layout-picker">'+
+      '<div class="field-row"><label class="field-label">Posição do formulário</label><div class="layout-picker">'+
         formLayoutOptionHTML('header','Cabeçalho','Capa no topo, em largura total')+
         formLayoutOptionHTML('lateral','Lateral','Capa fixa ao lado do formulário')+
+      '</div></div>'+
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Colunas do formulário</label><div class="layout-picker">'+
+        formColunaOptionHTML(1,'1 coluna','Campos empilhados, um abaixo do outro')+
+        formColunaOptionHTML(2,'2 colunas','Arraste campos da paleta para a coluna da direita')+
       '</div></div>'+
     '</div>'+
     '<div class="modal-foot"><button class="btn btn-primary" data-action="close-formsettings">'+ic('check',14)+'Concluído</button></div>'+
@@ -1365,15 +1421,26 @@ function formLayoutOptionHTML(val, label, desc){
   var active = (cfg.posicao||'header')===val;
   return '<button type="button" class="layout-opt'+(active?' selected':'')+'" data-action="set-form-posicao" data-posicao="'+val+'"><div class="lo-title">'+label+'</div><div class="lo-desc">'+desc+'</div></button>';
 }
+function formColunaOptionHTML(val, label, desc){
+  var cfg = currentData().formConfig;
+  var active = (cfg.colunas||1)===val;
+  return '<button type="button" class="layout-opt'+(active?' selected':'')+'" data-action="set-form-colunas" data-colunas="'+val+'"><div class="lo-title">'+label+'</div><div class="lo-desc">'+desc+'</div></button>';
+}
 function fieldModalHTML(){
   var d = currentData();
   var f = d.formFields.find(function(x){return x.id===state.fieldModalOpen;});
   if (!f){ return ''; }
+  var isSection = f.type==='section';
+  var eyebrow = isSection ? 'Configurar seção' : 'Configurar campo';
+  var heading = isSection ? (f.titulo||'Seção sem título') : (f.label||'Campo sem rótulo');
+  var sub = isSection ? '' : '<p>Rótulo, obrigatoriedade e visibilidade condicional</p>';
+  var body = isSection ? sectionInspectorHTML(f) : fieldInspectorHTML(f);
+  var deleteLabel = isSection ? 'Excluir seção' : 'Excluir campo';
   return '<div class="overlay" data-action="close-fieldmodal-overlay"><div class="modal modal-md">'+
-    '<div class="modal-head"><div><div class="dh-eyebrow" style="margin-bottom:4px">Configurar campo</div><h3>'+esc(f.label||'Campo sem rótulo')+'</h3><p>Rótulo, obrigatoriedade e visibilidade condicional</p></div><button class="icon-btn" data-action="close-fieldmodal">'+ic('x',16)+'</button></div>'+
-    '<div class="modal-body">'+fieldInspectorHTML(f)+'</div>'+
+    '<div class="modal-head"><div><div class="dh-eyebrow" style="margin-bottom:4px">'+eyebrow+'</div><h3>'+esc(heading)+'</h3>'+sub+'</div><button class="icon-btn" data-action="close-fieldmodal">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+body+'</div>'+
     '<div class="modal-foot" style="justify-content:space-between">'+
-      '<button class="btn btn-danger-ghost btn-sm" data-action="delete-field" data-id="'+f.id+'">'+ic('trash',14)+'Excluir campo</button>'+
+      '<button class="btn btn-danger-ghost btn-sm" data-action="delete-field" data-id="'+f.id+'">'+ic('trash',14)+esc(deleteLabel)+'</button>'+
       '<button class="btn btn-primary btn-sm" data-action="close-fieldmodal">'+ic('check',14)+'Concluído</button>'+
     '</div>'+
   '</div></div>';
@@ -1489,7 +1556,8 @@ function stepModalSlaHTML(step){
 }
 function stepCamposHTML(step){
   var d = currentData();
-  var baseRows = d.formFields.length ? d.formFields.map(function(f){
+  var fillableFields = d.formFields.filter(function(f){ return f.type!=='section'; });
+  var baseRows = fillableFields.length ? fillableFields.map(function(f){
     var cfg = (step.campos||[]).find(function(c){return c.fieldId===f.id;}) || {visibility:'visible'};
     return '<div class="field-mini-row"><div><div class="fmr-name">'+esc(f.label)+'</div><div class="fmr-type">'+fieldTypeMeta(f.type).label+'</div></div>'+
       '<div class="seg" data-action="set-fieldvis" data-stepid="'+step.id+'" data-fieldid="'+f.id+'">'+
@@ -1739,7 +1807,7 @@ function solicitacaoKeyValor(sol){
 }
 function requestCardHTML(sol){
   var d = currentData();
-  var fieldRows = d.formFields.slice(0,2).filter(function(f){ return sol.valores[f.id]; }).map(function(f){
+  var fieldRows = d.formFields.filter(function(f){ return f.type!=='section' && sol.valores[f.id]; }).slice(0,2).map(function(f){
     var meta = fieldTypeMeta(f.type);
     return '<div class="pv-card-field"><div class="pv-card-field-label">'+ic(meta.icon,11)+esc(f.label)+'</div><div class="pv-card-field-value">'+esc(sol.valores[f.id])+'</div></div>';
   }).join('');
@@ -1864,7 +1932,7 @@ function novaSolicitacaoModalHTML(){
   var capaStyle = cfg.capa ? ' style="background-image:url('+cfg.capa+')"' : '';
   var capaBlock = '<div class="form-preview-capa"'+capaStyle+'>'+(cfg.capa?'':ic('image',18)+' Sem capa')+'</div>';
   var headText = '<div class="form-preview-name">'+esc(cfg.nome||p.name)+'</div><div class="form-preview-desc">'+esc(cfg.descricao||p.description)+'</div>';
-  var fieldsHTML = '<div class="ns-fields">'+d.formFields.map(function(f){ return novaSolicitacaoFieldHTML(f, draft); }).join('')+'</div>';
+  var fieldsHTML = '<div class="ns-fields">'+novaSolicitacaoSegmentsHTML(d, cfg, draft)+'</div>';
   var layout = cfg.posicao==='lateral' ?
     '<div class="form-layout-lateral">'+capaBlock+'<div class="form-preview-main">'+headText+fieldsHTML+'</div></div>' :
     '<div class="form-layout-header">'+capaBlock+headText+fieldsHTML+'</div>';
@@ -1873,6 +1941,17 @@ function novaSolicitacaoModalHTML(){
     '<div class="modal-body">'+layout+'</div>'+
     '<div class="modal-foot"><button class="btn btn-ghost" data-action="close-nova-solicitacao">Cancelar</button><button class="btn btn-primary" data-action="submit-solicitacao">'+ic('check',14)+'Enviar</button></div>'+
   '</div></div>';
+}
+function novaSolicitacaoSegmentsHTML(d, cfg, draft){
+  var twoCol = (cfg.colunas||1)===2;
+  return formSegments(d.formFields, twoCol).map(function(seg){
+    if (seg.type==='section') return sectionBlockHTML(seg.field, false);
+    if (!twoCol) return seg.col1.map(function(f){ return novaSolicitacaoFieldHTML(f, draft); }).join('');
+    return '<div class="fb-two-col-row">'+
+      '<div>'+seg.col1.map(function(f){ return novaSolicitacaoFieldHTML(f, draft); }).join('')+'</div>'+
+      '<div>'+seg.col2.map(function(f){ return novaSolicitacaoFieldHTML(f, draft); }).join('')+'</div>'+
+    '</div>';
+  }).join('');
 }
 function novaSolicitacaoFieldHTML(f, draft){
   var val = draft.valores[f.id] || '';
@@ -1908,6 +1987,7 @@ function requestModalHTML(){
   var step = findStep(sol.stepId) || {};
 
   var formRows = d.formFields.map(function(f){
+    if (f.type==='section') return '<div class="rule-mini-label" style="margin-top:14px">'+esc(f.titulo||'Seção')+'</div>'+(f.descricao?'<div class="field-hint" style="margin:-4px 0 8px">'+esc(f.descricao)+'</div>':'');
     var val = sol.valores[f.id];
     return '<div class="req-field-row"><div class="req-field-label">'+esc(f.label)+'</div><div class="req-field-value">'+(val?esc(val):'<em>—</em>')+'</div></div>';
   }).join('');
@@ -2543,6 +2623,7 @@ document.addEventListener('click', function(e){
     case 'close-formsettings': case 'close-formsettings-overlay': state.formSettingsOpen=false; break;
     case 'remove-cover': currentData().formConfig.capa=null; break;
     case 'set-form-posicao': currentData().formConfig.posicao=t.dataset.posicao; break;
+    case 'set-form-colunas': currentData().formConfig.colunas=+t.dataset.colunas; break;
 
     /* workflow: step selection & basics */
     case 'select-step': {
@@ -2929,6 +3010,7 @@ document.addEventListener('change', function(e){
   else if (bind==='step.cor') { var s5=findStep(el.dataset.stepid); s5.cor=val||null; }
   else if (bind==='field.required') { var f=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f.required=val; }
   else if (bind==='field.conditional') { var f2=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f2.conditional=val; }
+  else if (bind==='field.coluna') { var fcol=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); fcol.coluna=+val; }
   else if (bind==='rule.destino') { var r=findRegra(el.dataset.stepid, el.dataset.regraid); r.destinoStepId=val||null; }
   else if (bind==='rule.condCampo') { var r2=findRegra(el.dataset.stepid, el.dataset.regraid); r2.condicoes[0]=r2.condicoes[0]||{}; r2.condicoes[0].campo=val; }
   else if (bind==='rule.condOp') { var r3=findRegra(el.dataset.stepid, el.dataset.regraid); r3.condicoes[0]=r3.condicoes[0]||{}; r3.condicoes[0].operador=val; }
@@ -2966,6 +3048,8 @@ document.addEventListener('input', function(e){
     }
     else if (bind==='field.label'){ var f=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f.label=val; setText('#fc-label-'+el.dataset.id, val || 'Campo sem rótulo'); }
     else if (bind==='field.help'){ var f2=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f2.help=val; }
+    else if (bind==='section.titulo'){ var sf=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); sf.titulo=val; }
+    else if (bind==='section.descricao'){ var sf2=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); sf2.descricao=val; }
     else if (bind==='field.placeholder'){ var f3=currentData().formFields.find(function(x){return x.id===el.dataset.id;}); f3.placeholder=val; }
     else if (bind==='step.name'){ var s=findStep(el.dataset.stepid); s.name=val; setText('#wf-name-'+el.dataset.stepid, val || 'Etapa sem nome'); setText('#step-modal-title-text', val || 'Etapa sem nome'); }
     else if (bind==='step.description'){ var sdesc=findStep(el.dataset.stepid); sdesc.description=val; }
@@ -2994,23 +3078,32 @@ document.addEventListener('dragstart', function(e){
   if (el){ e.dataTransfer.setData('text/plain', el.dataset.fieldtype); return; }
 });
 document.addEventListener('dragover', function(e){
-  if (e.target.closest('#fb-canvas')){ e.preventDefault(); qs('#fb-canvas').classList.add('drag-over'); }
+  var zone = e.target.closest('.fb-col-drop');
+  if (zone){ e.preventDefault(); zone.classList.add('drag-over'); }
 });
 document.addEventListener('dragleave', function(e){
-  if (e.target.closest('#fb-canvas')===null){ var c=qs('#fb-canvas'); if(c) c.classList.remove('drag-over'); }
+  var zone = e.target.closest('.fb-col-drop');
+  if (!zone){
+    Array.prototype.forEach.call(document.querySelectorAll('.fb-col-drop.drag-over'), function(z){ z.classList.remove('drag-over'); });
+  }
 });
 document.addEventListener('drop', function(e){
-  var canvas = e.target.closest('#fb-canvas');
-  if (!canvas) return;
-  e.preventDefault(); canvas.classList.remove('drag-over');
+  var zone = e.target.closest('.fb-col-drop');
+  if (!zone) return;
+  e.preventDefault();
+  Array.prototype.forEach.call(document.querySelectorAll('.fb-col-drop.drag-over'), function(z){ z.classList.remove('drag-over'); });
   var type = e.dataTransfer.getData('text/plain');
-  if (type){
+  if (!type) return;
+  var f;
+  if (type==='section'){
+    f = {id:uid(), type:'section', titulo:'Nova seção', descricao:''};
+  } else {
     var meta = fieldTypeMeta(type);
-    var f = {id:uid(), type:type, label:meta.label, required:false};
-    currentData().formFields.push(f);
-    state.fieldModalOpen = f.id;
-    render();
+    f = {id:uid(), type:type, label:meta.label, required:false, coluna:+(zone.dataset.coluna||1)};
   }
+  currentData().formFields.push(f);
+  state.fieldModalOpen = f.id;
+  render();
 });
 
 /* theme toggle */

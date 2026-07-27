@@ -80,6 +80,13 @@ abaixo.
 "Minha fila de aprovação" foi renomeada para **"Minhas Pendências"** e passa a ser o
 único lugar para ver essas solicitações.
 
+**v14** — três ajustes no Formulário e um geral. Personalização do formulário ganhou
+**layout de colunas** (1 ou 2 — no modo 2 colunas dá para arrastar campos da paleta
+para a coluna da direita); a **capa/banner ficou bem mais alta**; e agora dá para
+**adicionar Seção** ao formulário (título + descrição, quebrando os campos em blocos).
+No geral: o fundo cinza claro do módulo Processos virou **branco**. Ver "O que mudou
+na v14" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -503,6 +510,38 @@ Administrador, agora sensíveis ao papel de quem está vendo):
   modo, a lateral mostra o tracker de progresso e a etapa atual, mas não os botões de
   ação (Aprovar/Reprovar/...), já que essas ações pertencem ao responsável da etapa,
   não a quem apenas solicitou. O Administrador continua vendo as ações normalmente.
+
+## O que mudou na v14
+
+**No Formulário:**
+
+- **Layout de colunas (1 ou 2)** — nova opção em "Personalizar formulário", ao lado da
+  posição Cabeçalho/Lateral. Com "2 colunas" selecionado, o canvas do construtor passa
+  a mostrar duas zonas de soltar lado a lado; arrastar um campo da paleta para a da
+  direita já cria o campo na coluna 2. Campos existentes também podem trocar de coluna
+  pelo próprio modal de configuração do campo (novo seletor "Coluna", só aparece
+  quando o formulário está em 2 colunas). O formulário real que o Colaborador preenche
+  ("Iniciar Solicitação") respeita esse mesmo layout de colunas.
+- **Capa/banner bem mais alta** — de 96px para 200px no construtor e no formulário de
+  envio, e de 110px para 180px na pré-visualização da modal "Personalizar formulário".
+- **Seção do formulário** — o tipo "Divisor de seção" (que já existia na paleta, grupo
+  "Estrutura") agora tem funcionamento próprio: ao soltá-lo no canvas, abre uma modal
+  só com **Título** e **Descrição** da seção (em vez do inspetor genérico de campo,
+  que não faria sentido aqui). No canvas, uma seção aparece como um divisor com título
+  em destaque e descrição abaixo, sempre ocupando a largura toda (mesmo em formulários
+  de 2 colunas) — os campos antes e depois dela formam blocos de coluna independentes.
+  Seções também aparecem no formulário real de envio e no resumo "Formulário enviado"
+  da modal de detalhes da solicitação, mas nunca contam como campo preenchível (não
+  entram em condições de automação/ação, nem na validação de campos obrigatórios).
+
+**No geral:**
+
+- **Fundo branco** — o módulo Processos usava um cinza muito claro (`#FAFAFA`) como
+  fundo de página, o que deixava tudo com uma aparência acinzentada. Trocado para
+  branco puro (`#FFFFFF`) no tema claro; o tema escuro não foi alterado. Superfícies
+  internas que usam tons de cinza de propósito (hover, badges, cabeçalho de tabela,
+  colunas do Kanban) continuam como estavam — a mudança foi só no fundo geral da
+  página.
 
 ## O que está implementado
 

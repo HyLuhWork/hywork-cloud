@@ -1,9 +1,10 @@
-import Link from "next/link";
 import { requireUser } from "@/lib/require-user";
 import { LogoutButton } from "@/components/logout-button";
+import { Sidebar, SidebarNav, SidebarGroupLabel, SidebarLink } from "@/components/ui";
 
 const navItems = [
   { label: "Analytics", href: "/home" },
+  { label: "Processos", href: "/processos" },
   { label: "Modelos", href: "/home" },
   { label: "Conteúdos", href: "/home" },
   { label: "Reconhecimentos", href: "/home" },
@@ -15,40 +16,27 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-card p-4">
+      <Sidebar>
         <div className="mb-6 flex items-center gap-2 px-2">
           <span className="text-xl font-bold text-primary">hywork</span>
         </div>
 
-        <nav className="flex flex-1 flex-col gap-1">
+        <SidebarNav className="flex-1">
           {navItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted"
-            >
+            <SidebarLink key={item.label} href={item.href}>
               {item.label}
-            </Link>
+            </SidebarLink>
           ))}
 
           {session.user.role === "ADMIN" && (
             <>
-              <div className="mt-6 mb-1 px-3 text-xs font-semibold uppercase text-muted-foreground">
-                Administração
-              </div>
-              <Link href="/settings/usuarios" className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted">
-                Usuários
-              </Link>
-              <Link
-                href="/settings/espaco"
-                className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted"
-              >
-                Configurações
-              </Link>
+              <SidebarGroupLabel>Administração</SidebarGroupLabel>
+              <SidebarLink href="/settings/usuarios">Usuários</SidebarLink>
+              <SidebarLink href="/settings/espaco">Configurações</SidebarLink>
             </>
           )}
-        </nav>
-      </aside>
+        </SidebarNav>
+      </Sidebar>
 
       <div className="flex flex-1 flex-col">
         <header className="flex items-center justify-end border-b border-border bg-card px-6 py-3">

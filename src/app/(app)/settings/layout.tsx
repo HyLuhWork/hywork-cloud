@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/require-user";
+import { Sidebar, SidebarNav, SidebarGroupLabel, SidebarLink } from "@/components/ui";
 
 const generalItems = [
   { label: "Espaços", href: "/settings/espaco" },
@@ -12,31 +13,25 @@ export default async function SettingsLayout({ children }: { children: React.Rea
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-64 shrink-0 border-r border-border bg-card p-4">
+      <Sidebar>
         <Link href="/home" className="mb-6 flex items-center gap-2 px-2 text-sm text-muted-foreground">
           ← Espaço
         </Link>
 
-        <div className="mb-1 px-3 text-xs font-semibold uppercase text-muted-foreground">
-          Configurações de Conta
-        </div>
-        <Link href="/settings/conta" className="mb-4 block rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted">
-          Conta
-        </Link>
+        <SidebarGroupLabel>Configurações de Conta</SidebarGroupLabel>
+        <SidebarNav className="mb-4">
+          <SidebarLink href="/settings/conta">Conta</SidebarLink>
+        </SidebarNav>
 
-        <div className="mb-1 px-3 text-xs font-semibold uppercase text-muted-foreground">Gerais</div>
-        <nav className="flex flex-col gap-1">
+        <SidebarGroupLabel>Gerais</SidebarGroupLabel>
+        <SidebarNav>
           {generalItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted"
-            >
+            <SidebarLink key={item.href} href={item.href}>
               {item.label}
-            </Link>
+            </SidebarLink>
           ))}
-        </nav>
-      </aside>
+        </SidebarNav>
+      </Sidebar>
       <div className="flex-1">{children}</div>
     </div>
   );

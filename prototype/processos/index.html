@@ -213,6 +213,12 @@
   .modal-sm{max-width:420px}
   .modal-md{max-width:560px}
   .modal-lg{max-width:900px}
+  .modal-wizard{max-width:820px}
+  .modal-wizard .wizard-grid{grid-template-columns:1.4fr 1fr;gap:32px}
+  .modal-wizard .preview-panel{padding:26px}
+  .modal-wizard .icon-grid{grid-template-columns:repeat(7,1fr);gap:9px}
+  .modal-wizard .icon-swatch{font-size:20px}
+  .modal-wizard .color-grid{gap:9px}
   .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--border);flex:none}
   .modal-head h3{font-size:16px}
   .modal-head p{font-size:12px;color:var(--ink-faint);margin-top:3px}
@@ -241,7 +247,6 @@
   .editor-title-row h2{font-size:18px}
   .editor-title-row .icon-btn{width:24px;height:24px}
   .editor-desc{font-size:12.5px;color:var(--ink-muted);margin-top:4px;max-width:460px}
-  .editor-meta{font-size:11px;color:var(--ink-faint);margin-top:5px}
   .editor-actions{display:flex;align-items:center;gap:8px;flex:none}
   .editor-tabs{display:flex;gap:28px;border-bottom:1px solid var(--border);padding:0 28px}
   .etab{padding:12px 1px 10px;font-size:13.5px;font-weight:700;color:var(--ink-faint);border-bottom:2.5px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:7px;border-radius:0}
@@ -307,8 +312,8 @@
   .layout-opt.selected{border-color:var(--primary);background:var(--primary-50)}
 
   /* ---------- workflow canvas ---------- */
-  .wf-layout{display:flex;min-height:600px;border-top:1px solid var(--border)}
-  .wf-canvas-wrap{flex:1;min-width:0;position:relative;background-color:var(--canvas-bg);background-image:
+  .wf-layout{display:flex;height:calc(100vh - 320px);min-height:380px;border-top:1px solid var(--border)}
+  .wf-canvas-wrap{flex:1;min-width:0;min-height:0;position:relative;background-color:var(--canvas-bg);background-image:
     radial-gradient(var(--border-strong) 1px, transparent 1px);
     background-size:16px 16px;background-position:-7px -7px;padding:40px 20px;overflow:auto}
   .wf-flow{display:flex;flex-direction:column;align-items:center;gap:0;width:380px;margin:0 auto}
@@ -340,7 +345,7 @@
   .wf-gap{height:22px}
   .wf-add{width:100%;display:flex;align-items:center;justify-content:center;gap:7px;border:1.5px dashed var(--border-strong);border-radius:var(--radius-lg);padding:12px;color:var(--ink-muted);font-weight:700;font-size:12.5px;background:var(--surface)}
   .wf-add:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
-  .steps-board{display:flex;flex-direction:row;align-items:flex-start;gap:16px;overflow-x:auto;padding:6px 2px 64px}
+  .steps-board{display:flex;flex-direction:row;align-items:stretch;gap:16px;overflow-x:auto;padding:6px 2px 64px}
   .step-card{width:250px;flex:none}
   .steps-board .wf-add{width:220px;flex:none;align-self:flex-start}
   .step-card-menu{position:absolute;top:10px;right:10px;z-index:2}
@@ -459,6 +464,9 @@
   .tracker-step.current .tracker-label,.tracker-step.done .tracker-label{color:var(--ink);font-weight:700}
   .tracker-line{flex:1;height:2px;background:var(--muted);margin-top:11px;min-width:24px}
   .tracker-line.done{background:var(--success)}
+  .tracker-status-pill{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;padding:7px 14px;border-radius:var(--radius-full);margin-bottom:20px}
+  .tracker-modal-tabs{display:flex;gap:22px;padding:0 24px;border-bottom:1px solid var(--border)}
+  .tracker-modal-tabs .req-detail-tab{padding-top:12px}
   .req-action-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:10px;background:var(--surface)}
   .req-action-top{display:flex;align-items:center;gap:7px;font-size:12.5px;margin-bottom:8px;color:var(--ink)}
   .req-action-card.acao-aprovar .req-action-top svg{color:var(--success)}
@@ -475,13 +483,13 @@
   .req-action-confirm.acao-personalizada{background:var(--navy-800)}
 
   /* ---------- config panel (right side of workflow) — single flat panel, no sub-tabs ---------- */
-  .wf-panel{width:460px;flex:none;border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column}
+  .wf-panel{width:460px;flex:none;min-height:0;border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column}
   .wf-panel-head{padding:18px 20px;border-bottom:1px solid var(--border);flex:none}
   .wf-panel-head .wf-panel-title-row{display:flex;align-items:center;gap:8px}
   .wf-panel-head .wf-panel-title{font-size:15px;font-weight:700;border:none;background:none;padding:0;width:100%;font-family:inherit}
   .wf-panel-head .wf-panel-title:focus{outline:none;border-bottom:1.5px solid var(--primary)}
   .wf-panel-head .wf-panel-sub{font-size:11.5px;color:var(--ink-faint);margin-top:3px}
-  .wf-panel-body{flex:1;overflow-y:auto;padding:18px 20px 30px}
+  .wf-panel-body{flex:1;min-height:0;overflow-y:auto;padding:18px 20px 30px}
   .wf-panel-empty{padding:50px 26px;text-align:center;color:var(--ink-faint);font-size:12.5px;display:flex;flex-direction:column;align-items:center;gap:12px}
   .wf-panel-empty .we-ic{width:44px;height:44px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
   .wf-panel-section{margin-bottom:22px}
@@ -571,6 +579,9 @@
   .bar-chart .bc-val{font-size:11px;font-weight:700}
   .widget-remove{position:absolute;top:10px;right:10px}
   .widget-shell{position:relative}
+  .venc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+  .venc-row:last-child{border-bottom:none}
+  .venc-row .vr-name{font-size:12.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .add-widget-card{grid-column:span 1;border:1.5px dashed var(--border-strong);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:120px;color:var(--ink-muted);font-weight:700;font-size:12px}
   .add-widget-card:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
 
@@ -781,6 +792,12 @@ function ic(name, size){
     filter:'<path d="M4 6h16M7 12h10M10 18h4"/>',
     sort:'<path d="M7 17V4M7 4 3.5 7.5M7 4l3.5 3.5M17 7v13M17 20l3.5-3.5M17 20l-3.5-3.5"/>',
     layers:'<path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
+    cart:'<circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/><path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 8H6.2"/>',
+    bulb:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.3 1 2.1h5c0-.8.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/>',
+    box:'<path d="M3 8 12 4l9 4-9 4-9-4Z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/>',
+    folder:'<path d="M3.5 7a1 1 0 0 1 1-1h4.8l1.8 2H19a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4.5a1 1 0 0 1-1-1V7Z"/>',
+    door:'<rect x="6" y="2.5" width="12" height="19" rx="1"/><circle cx="14.3" cy="12" r="1.1"/>',
+    wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.3 4.9L4 16.6l2.4 2.4 5.4-5.4a4 4 0 0 0 4.9-5.3l-2.6 2.6-2.4-2.4Z"/>',
   };
   var body = p[name] || p.info;
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+body+'</svg>';
@@ -792,7 +809,7 @@ function qs(s,r){ return (r||document).querySelector(s); }
 
 /* ============ SEED DATA ============ */
 var CATEGORIES = ['Recursos Humanos','Financeiro','Tecnologia','Operações','Jurídico','Outros'];
-var ICON_OPTIONS = ['🏖️','💰','🖥️','🛒','🎓','📝','💡','📦','✅','🧾','🗂️','📅','🚪','🔧'];
+var ICON_OPTIONS = ['sun','money','tv','cart','gradcap','sig','bulb','box','check','doc','folder','calendar','door','wrench'];
 var COLOR_OPTIONS = [
   {v:'#D74326', name:'Terracota'}, {v:'#1E72A1', name:'Azul'}, {v:'#104A74', name:'Navy'},
   {v:'#B8860B', name:'Âmbar'}, {v:'#1E9E5A', name:'Verde'}, {v:'#8EA1C7', name:'Azul claro'},
@@ -1078,12 +1095,12 @@ function resetPvSessionState(d){
 
 function seedProcesses(){
   var list = [
-    {id:'p1',name:'Solicitação de Férias',description:'Peça e acompanhe seus períodos de férias com aprovação do gestor e RH.',category:'Recursos Humanos',icon:'🏖️',color:'#D74326',status:'published',openCount:12,avgSla:'1,8 dias',updatedAt:'22/07/2026'},
-    {id:'p2',name:'Reembolso de Despesas',description:'Solicite reembolso de despesas corporativas com anexo de notas fiscais.',category:'Financeiro',icon:'💰',color:'#1E72A1',status:'published',openCount:5,avgSla:'0,9 dia',updatedAt:'21/07/2026'},
-    {id:'p3',name:'Chamados de TI',description:'Abra chamados técnicos para o time de tecnologia e acompanhe o SLA.',category:'Tecnologia',icon:'🖥️',color:'#104A74',status:'published',openCount:23,avgSla:'6 horas',updatedAt:'20/07/2026'},
-    {id:'p4',name:'Solicitação de Compras',description:'Peça a compra de materiais e serviços com aprovação por alçada de valor.',category:'Operações',icon:'🛒',color:'#B8860B',status:'draft',openCount:0,avgSla:'—',updatedAt:'19/07/2026'},
-    {id:'p5',name:'Onboarding de Colaboradores',description:'Fluxo guiado de admissão para novos colaboradores, do convite ao 1º dia.',category:'Recursos Humanos',icon:'🎓',color:'#1E9E5A',status:'published',openCount:3,avgSla:'2,5 dias',updatedAt:'18/07/2026'},
-    {id:'p6',name:'Aprovação de Documentos',description:'Envie contratos e documentos para aprovação e assinatura interna.',category:'Jurídico',icon:'📝',color:'#8EA1C7',status:'draft',openCount:0,avgSla:'—',updatedAt:'16/07/2026'},
+    {id:'p1',name:'Solicitação de Férias',description:'Peça e acompanhe seus períodos de férias com aprovação do gestor e RH.',category:'Recursos Humanos',icon:'sun',color:'#D74326',status:'published',openCount:12,avgSla:'1,8 dias',updatedAt:'22/07/2026'},
+    {id:'p2',name:'Reembolso de Despesas',description:'Solicite reembolso de despesas corporativas com anexo de notas fiscais.',category:'Financeiro',icon:'money',color:'#1E72A1',status:'published',openCount:5,avgSla:'0,9 dia',updatedAt:'21/07/2026'},
+    {id:'p3',name:'Chamados de TI',description:'Abra chamados técnicos para o time de tecnologia e acompanhe o SLA.',category:'Tecnologia',icon:'tv',color:'#104A74',status:'published',openCount:23,avgSla:'6 horas',updatedAt:'20/07/2026'},
+    {id:'p4',name:'Solicitação de Compras',description:'Peça a compra de materiais e serviços com aprovação por alçada de valor.',category:'Operações',icon:'cart',color:'#B8860B',status:'draft',openCount:0,avgSla:'—',updatedAt:'19/07/2026'},
+    {id:'p5',name:'Onboarding de Colaboradores',description:'Fluxo guiado de admissão para novos colaboradores, do convite ao 1º dia.',category:'Recursos Humanos',icon:'gradcap',color:'#1E9E5A',status:'published',openCount:3,avgSla:'2,5 dias',updatedAt:'18/07/2026'},
+    {id:'p6',name:'Aprovação de Documentos',description:'Envie contratos e documentos para aprovação e assinatura interna.',category:'Jurídico',icon:'sig',color:'#8EA1C7',status:'draft',openCount:0,avgSla:'—',updatedAt:'16/07/2026'},
   ];
   var data = {};
   list.forEach(function(p){ data[p.id] = richProcessData(); });
@@ -1149,6 +1166,10 @@ var state = {
   pvCustomizeOpen:null, // 'kanban' | 'list' | null
   pvCustomizeDraft:null, // rascunho em edição na modal de personalizar visualização
   pvListCollapsed:{}, // chave do grupo -> true quando recolhido na List
+  intranetFilterProcs:null, // null = todos os processos; array de processIds quando filtrado
+  intranetSort:'recent', // 'recent' | 'solicitante'
+  intranetToolbarMenu:null, // 'filter' | 'sort' | null
+  trackerModalTab:'status', // 'status' | 'formulario' — tabs do modal pós-envio da solicitação
 };
 var CURRENT_USER_NAME = 'Luiza Vieira';
 
@@ -1318,9 +1339,9 @@ function renderScreen(){
 }
 
 var PROCESS_TEMPLATES = [
-  {label:'Solicitações de Férias', icon:'calendar', emoji:'🏖️', desc:'Peça e acompanhe períodos de férias com aprovação do gestor.', category:'Recursos Humanos', color:'#1E72A1'},
-  {label:'Solicitações de Reembolso', icon:'money', emoji:'💰', desc:'Solicite reembolso de despesas com anexo de notas fiscais.', category:'Financeiro', color:'#D74326'},
-  {label:'Chamados', icon:'clock', emoji:'🖥️', desc:'Abra chamados para times internos com fila e SLA.', category:'Tecnologia', color:'#104A74'}
+  {label:'Solicitações de Férias', icon:'sun', desc:'Peça e acompanhe períodos de férias com aprovação do gestor.', category:'Recursos Humanos', color:'#1E72A1'},
+  {label:'Solicitações de Reembolso', icon:'money', desc:'Solicite reembolso de despesas com anexo de notas fiscais.', category:'Financeiro', color:'#D74326'},
+  {label:'Chamados', icon:'tv', desc:'Abra chamados para times internos com fila e SLA.', category:'Tecnologia', color:'#104A74'}
 ];
 function monogram(name){
   var words = (name||'').trim().split(/\s+/).filter(Boolean);
@@ -1394,7 +1415,7 @@ function processRowHTML(p){
 function processCardHTML(p){
   var statusBadge = p.status==='published' ? '<span class="badge badge-success">'+ic('check',10)+' Publicado</span>' : '<span class="badge badge-muted">Rascunho</span>';
   return '<button class="process-card" data-action="'+(p.status==='published'?'open-processview':'open-editor')+'" data-id="'+p.id+'">'+
-    '<div class="pc-top"><div class="pc-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+p.icon+'</div>'+statusBadge+'</div>'+
+    '<div class="pc-top"><div class="pc-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,18)+'</div>'+statusBadge+'</div>'+
     '<div><div class="pc-name">'+esc(p.name)+'</div><div class="pc-desc">'+esc(p.description)+'</div></div>'+
     '<div class="pc-cta">'+(p.status==='published' ? 'Abrir workflow' : 'Continuar montagem')+ic('arrowLeft',12).replace('19 12H5','5 12H19').replace('m11 18-6-6 6-6','m13 18 6-6-6-6')+'</div>'+
   '</button>';
@@ -1416,18 +1437,16 @@ function editorHTML(){
   else body = permissoesTabHTML();
 
   var flush = state.editorTab==='form' || state.editorTab==='workflow' || state.editorTab==='automacoes';
-  var lastEditor = 'Mariana Rocha (RH)';
 
   return ''+
     '<div class="editor-topbar">'+
       '<a href="#" class="back-link" data-action="go-home">'+ic('arrowLeft',14)+'Voltar para Processos</a>'+
       '<div class="editor-header">'+
         '<div class="editor-header-left">'+
-          '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+p.icon+'</div>'+
+          '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,20)+'</div>'+
           '<div><div class="editor-title-row"><h2 id="editor-title-text">'+esc(p.name)+'</h2>'+(p.status==='published'?'<span class="badge badge-success">Publicado</span>':'<span class="badge badge-muted">Rascunho</span>')+
             '<button class="icon-btn" data-action="open-edit-general" title="Editar informações gerais">'+ic('edit',14)+'</button></div>'+
-          '<div class="editor-desc" id="editor-desc-text">'+esc(p.description)+'</div>'+
-          '<div class="editor-meta">v'+(p.version||2)+' · última edição por '+lastEditor+'</div></div>'+
+          '<div class="editor-desc" id="editor-desc-text">'+esc(p.description)+'</div></div>'+
         '</div>'+
         '<div class="editor-actions">'+
           (p.status==='published' ? '<button class="btn btn-outline btn-sm" data-action="open-processview" data-id="'+p.id+'">'+ic('grid',14)+'Ver processo</button>' : '')+
@@ -1612,8 +1631,8 @@ function switchHTML(bind,id,checked){
 
 /* ---- Workflow tab ---- */
 function stepIcon(step){
-  if (step.id==='s_start') return '📨';
-  if (step.id==='s_end') return '🏁';
+  if (step.id==='s_start') return ic('send',15);
+  if (step.id==='s_end') return ic('flag',15);
   return '';
 }
 function ruleConditionText(r){
@@ -1973,7 +1992,7 @@ function processViewHTML(){
         actionsRight+
       '</div>'+
       '<div class="pv-hero">'+
-        '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+p.icon+'</div>'+
+        '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,20)+'</div>'+
         '<div class="pv-hero-info"><div class="pv-hero-name">'+esc(d.formConfig.nome||p.name)+'</div><div class="pv-hero-desc">'+esc(d.formConfig.descricao||p.description)+'</div></div>'+
       '</div>'+
       '<div class="mtabs" style="margin-top:8px">'+tabsHTML+'</div>'+
@@ -2250,9 +2269,9 @@ function intranetHomeHTML(){
     return '<button class="intranet-tab'+(state.intranetTab===t[0]?' active':'')+'" data-action="set-intranet-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+'</button>';
   }).join('');
   var body;
-  if (state.intranetTab==='minhas') body = intranetRequestListHTML(minhasSolicitacoes(), 'Você ainda não enviou nenhuma solicitação.');
-  else if (state.intranetTab==='fila') body = intranetRequestListHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.');
-  else if (state.intranetTab==='historico') body = intranetRequestListHTML(historicoFinalizadas(), 'Nenhuma solicitação finalizada ainda.');
+  if (state.intranetTab==='minhas') body = intranetTableHTML(minhasSolicitacoes(), 'Você ainda não enviou nenhuma solicitação.');
+  else if (state.intranetTab==='fila') body = intranetPendenciasDashboardHTML()+intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.');
+  else if (state.intranetTab==='historico') body = intranetTableHTML(historicoFinalizadas(), 'Nenhuma solicitação finalizada ainda.');
   else body = '<div id="intranet-grid-area">'+intranetProcessesGridHTML()+'</div>';
 
   return '<div class="screen-inner">'+
@@ -2282,7 +2301,7 @@ function intranetProcessCardHTML(p){
   var d = state.processData[p.id];
   var stepCount = (d.steps||[]).filter(function(s){return !s.system;}).length;
   return '<div class="intranet-process-card">'+
-    '<div class="ipc-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+p.icon+'</div>'+
+    '<div class="ipc-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,19)+'</div>'+
     '<div class="ipc-name">'+esc(p.name)+'</div>'+
     '<div class="ipc-desc">'+esc(p.description)+'</div>'+
     '<div class="ipc-foot"><span>'+stepCount+' Etapas</span>'+
@@ -2293,18 +2312,130 @@ function intranetProcessCardHTML(p){
     '</div>'+
   '</div>';
 }
-function intranetRequestListHTML(list, emptyMsg){
-  if (!list.length) return '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nada por aqui</div><div class="es-sub">'+esc(emptyMsg)+'</div></div>';
+function intranetFilterSortList(list){
+  var out = list.filter(function(x){
+    if (state.intranetFilterProcs && state.intranetFilterProcs.indexOf(x.processo.id)===-1) return false;
+    return true;
+  });
+  out = out.slice();
+  if (state.intranetSort==='solicitante') out.sort(function(a,b){ return a.sol.solicitante.localeCompare(b.sol.solicitante); });
+  else out.sort(function(a,b){ return parseDataBR(b.sol.criadoEm)-parseDataBR(a.sol.criadoEm); });
+  return out;
+}
+function intranetTableToolbarHTML(rawList){
+  var procsInList = [];
+  rawList.forEach(function(x){ if (procsInList.indexOf(x.processo)===-1) procsInList.push(x.processo); });
+  var filterActive = state.intranetFilterProcs && state.intranetFilterProcs.length ? ' active' : '';
+  var sortLabel = state.intranetSort==='solicitante' ? 'Solicitante (A-Z)' : 'Recentes';
+  var filterDropdown = state.intranetToolbarMenu==='filter' ? '<div class="pv-toolbar-dropdown">'+
+      '<div class="pv-toolbar-dropdown-label">Filtrar por processo</div>'+
+      procsInList.map(function(p){
+        var checked = !state.intranetFilterProcs || state.intranetFilterProcs.indexOf(p.id)!==-1;
+        return '<label class="pv-filter-check"><input type="checkbox" data-action="intranet-toggle-filter-proc" data-procid="'+p.id+'"'+(checked?' checked':'')+'/>'+esc(p.name)+'</label>';
+      }).join('')+
+      (state.intranetFilterProcs ? '<button class="link-btn" style="margin-top:6px;font-size:11.5px" data-action="intranet-clear-filter">Limpar filtro</button>' : '')+
+    '</div>' : '';
+  var sortDropdown = state.intranetToolbarMenu==='sort' ? '<div class="pv-toolbar-dropdown">'+
+      '<button class="pv-toolbar-dropdown-item'+(state.intranetSort==='recent'?' selected':'')+'" data-action="intranet-set-sort" data-sort="recent">Mais recentes</button>'+
+      '<button class="pv-toolbar-dropdown-item'+(state.intranetSort==='solicitante'?' selected':'')+'" data-action="intranet-set-sort" data-sort="solicitante">Solicitante (A-Z)</button>'+
+    '</div>' : '';
+  return '<div class="pv-toolbar" style="padding:0 0 12px;border-bottom:none">'+
+    '<div></div>'+
+    '<div class="pv-toolbar-right">'+
+      '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn'+filterActive+'" data-action="toggle-intranet-menu" data-menu="filter">'+ic('filter',13)+'Filtrar'+ic('chevronDown',12)+'</button>'+filterDropdown+'</div>'+
+      '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn" data-action="toggle-intranet-menu" data-menu="sort">'+ic('sort',13)+'Ordenar: '+sortLabel+ic('chevronDown',12)+'</button>'+sortDropdown+'</div>'+
+    '</div>'+
+  '</div>';
+}
+function intranetTableHTML(rawList, emptyMsg){
+  if (!rawList.length) return '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nada por aqui</div><div class="es-sub">'+esc(emptyMsg)+'</div></div>';
+  var toolbar = intranetTableToolbarHTML(rawList);
+  var list = intranetFilterSortList(rawList);
+  var gridStyle = 'grid-template-columns:minmax(180px,1.6fr) minmax(140px,1fr) 150px 150px 130px';
+  var colHead = '<div class="pv-list-colhead" style="'+gridStyle+'"><span>Processo</span><span>Solicitante</span><span>Etapa atual</span><span>Prioridade</span><span>Criado em</span></div>';
   var rows = list.map(function(x){
+    var d = state.processData[x.processo.id];
     var step = findStepIn(x.processo, x.sol.stepId);
-    return '<tr data-action="open-request-from-list" data-solid="'+x.sol.id+'" data-pid="'+x.processo.id+'" style="cursor:pointer">'+
-      '<td style="text-align:left;padding-left:16px">'+esc(x.processo.icon)+' '+esc(x.processo.name)+'</td>'+
-      '<td style="text-align:left">'+esc(x.sol.solicitante)+'</td>'+
-      '<td style="text-align:left">'+esc(step?step.name:'—')+'</td>'+
-      '<td style="text-align:left">'+esc(x.sol.criadoEm)+'</td>'+
-    '</tr>';
+    var stepBadge = step ? '<span class="badge" style="background:'+(step.cor?step.cor+'22':'var(--muted-strong)')+';color:'+(step.cor||'var(--ink-muted)')+'">'+esc(step.name)+'</span>' : '<span class="pv-list-unset">—</span>';
+    var tipoField = tipoSolicitacaoField(d);
+    var tipoVal = tipoField ? x.sol.valores[tipoField.id] : null;
+    var priorityBadge = tipoVal ? '<span class="badge '+(/urgente/i.test(tipoVal)?'badge-danger':'badge-info')+'">'+esc(tipoVal)+'</span>' : '<span class="pv-list-unset">Não definido</span>';
+    return '<div class="pv-list-row" style="'+gridStyle+'" data-action="open-request-from-list" data-solid="'+x.sol.id+'" data-pid="'+x.processo.id+'">'+
+      '<span style="display:flex;align-items:center;gap:8px;overflow:hidden"><span style="display:flex;flex:none;color:'+x.processo.color+'">'+ic(x.processo.icon,15)+'</span><span class="pv-list-name">'+esc(x.processo.name)+'</span></span>'+
+      '<span class="pv-list-name">'+esc(x.sol.solicitante)+'</span>'+
+      '<span>'+stepBadge+'</span>'+
+      '<span>'+priorityBadge+'</span>'+
+      '<span class="pv-list-date">'+ic('calendar',12)+esc(x.sol.criadoEm)+'</span>'+
+    '</div>';
   }).join('');
-  return '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Processo</th><th style="text-align:left">Solicitante</th><th style="text-align:left">Etapa atual</th><th style="text-align:left">Criado em</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  var tableBody = list.length ? '<div class="pv-list">'+colHead+rows+'</div>' :
+    '<div class="empty-state"><div class="es-ic">'+ic('search',22)+'</div><div class="es-title">Nenhum resultado com esse filtro</div><div class="es-sub">Ajuste os filtros para ver mais solicitações.</div></div>';
+  return toolbar+tableBody;
+}
+function diasDesde(dataStr){
+  var t = parseDataBR(dataStr);
+  if (!t) return 0;
+  return Math.floor((Date.now()-t)/(1000*60*60*24));
+}
+function slaDiasFor(step){
+  if (!step || !step.sla) return null;
+  var s = step.sla;
+  return s.unidade==='horas' ? s.prazo/24 : s.prazo;
+}
+function openSolicitacoes(){
+  return allSolicitacoesFlat().filter(function(x){
+    var step = findStepIn(x.processo, x.sol.stepId);
+    return step && !step.final;
+  });
+}
+function chartEmptyCardHTML(label, msg){
+  return '<div class="chart-card widget-shell"><div class="cc-label">'+esc(label)+'</div><div class="field-hint" style="margin-top:6px">'+esc(msg)+'</div></div>';
+}
+function intranetPendenciasDashboardHTML(){
+  var pend = filaAprovacao();
+  var atendidas = historicoFinalizadas();
+  var urgentCount = pend.filter(function(x){
+    var d = state.processData[x.processo.id];
+    var tf = tipoSolicitacaoField(d);
+    var v = tf ? x.sol.valores[tf.id] : null;
+    return v && /urgente/i.test(v);
+  }).length;
+  var avgWait = pend.length ? (pend.reduce(function(sum,x){ return sum+diasDesde(x.sol.criadoEm); },0)/pend.length) : 0;
+  var avgWaitStr = pend.length ? avgWait.toFixed(1).replace('.',',')+' dias' : '—';
+
+  var kpis = [
+    {label:'Pendentes', value:String(pend.length), trend:'Aguardando decisão'},
+    {label:'Atendidas', value:String(atendidas.length), trend:'Total finalizado'},
+    {label:'Urgentes', value:String(urgentCount), trend:'Marcadas como urgente'},
+    {label:'Tempo médio de espera', value:avgWaitStr, trend:'Desde a criação'}
+  ];
+  var kpisHTML = kpis.map(function(k,i){ return widgetHTML({type:'kpi', id:'intranet-kpi-'+i, label:k.label, value:k.value, trend:k.trend}, true); }).join('');
+
+  var vencendoRaw = pend.map(function(x){
+    var step = findStepIn(x.processo, x.sol.stepId);
+    var prazoDias = slaDiasFor(step);
+    if (prazoDias==null) return null;
+    var restante = Math.round(prazoDias - diasDesde(x.sol.criadoEm));
+    return {x:x, restante:restante};
+  }).filter(Boolean);
+  vencendoRaw.sort(function(a,b){ return a.restante-b.restante; });
+  var vencendoTop = vencendoRaw.slice(0,6);
+  var vencendoHTML = vencendoTop.length ? '<div class="chart-card widget-shell"><div class="cc-label">Solicitações prestes a vencer</div>'+
+    vencendoTop.map(function(v){
+      var restante = v.restante;
+      var badgeClass = restante<=0 ? 'badge-danger' : (restante<=2 ? 'badge-warning' : 'badge-info');
+      var label = restante<0 ? 'vencida há '+Math.abs(restante)+'d' : (restante===0 ? 'vence hoje' : 'vence em '+restante+'d');
+      return '<div class="venc-row"><span class="vr-name">'+esc(v.x.sol.solicitante)+' · '+esc(v.x.processo.name)+'</span><span class="badge '+badgeClass+'">'+esc(label)+'</span></div>';
+    }).join('')+
+  '</div>' : chartEmptyCardHTML('Solicitações prestes a vencer', 'Nenhuma solicitação com prazo definido no momento.');
+
+  var open = openSolicitacoes();
+  var byProc = {};
+  open.forEach(function(x){ byProc[x.processo.name] = (byProc[x.processo.name]||0)+1; });
+  var barData = Object.keys(byProc).map(function(k){ return {name:k, value:byProc[k]}; });
+  var barHTML = barData.length ? widgetHTML({type:'bar', id:'intranet-bar-open', label:'Todas as solicitações em aberto', data:barData}, true) : chartEmptyCardHTML('Todas as solicitações em aberto', 'Nenhuma solicitação em aberto no momento.');
+
+  return '<div class="widget-grid" style="margin-bottom:22px">'+kpisHTML+vencendoHTML+barHTML+'</div>';
 }
 function novaSolicitacaoModalHTML(){
   var pid = state.novaSolicitacaoOpen;
@@ -2352,13 +2483,41 @@ function novaSolicitacaoFieldHTML(f, draft){
   }
   return '<div class="field-row"><label class="field-label">'+esc(f.label)+req+'</label>'+input+'</div>';
 }
+function solFormRowsHTML(d, sol){
+  return d.formFields.map(function(f){
+    if (f.type==='section') return '<div class="rule-mini-label" style="margin-top:14px">'+esc(f.titulo||'Seção')+'</div>'+(f.descricao?'<div class="field-hint" style="margin:-4px 0 8px">'+esc(f.descricao)+'</div>':'');
+    var val = sol.valores[f.id];
+    return '<div class="req-field-row"><div class="req-field-label">'+esc(f.label)+'</div><div class="req-field-value">'+(val?esc(val):'<em>—</em>')+'</div></div>';
+  }).join('');
+}
+function solHistoricoHTML(sol){
+  var historico = (sol.historico||[]).slice().reverse();
+  return historico.length ? '<div class="req-hist-list">'+historico.map(function(h){
+    return '<div class="req-hist-item"><div class="req-hist-dot"></div><div><div class="req-hist-text">'+esc(h.texto)+'</div><div class="req-hist-date">'+esc(h.data)+'</div></div></div>';
+  }).join('')+'</div>' : '<div class="field-hint">Nenhum histórico ainda.</div>';
+}
 function trackerModalHTML(){
   var sol = findSolicitacao(state.trackerModalOpen);
   if (!sol) return '';
   var p = currentProcess();
+  var d = currentData();
+  var step = findStep(sol.stepId) || {};
+  var tab = state.trackerModalTab || 'status';
+
+  var statusBody = '<div class="tracker-status-pill" style="background:'+(step.cor?step.cor+'1c':'var(--primary-50)')+';color:'+(step.cor||'var(--primary-dark)')+'">'+ic('clock',13)+'Etapa atual: '+esc(step.name||'—')+'</div>'+
+    stepTrackerHTML(sol)+
+    '<div class="rule-mini-label" style="margin-top:24px">Histórico</div>'+
+    solHistoricoHTML(sol);
+
+  var formBody = solFormRowsHTML(d, sol);
+
   return '<div class="overlay" data-action="close-tracker-overlay"><div class="modal modal-md">'+
-    '<div class="modal-head"><div><h3>Solicitação enviada!</h3><p>'+esc(p?p.name:'')+'</p></div><button class="icon-btn" data-action="close-tracker">'+ic('x',16)+'</button></div>'+
-    '<div class="modal-body">'+stepTrackerHTML(sol)+'</div>'+
+    '<div class="modal-head"><div><h3>Solicitação enviada!</h3><p>Rascunho #'+esc(sol.id)+' · '+esc(p?p.name:'')+'</p></div><button class="icon-btn" data-action="close-tracker">'+ic('x',16)+'</button></div>'+
+    '<div class="tracker-modal-tabs">'+
+      '<button class="req-detail-tab'+(tab==='status'?' active':'')+'" data-action="set-tracker-tab" data-tab="status">Status</button>'+
+      '<button class="req-detail-tab'+(tab==='formulario'?' active':'')+'" data-action="set-tracker-tab" data-tab="formulario">Formulário</button>'+
+    '</div>'+
+    '<div class="modal-body">'+(tab==='formulario'?formBody:statusBody)+'</div>'+
     '<div class="modal-foot"><button class="btn btn-primary" data-action="close-tracker">Fechar</button></div>'+
   '</div></div>';
 }
@@ -2371,20 +2530,13 @@ function requestModalHTML(){
   var p = currentProcess();
   var step = findStep(sol.stepId) || {};
 
-  var formRows = d.formFields.map(function(f){
-    if (f.type==='section') return '<div class="rule-mini-label" style="margin-top:14px">'+esc(f.titulo||'Seção')+'</div>'+(f.descricao?'<div class="field-hint" style="margin:-4px 0 8px">'+esc(f.descricao)+'</div>':'');
-    var val = sol.valores[f.id];
-    return '<div class="req-field-row"><div class="req-field-label">'+esc(f.label)+'</div><div class="req-field-value">'+(val?esc(val):'<em>—</em>')+'</div></div>';
-  }).join('');
+  var formRows = solFormRowsHTML(d, sol);
 
   var anexosHTML = (sol.anexos&&sol.anexos.length) ? '<div class="req-anexos-row">'+sol.anexos.map(function(a){
     return '<div class="req-anexo-chip">'+ic('doc',13)+'<span>'+esc(a.nome)+'</span><span class="req-anexo-size">'+esc(a.tamanho||'')+'</span></div>';
   }).join('')+'</div>' : '<div class="field-hint">Nenhum anexo.</div>';
 
-  var historico = (sol.historico||[]).slice().reverse();
-  var historicoHTML = historico.length ? '<div class="req-hist-list">'+historico.map(function(h){
-    return '<div class="req-hist-item"><div class="req-hist-dot"></div><div><div class="req-hist-text">'+esc(h.texto)+'</div><div class="req-hist-date">'+esc(h.data)+'</div></div></div>';
-  }).join('')+'</div>' : '<div class="field-hint">Nenhum histórico ainda.</div>';
+  var historicoHTML = solHistoricoHTML(sol);
 
   var extraFieldsHTML = (step.camposExtras||[]).length ? step.camposExtras.map(function(f){
     return '<div class="field-row"><label class="field-label">'+esc(f.label)+'</label><input class="input" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'" value="'+esc(sol.valores[f.id]||'')+'"/></div>';
@@ -2396,7 +2548,7 @@ function requestModalHTML(){
   return '<div class="overlay" data-action="close-requestmodal-overlay"><div class="modal request-modal">'+
     '<div class="modal-head">'+
       '<div class="req-modal-head-left">'+
-        '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+p.icon+'</div>'+
+        '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,20)+'</div>'+
         '<div><h3>'+esc(p?p.name:'')+'</h3><p>'+esc(p?p.description:'')+'</p></div>'+
       '</div>'+
       '<button class="icon-btn" data-action="close-requestmodal">'+ic('x',16)+'</button>'+
@@ -2776,14 +2928,14 @@ function renderModal(){
 }
 function wizardModalHTML(){
   var w = state.wizardDraft;
-  return '<div class="overlay" data-action="close-wizard-overlay"><div class="modal modal-md">'+
+  return '<div class="overlay" data-action="close-wizard-overlay"><div class="modal modal-wizard">'+
     '<div class="modal-head"><div><h3>Criar processo</h3><p>Nome, descrição e identidade visual</p></div><button class="icon-btn" data-action="close-wizard">'+ic('x',16)+'</button></div>'+
     '<div class="modal-body"><div class="wizard-grid">'+
       '<div>'+
         '<div class="field-row"><label class="field-label">Nome do processo</label><input class="input" id="wz-name" placeholder="Ex: Solicitação de Home Office" value="'+esc(w.name)+'" data-bind="wizard.name"/></div>'+
         '<div class="field-row"><label class="field-label">Descrição</label><textarea class="textarea" placeholder="Explique em uma frase para que serve este processo" data-bind="wizard.description">'+esc(w.description)+'</textarea></div>'+
         '<div class="field-row"><label class="field-label">Categoria</label><select class="select" data-bind="wizard.category">'+CATEGORIES.map(function(c){return '<option'+(c===w.category?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>'+
-        '<div class="field-row"><label class="field-label">Ícone</label><div class="icon-grid">'+ICON_OPTIONS.map(function(i){return '<button type="button" class="icon-swatch'+(i===w.icon?' selected':'')+'" data-action="wz-set-icon" data-icon="'+i+'">'+i+'</button>';}).join('')+'</div></div>'+
+        '<div class="field-row"><label class="field-label">Ícone</label><div class="icon-grid">'+ICON_OPTIONS.map(function(i){return '<button type="button" class="icon-swatch'+(i===w.icon?' selected':'')+'" data-action="wz-set-icon" data-icon="'+i+'">'+ic(i,18)+'</button>';}).join('')+'</div></div>'+
         '<div class="field-row" style="margin-bottom:0"><label class="field-label">Cor</label><div class="color-grid">'+COLOR_OPTIONS.map(function(c){return '<button type="button" class="color-swatch'+(c.v===w.color?' selected':'')+'" style="background:'+c.v+'" data-action="wz-set-color" data-color="'+c.v+'"></button>';}).join('')+'</div></div>'+
       '</div>'+
       '<div class="preview-panel" id="wz-preview"><div class="pp-label">Pré-visualização</div>'+processCardHTML(Object.assign({},w,{id:'preview',status:'draft',updatedAt:'agora'}))+'</div>'+
@@ -2799,7 +2951,7 @@ function editGeneralModalHTML(){
       '<div class="field-row"><label class="field-label">Nome do processo</label><input class="input" data-bind="p.name" value="'+esc(p.name)+'"/></div>'+
       '<div class="field-row"><label class="field-label">Descrição</label><textarea class="textarea" data-bind="p.description">'+esc(p.description)+'</textarea></div>'+
       '<div class="field-row"><label class="field-label">Categoria</label><select class="select" data-bind="p.category">'+CATEGORIES.map(function(c){return '<option'+(c===p.category?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>'+
-      '<div class="field-row"><label class="field-label">Ícone</label><div class="icon-grid">'+ICON_OPTIONS.map(function(i){return '<button type="button" class="icon-swatch'+(i===p.icon?' selected':'')+'" data-action="set-icon" data-icon="'+i+'">'+i+'</button>';}).join('')+'</div></div>'+
+      '<div class="field-row"><label class="field-label">Ícone</label><div class="icon-grid">'+ICON_OPTIONS.map(function(i){return '<button type="button" class="icon-swatch'+(i===p.icon?' selected':'')+'" data-action="set-icon" data-icon="'+i+'">'+ic(i,18)+'</button>';}).join('')+'</div></div>'+
       '<div class="field-row" style="margin-bottom:0"><label class="field-label">Cor</label><div class="color-grid">'+COLOR_OPTIONS.map(function(c){return '<button type="button" class="color-swatch'+(c.v===p.color?' selected':'')+'" style="background:'+c.v+'" data-action="set-color" data-color="'+c.v+'"></button>';}).join('')+'</div></div>'+
     '</div>'+
     '<div class="modal-foot"><button class="btn btn-primary" data-action="close-editgeneral">'+ic('check',14)+'Concluído</button></div>'+
@@ -2994,6 +3146,7 @@ document.addEventListener('click', function(e){
   if (/-overlay$/.test(action) && e.target !== t) return;
   if (state.openStepMenuFor && action!=='toggle-step-menu') state.openStepMenuFor = null;
   if (state.pvToolbarMenu && !/^(toggle-pv-menu|pv-toggle-filter-step|pv-clear-filter|pv-set-group|pv-set-sort|pv-mock-export)$/.test(action)) state.pvToolbarMenu = null;
+  if (state.intranetToolbarMenu && !/^(toggle-intranet-menu|intranet-toggle-filter-proc|intranet-clear-filter|intranet-set-sort)$/.test(action)) state.intranetToolbarMenu = null;
   if (state.pvColMenuFor && action!=='toggle-pv-col-menu') state.pvColMenuFor = null;
   var handled = true;
   switch(action){
@@ -3033,7 +3186,7 @@ document.addEventListener('click', function(e){
     case 'use-template': {
       var tpl = PROCESS_TEMPLATES[+t.dataset.idx];
       state.wizardOpen = true;
-      state.wizardDraft = {name:tpl.label, description:tpl.desc, category:tpl.category, icon:tpl.emoji, color:tpl.color};
+      state.wizardDraft = {name:tpl.label, description:tpl.desc, category:tpl.category, icon:tpl.icon, color:tpl.color};
       break;
     }
     case 'toggle-active': {
@@ -3271,6 +3424,17 @@ document.addEventListener('click', function(e){
     case 'toggle-pv-list-group': { var pvlk = t.dataset.key; state.pvListCollapsed[pvlk] = !state.pvListCollapsed[pvlk]; break; }
     case 'pv-set-sort': state.pvSort = t.dataset.sort; state.pvToolbarMenu=null; break;
     case 'pv-mock-export': showToast('Exportação disponível em breve.'); state.pvToolbarMenu=null; break;
+    case 'toggle-intranet-menu': { var itm = t.dataset.menu; state.intranetToolbarMenu = state.intranetToolbarMenu===itm ? null : itm; break; }
+    case 'intranet-toggle-filter-proc': {
+      var allProcIds = enabledProcesses().map(function(p){return p.id;});
+      var curProcs = state.intranetFilterProcs ? state.intranetFilterProcs.slice() : allProcIds.slice();
+      var pidx = curProcs.indexOf(t.dataset.procid);
+      if (pidx===-1) curProcs.push(t.dataset.procid); else curProcs.splice(pidx,1);
+      state.intranetFilterProcs = (curProcs.length===allProcIds.length) ? null : curProcs;
+      break;
+    }
+    case 'intranet-clear-filter': state.intranetFilterProcs = null; break;
+    case 'intranet-set-sort': state.intranetSort = t.dataset.sort; state.intranetToolbarMenu=null; break;
     case 'open-pv-customize': {
       var dPvc = currentData(); ensureViewConfig(dPvc);
       state.pvCustomizeOpen = state.processViewTab==='list' ? 'list' : 'kanban';
@@ -3487,9 +3651,11 @@ document.addEventListener('click', function(e){
       state.novaSolicitacaoDraft = null;
       state.processViewRole = 'colaborador';
       state.trackerModalOpen = novaSol.id;
+      state.trackerModalTab = 'status';
       showToast('Solicitação enviada com sucesso!');
       break;
     }
+    case 'set-tracker-tab': state.trackerModalTab = t.dataset.tab; break;
     case 'close-tracker': case 'close-tracker-overlay': state.trackerModalOpen=null; break;
     default: handled=false;
   }

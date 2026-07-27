@@ -178,6 +178,20 @@ some quando o agrupamento já é por Etapa (ela seria redundante com o próprio
 cabeçalho do grupo) e volta a aparecer nos outros agrupamentos. Ver "O que mudou na
 v24" abaixo.
 
+**v25** — rodada de polimento pedida direto sobre a visão Administrador e a visão
+Colaborador: modal "Criar processo" bem maior (era apertado); **todos os emojis do
+protótipo viraram ícones SVG** (heroicons-style), inclusive no seletor de ícone do
+processo, nos cards de etapa e na lista da Intranet; a tela de Etapas tinha duas
+barras de rolagem sobrepostas — agora só uma; os cards de cada etapa passaram a ter
+a mesma altura; e a linha "v2 · última edição por..." saiu do cabeçalho do editor. Na
+visão Colaborador: "Minhas Pendências" ganhou um **dashboard** (KPIs de pendentes,
+atendidas, urgentes e tempo médio de espera, mais gráficos de solicitações prestes a
+vencer e todas as solicitações em aberto); "Minhas Solicitações"/"Histórico" viraram
+uma **tabela com cores e filtros**, no mesmo estilo Linear/Notion da List
+administrativa (v24); e a modal de confirmação pós-envio ganhou abas **Status**
+(etapa atual + linha do tempo do histórico) e **Formulário** (valores enviados). Ver
+"O que mudou na v25" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -816,6 +830,60 @@ aquele componente, com um visual mais próximo de ferramentas como Linear/Notion
   agrupamento é por Solicitante ou Responsável.
 - O menu "..." (editar etapa, visível só para administradores) migrou da antiga linha
   de grupo da tabela para a nova barra de grupo, mantendo o mesmo comportamento.
+
+## O que mudou na v25
+
+Rodada de ajustes pedidos direto sobre a visão Administrador (4 itens) e a visão
+Colaborador (3 itens):
+
+**Administrador**
+
+- **Modal "Criar processo" maior** — passou a usar uma classe própria
+  (`modal-wizard`, 820px em vez dos 480px padrão), com mais espaço entre o
+  formulário e o preview do card, e a grade de ícones/cores reorganizada para caber
+  confortavelmente no novo tamanho.
+- **Emojis → ícones SVG em todo o protótipo** — o seletor de ícone do processo (na
+  criação e na edição), os ícones dos 6 processos-exemplo, os 3 modelos prontos, os
+  ícones de início/fim nas Etapas e a coluna "Processo" da Intranet usavam emoji
+  (🏖️💰🖥️🛒🎓📝 etc); tudo migrou para o mesmo sistema de ícones SVG (`ic()`,
+  estilo heroicons outline) já usado no resto da interface — foram adicionados 6
+  ícones novos (carrinho, lâmpada, caixa, pasta, porta, chave de fenda) para cobrir
+  os processos-exemplo sem repetir ícone.
+- **Uma barra de rolagem só nas Etapas/Automações** — o layout `.wf-layout` não tinha
+  altura definida, então tanto o canvas quanto o painel lateral cresciam com o
+  conteúdo e empurravam a tela inteira para rolar, além de cada um rolar por conta
+  própria — resultado: duas barras visíveis ao mesmo tempo. Agora `.wf-layout` tem
+  altura fixa (`calc(100vh - 320px)`) e cada painel interno rola de forma
+  independente (`min-height:0` nos containers flex intermediários), então só existe
+  uma barra — a do painel que realmente precisa dela.
+- **Cards de etapa com altura igual** — o board de Etapas trocou
+  `align-items:flex-start` por `align-items:stretch`, então todos os cards da fileira
+  ocupam a altura do maior (o botão "Adicionar Etapa" continua alinhado ao topo).
+- **Removida a linha "v2 · última edição por Mariana Rocha (RH)"** do cabeçalho do
+  editor — informação de versionamento mockada que não agregava e poluía o header.
+
+**Colaborador**
+
+- **Dashboard em "Minhas Pendências"** — 4 KPIs (Pendentes, Atendidas — total
+  finalizado em todos os processos —, Urgentes — pendentes com o campo "Tipo de
+  solicitação" contendo "urgente" — e Tempo médio de espera, em dias desde a
+  criação) mais 2 gráficos: **Solicitações prestes a vencer** (as pendentes mais
+  próximas do prazo da etapa atual, calculado a partir do SLA de cada etapa, com
+  badge "vence hoje" / "vence em Xd" / "vencida há Xd" colorido por urgência) e
+  **Todas as solicitações em aberto** (contagem de solicitações não finalizadas,
+  agrupadas por processo, em gráfico de barras). A tabela de pendências continua
+  logo abaixo do dashboard, sem perder a navegação por clique já existente.
+- **"Minhas Solicitações" e "Histórico" viraram uma tabela com cores e filtros** —
+  no mesmo estilo sem bordas da List administrativa (v24): colunas Processo (com
+  ícone e cor do processo), Solicitante, Etapa atual (badge na cor da etapa),
+  Prioridade (badge a partir de "Tipo de solicitação", quando existir) e Criado em;
+  com **Filtrar** (por processo, via checkboxes) e **Ordenar** (mais recentes ou
+  Solicitante A-Z) no mesmo padrão de dropdown já usado na List do Administrador.
+- **Modal de confirmação pós-envio com abas** — a modal que aparecia só com a
+  trilha de etapas ganhou duas abas: **Status** (badge com a etapa atual, a trilha
+  de etapas e o histórico de atividades da solicitação) e **Formulário** (os
+  valores exatamente como foram enviados no formulário inicial), reaproveitando os
+  mesmos componentes já usados na modal de detalhes da solicitação.
 
 ## O que está implementado
 

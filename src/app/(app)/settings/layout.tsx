@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/require-user";
-import { Sidebar, SidebarNav, SidebarGroupLabel, SidebarLink } from "@/components/ui";
+import { Sidebar, SidebarNav, SidebarGroupLabel, SidebarLink, Icon, type IconName } from "@/components/ui";
 
-const generalItems = [
-  { label: "Espaços", href: "/settings/espaco" },
-  { label: "Usuários", href: "/settings/usuarios" },
-  { label: "Segurança", href: "/settings/security" },
+const generalItems: { label: string; href: string; icon: IconName }[] = [
+  { label: "Espaços", href: "/settings/espaco", icon: "dept" },
+  { label: "Usuários", href: "/settings/usuarios", icon: "users" },
+  { label: "Segurança", href: "/settings/security", icon: "shield" },
 ];
 
 export default async function SettingsLayout({ children }: { children: React.ReactNode }) {
@@ -14,19 +14,24 @@ export default async function SettingsLayout({ children }: { children: React.Rea
   return (
     <div className="flex min-h-screen">
       <Sidebar>
-        <Link href="/home" className="mb-6 flex items-center gap-2 px-2 text-sm text-muted-foreground">
-          ← Espaço
+        <Link
+          href="/home"
+          className="mb-4 flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
+          <Icon name="arrowLeft" size={15} /> Espaço
         </Link>
 
         <SidebarGroupLabel>Configurações de Conta</SidebarGroupLabel>
         <SidebarNav className="mb-4">
-          <SidebarLink href="/settings/conta">Conta</SidebarLink>
+          <SidebarLink href="/settings/conta" icon="id">
+            Conta
+          </SidebarLink>
         </SidebarNav>
 
         <SidebarGroupLabel>Gerais</SidebarGroupLabel>
         <SidebarNav>
           {generalItems.map((item) => (
-            <SidebarLink key={item.href} href={item.href}>
+            <SidebarLink key={item.href} href={item.href} icon={item.icon}>
               {item.label}
             </SidebarLink>
           ))}

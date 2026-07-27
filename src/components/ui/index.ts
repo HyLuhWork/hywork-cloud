@@ -10,3 +10,5 @@ export * from "@/components/ui/select";
 export * from "@/components/ui/switch";
 export * from "@/components/ui/badge";
 export * from "@/components/ui/sidebar";
+export * from "@/components/ui/icon";
+export * from "@/components/ui/topbar";

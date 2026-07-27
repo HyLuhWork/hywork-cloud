@@ -41,6 +41,18 @@ const config: Config = {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
         },
+        brand: {
+          DEFAULT: "var(--brand)",
+          dark: "var(--brand-dark)",
+          light: "var(--brand-light)",
+          50: "var(--brand-50)",
+        },
+        navy: {
+          800: "var(--navy-800)",
+        },
+      },
+      fontFamily: {
+        sans: ["var(--font-montserrat)", "-apple-system", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
       },
       borderRadius: {
         sm: "4px",

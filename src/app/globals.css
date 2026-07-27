@@ -32,6 +32,12 @@
 
     --info: 200 100% 50%;
     --info-foreground: 0 0% 100%;
+
+    --brand: #d74326;
+    --brand-dark: #b8371d;
+    --brand-light: #f0a08c;
+    --brand-50: #fceae4;
+    --navy-800: #104a74;
   }
 
   .dark {

@@ -584,16 +584,27 @@
   .perm-avatar{width:26px;height:26px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex:none}
   .perm-note{display:flex;gap:10px;background:var(--info-50);border-radius:var(--radius-md);padding:12px 14px;margin-top:16px;font-size:12px;color:var(--navy-800)}
   .table-wrap{overflow-x:auto;border-radius:var(--radius-lg)}
-  .perm-table tbody tr.pv-list-group-row td{background:var(--muted);cursor:pointer;font-weight:800}
-  .pv-list-group-chevron{display:flex;color:var(--ink-faint);transition:transform .12s;flex:none}
-  .pv-list-group-chevron.collapsed{transform:rotate(-90deg)}
-  .pv-list-group-name{font-size:12.5px;font-weight:800;color:var(--ink)}
   .pv-table-resp{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink)}
   .pv-table-resp-avatar{width:22px;height:22px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;flex:none}
   .pv-progress-cell{display:flex;align-items:center;gap:8px}
   .pv-progress-bar{width:70px;height:6px;border-radius:999px;background:var(--muted-strong);overflow:hidden;flex:none}
   .pv-progress-fill{height:100%;border-radius:999px}
   .pv-progress-text{font-size:11px;color:var(--ink-faint);font-weight:600;white-space:nowrap}
+
+  /* ---------- List (grouped, borderless) ---------- */
+  .pv-list{display:flex;flex-direction:column;max-width:1180px;margin:0 auto}
+  .pv-list-group{margin-bottom:6px}
+  .pv-list-group-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--radius-md);cursor:pointer}
+  .pv-list-group-icon{display:flex;flex:none}
+  .pv-list-group-chevron{display:flex;color:var(--ink-faint);transition:transform .12s;flex:none}
+  .pv-list-group-chevron.collapsed{transform:rotate(-90deg)}
+  .pv-list-group-name{font-size:12.5px;font-weight:800;color:var(--ink)}
+  .pv-list-colhead{display:grid;gap:14px;padding:8px 14px 6px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint)}
+  .pv-list-row{display:grid;gap:14px;align-items:center;padding:11px 14px;border-radius:var(--radius-md);cursor:pointer}
+  .pv-list-row:hover{background:var(--muted)}
+  .pv-list-name{font-size:13px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pv-list-date{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-muted)}
+  .pv-list-unset{font-size:11.5px;color:var(--ink-faint)}
 
   /* ---------- publish drawer ---------- */
   .checklist-item{display:flex;align-items:flex-start;gap:11px;padding:12px 0;border-bottom:1px solid var(--border)}
@@ -2104,50 +2115,87 @@ function processViewKanbanHTML(){
   }).join('');
   return '<div class="pv-board">'+cols+'</div>';
 }
+function pvGroupIconInfo(g){
+  if (state.pvGroupBy==='solicitante') return {icon:'id', color:'var(--ink-faint)'};
+  if (state.pvGroupBy==='responsavel') return {icon:'users', color:'var(--ink-faint)'};
+  var step = findStep(g.stepId);
+  if (step && step.final) return {icon:'check', color:step.cor||'var(--success)'};
+  if (step && step.initial) return {icon:'doc', color:step.cor||'var(--ink-faint)'};
+  return {icon:'clock', color:(step&&step.cor)||'var(--warning)'};
+}
 function processViewListHTML(){
   var d = currentData();
   ensureViewConfig(d);
   var sols = pvFilteredSortedSolicitacoes(d);
   var extraFields = (d.viewConfig.tableFields||[]).map(function(fid){ return d.formFields.find(function(f){return f.id===fid;}); }).filter(Boolean);
-  var headExtra = extraFields.map(function(f){ return '<th style="text-align:left">'+esc(f.label)+'</th>'; }).join('');
   var totalSteps = d.steps.length;
-  var colCount = 5 + extraFields.length;
+  var showEtapaCol = state.pvGroupBy!=='etapa';
+  var tipoField = tipoSolicitacaoField(d);
+  var isAdmin = state.processViewRole!=='colaborador';
+
+  var cols = ['minmax(160px,1.6fr)','90px'];
+  if (showEtapaCol) cols.push('150px');
+  cols.push('130px','180px','110px');
+  extraFields.forEach(function(){ cols.push('120px'); });
+  var gridStyle = 'grid-template-columns:'+cols.join(' ');
+
+  var colHeadHTML = '<div class="pv-list-colhead" style="'+gridStyle+'">'+
+    '<span>Solicitante</span><span>Prioridade</span>'+
+    (showEtapaCol ? '<span>Etapa atual</span>' : '')+
+    '<span>Progresso</span><span>Responsável</span><span>Criado em</span>'+
+    extraFields.map(function(f){return '<span>'+esc(f.label)+'</span>';}).join('')+
+  '</div>';
 
   function rowHTML(sol){
     var step = findStep(sol.stepId);
+    var tipoVal = tipoField ? sol.valores[tipoField.id] : null;
+    var priorityBadge = tipoVal ? '<span class="badge '+(/urgente/i.test(tipoVal)?'badge-danger':'badge-info')+'">'+esc(tipoVal)+'</span>' : '<span class="pv-list-unset">Não definido</span>';
     var stepBadge = step ? '<span class="badge" style="background:'+(step.cor?step.cor+'22':'var(--muted-strong)')+';color:'+(step.cor||'var(--ink-muted)')+'">'+esc(step.name)+'</span>' : '—';
     var respName = step && step.responsavel && step.responsavel.valor;
-    var respCell = respName ? '<div class="pv-table-resp"><span class="pv-table-resp-avatar">'+esc(initials(respName))+'</span>'+esc(respName)+'</div>' : '<span class="field-hint" style="margin:0">—</span>';
+    var respCell = respName ? '<div class="pv-table-resp"><span class="pv-table-resp-avatar">'+esc(initials(respName))+'</span>'+esc(respName)+'</div>' : '<span class="pv-list-unset">—</span>';
     var stepIdx = d.steps.findIndex(function(s){return s.id===sol.stepId;});
     var stepNum = stepIdx<0 ? 0 : stepIdx+1;
     var pct = totalSteps ? Math.round(stepNum/totalSteps*100) : 0;
     var progressCell = '<div class="pv-progress-cell"><div class="pv-progress-bar"><div class="pv-progress-fill" style="width:'+pct+'%;background:'+(step&&step.cor?step.cor:'var(--primary)')+'"></div></div><span class="pv-progress-text">'+stepNum+'/'+totalSteps+'</span></div>';
-    var extraCells = extraFields.map(function(f){ var v = sol.valores[f.id]; return '<td style="text-align:left">'+(v?esc(v):'—')+'</td>'; }).join('');
-    return '<tr data-action="open-request-modal" data-id="'+sol.id+'" style="cursor:pointer">'+
-      '<td style="text-align:left;padding-left:16px">'+esc(sol.solicitante)+'</td>'+
-      '<td style="text-align:left">'+stepBadge+'</td>'+
-      '<td style="text-align:left">'+respCell+'</td>'+
-      '<td style="text-align:left">'+progressCell+'</td>'+
-      '<td style="text-align:left">'+esc(sol.criadoEm)+'</td>'+
+    var extraCells = extraFields.map(function(f){ var v = sol.valores[f.id]; return '<span>'+(v?esc(v):'<span class="pv-list-unset">—</span>')+'</span>'; }).join('');
+    return '<div class="pv-list-row" style="'+gridStyle+'" data-action="open-request-modal" data-id="'+sol.id+'">'+
+      '<span class="pv-list-name">'+esc(sol.solicitante)+'</span>'+
+      '<span>'+priorityBadge+'</span>'+
+      (showEtapaCol ? '<span>'+stepBadge+'</span>' : '')+
+      '<span>'+progressCell+'</span>'+
+      '<span>'+respCell+'</span>'+
+      '<span class="pv-list-date">'+ic('calendar',12)+esc(sol.criadoEm)+'</span>'+
       extraCells+
-    '</tr>';
+    '</div>';
   }
 
   var groups = pvGroupedSolicitacoes(d, sols);
-  var bodyRows = groups.map(function(g){
+  var groupsHTML = groups.map(function(g){
     if (!g.items.length) return '';
     var collapsed = !!state.pvListCollapsed[g.key];
-    var groupRow = '<tr class="pv-list-group-row" data-action="toggle-pv-list-group" data-key="'+esc(g.key)+'"><td colspan="'+colCount+'">'+
+    var iconInfo = pvGroupIconInfo(g);
+    var barTint = g.cor ? g.cor+'14' : 'var(--muted)';
+    var menu = (isAdmin && g.stepId) ?
+      '<div class="pv-col-menu-wrap" style="margin-left:auto">'+
+        '<button class="icon-btn pv-col-menu-btn" data-action="toggle-pv-col-menu" data-key="'+esc(g.key)+'" title="Mais opções">'+ic('more',14)+'</button>'+
+        (state.pvColMenuFor===g.key ? '<div class="pv-col-menu-dropdown">'+
+          '<button data-action="pv-col-edit-etapa" data-stepid="'+g.stepId+'">'+ic('edit',13)+'Editar etapa</button>'+
+        '</div>' : '')+
+      '</div>' : '';
+    var groupBar = '<div class="pv-list-group-bar" style="background:'+barTint+'" data-action="toggle-pv-list-group" data-key="'+esc(g.key)+'">'+
       '<span class="pv-list-group-chevron'+(collapsed?' collapsed':'')+'">'+ic('chevronDown',13)+'</span>'+
-      '<span class="pv-col-dot" style="background:'+(g.cor||'var(--ink-faint)')+'"></span>'+
+      '<span class="pv-list-group-icon" style="color:'+iconInfo.color+'">'+ic(iconInfo.icon,13)+'</span>'+
       '<span class="pv-list-group-name">'+esc(g.label)+'</span>'+
       '<span class="pv-col-count">'+g.items.length+'</span>'+
-    '</td></tr>';
-    return groupRow+(collapsed ? '' : g.items.map(rowHTML).join(''));
+      (menu || '<span style="margin-left:auto"></span>')+
+    '</div>';
+    return '<div class="pv-list-group">'+groupBar+
+      (collapsed ? '' : colHeadHTML+g.items.map(rowHTML).join(''))+
+    '</div>';
   }).join('');
 
-  return '<div class="screen-inner" style="padding-top:20px">'+
-    (sols.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Solicitante</th><th style="text-align:left">Etapa atual</th><th style="text-align:left">Responsável</th><th style="text-align:left">Progresso</th><th style="text-align:left">Criado em</th>'+headExtra+'</tr></thead><tbody>'+bodyRows+'</tbody></table></div>' :
+  return '<div class="screen-inner" style="padding-top:16px">'+
+    (sols.length ? '<div class="pv-list">'+groupsHTML+'</div>' :
       '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nenhuma solicitação ainda</div><div class="es-sub">Assim que alguém enviar o formulário, as solicitações aparecem aqui.</div></div>')+
   '</div>';
 }

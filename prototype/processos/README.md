@@ -167,6 +167,17 @@ Também mudei o clique nos processos em "Seus Processos" (Home): processos
 **publicados** agora abrem direto no **Kanban**, em vez de cair na tela de edição —
 rascunhos continuam abrindo a edição, já que não têm nada publicado para ver.
 
+**v24** — a List da v23 usava uma tabela tradicional com bordas (a mesma da aba
+Permissões), o que ficou visualmente pesado para um agrupamento — refeita do zero
+num estilo mais parecido com Linear/Notion: sem bordas de tabela, linhas de grupo
+com fundo levemente colorido (na cor da etapa) e um ícone por tipo de agrupamento,
+cabeçalho de colunas repetido dentro de cada grupo (não uma única linha fixa no
+topo), linhas com hover sutil em vez de grades, e uma nova coluna **Prioridade**
+(a partir do campo "Tipo de solicitação", quando existir). A coluna "Etapa atual"
+some quando o agrupamento já é por Etapa (ela seria redundante com o próprio
+cabeçalho do grupo) e volta a aparecer nos outros agrupamentos. Ver "O que mudou na
+v24" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -777,6 +788,34 @@ Administrador, agora sensíveis ao papel de quem está vendo):
   **rascunhos** continuam abrindo a edição normalmente, já que ainda não têm nada
   publicado para visualizar. O botão "Editar processo" dentro da visão do processo
   continua disponível para voltar à edição a qualquer momento.
+
+## O que mudou na v24
+
+A List (v23) usava a mesma tabela com bordas da aba Permissões (`.perm-table`), o que
+ficou visualmente pesado para uma lista agrupada — redesenhada do zero, sem reusar
+aquele componente, com um visual mais próximo de ferramentas como Linear/Notion:
+
+- **Sem bordas de tabela** — linhas e cabeçalhos agora são divs em grid, não uma
+  `<table>`; a única "borda" visível é o hover sutil (fundo cinza) ao passar o mouse
+  numa linha.
+- **Barra de grupo colorida e com ícone** — o cabeçalho de cada grupo tem um fundo
+  levemente tingido na cor da etapa (ou neutro, quando agrupado por Solicitante/
+  Responsável) e um ícone que muda de acordo com o tipo de agrupamento: relógio para
+  etapas intermediárias, check verde para a etapa final, documento para a etapa
+  inicial, e um ícone de pessoa/organização para os agrupamentos por Solicitante ou
+  Responsável.
+- **Cabeçalho de colunas repetido por grupo** — em vez de uma única linha de
+  cabeçalho fixa no topo da tabela inteira, cada grupo tem o seu próprio cabeçalho de
+  colunas logo abaixo da barra — mesmo padrão do quadro de referência usado.
+- **Nova coluna Prioridade** — a partir do campo "Tipo de solicitação" do formulário,
+  quando existir (mesmo badge colorido já usado nos cards do Kanban e na modal de
+  detalhes); mostra "Não definido" quando o processo não tem esse campo.
+- **Coluna Etapa atual condicional** — como a etapa já vira o próprio cabeçalho do
+  grupo quando o agrupamento é por Etapa, a coluna "Etapa atual" some nesse caso (pra
+  não repetir a mesma informação duas vezes) e volta a aparecer normalmente quando o
+  agrupamento é por Solicitante ou Responsável.
+- O menu "..." (editar etapa, visível só para administradores) migrou da antiga linha
+  de grupo da tabela para a nova barra de grupo, mantendo o mesmo comportamento.
 
 ## O que está implementado
 

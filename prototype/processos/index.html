@@ -409,7 +409,6 @@
   /* ---------- modal de detalhes da solicitação ---------- */
   .request-modal{max-width:1400px;max-height:92vh}
   .req-modal-head-left{display:flex;align-items:center;gap:14px}
-  .req-modal-meta{font-size:11.5px;color:var(--ink-faint);margin-top:6px}
   .req-tracker-wrap{padding:14px 24px;border-bottom:1px solid var(--border);flex:none}
   .request-modal-2col{display:flex;flex:1;min-height:0;overflow:hidden}
   .req-col{overflow-y:auto;padding:20px 24px}
@@ -417,6 +416,12 @@
   .req-col-info{flex:1.15;min-width:0;border-left:1px solid var(--border)}
   .req-info-section+.req-info-section{margin-top:22px;padding-top:20px;border-top:1px solid var(--border)}
   .req-fase-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .req-form-title{font-size:16px;font-weight:800;color:var(--ink)}
+  .req-form-subtitle{font-size:12px;color:var(--ink-faint);margin-top:3px;margin-bottom:16px}
+  .req-resp-row{display:flex;align-items:center;gap:10px;margin:12px 0 18px}
+  .req-resp-avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:none}
+  .req-resp-name{font-size:12.5px;font-weight:700;color:var(--ink)}
+  .req-resp-role{font-size:11px;color:var(--ink-faint);margin-top:1px}
   .request-modal-footer{border-top:1px solid var(--border);padding:16px 24px 18px;overflow-y:auto;max-height:260px;flex:none}
   .req-detail-tabs{display:flex;gap:20px;border-bottom:1px solid var(--border);margin-bottom:14px}
   .req-detail-tab{padding:0 1px 10px;font-size:12.5px;font-weight:700;color:var(--ink-faint);border-bottom:2.5px solid transparent;margin-bottom:-1px}
@@ -470,7 +475,7 @@
   .req-action-confirm.acao-personalizada{background:var(--navy-800)}
 
   /* ---------- config panel (right side of workflow) — single flat panel, no sub-tabs ---------- */
-  .wf-panel{width:392px;flex:none;border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column}
+  .wf-panel{width:460px;flex:none;border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column}
   .wf-panel-head{padding:18px 20px;border-bottom:1px solid var(--border);flex:none}
   .wf-panel-head .wf-panel-title-row{display:flex;align-items:center;gap:8px}
   .wf-panel-head .wf-panel-title{font-size:15px;font-weight:700;border:none;background:none;padding:0;width:100%;font-family:inherit}
@@ -2293,15 +2298,15 @@ function requestModalHTML(){
     '<div class="modal-head">'+
       '<div class="req-modal-head-left">'+
         '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+p.icon+'</div>'+
-        '<div><h3>'+esc(p?p.name:'')+'</h3><p>'+esc(p?p.description:'')+'</p>'+
-        '<div class="req-modal-meta">Solicitação de <b>'+esc(sol.solicitante)+'</b> · Enviada em '+esc(sol.criadoEm)+'</div></div>'+
+        '<div><h3>'+esc(p?p.name:'')+'</h3><p>'+esc(p?p.description:'')+'</p></div>'+
       '</div>'+
       '<button class="icon-btn" data-action="close-requestmodal">'+ic('x',16)+'</button>'+
     '</div>'+
     '<div class="req-tracker-wrap">'+stepTrackerHTML(sol)+'</div>'+
     '<div class="request-modal-2col">'+
       '<div class="req-col req-col-form">'+
-        '<div class="rule-mini-label" style="margin-top:0">Formulário Inicial</div>'+
+        '<div class="req-form-title">Formulário Inicial</div>'+
+        '<div class="req-form-subtitle">Solicitação de <b>'+esc(sol.solicitante)+'</b> · Enviada em '+esc(sol.criadoEm)+'</div>'+
         formRows+
         '<div class="rule-mini-label">Anexos</div>'+anexosHTML+
       '</div>'+
@@ -2322,8 +2327,14 @@ function requestModalHTML(){
 function requestFaseColumnHTML(step, extraFieldsHTML){
   var badgeStyle = step.cor ? ' style="background:'+step.cor+'22;color:'+step.cor+'"' : '';
   var head = '<div class="req-fase-head"><span class="rule-mini-label" style="margin:0">Etapa atual</span><span class="req-step-badge"'+badgeStyle+'>'+esc(step.name||'—')+'</span></div>';
-  if (extraFieldsHTML) return head+'<div class="rule-mini-label" style="margin-top:0">Campos desta etapa</div>'+extraFieldsHTML;
-  return head+'<div class="field-hint" style="margin-top:6px">Nenhum campo adicional configurado para esta etapa.</div>';
+  var respHTML = requestResponsavelHTML(step);
+  var fieldsBlock = extraFieldsHTML ? '<div class="rule-mini-label" style="margin-top:14px">Campos desta etapa</div>'+extraFieldsHTML : '<div class="field-hint" style="margin-top:'+(respHTML?'0':'6px')+'">Nenhum campo adicional configurado para esta etapa.</div>';
+  return head+respHTML+fieldsBlock;
+}
+function requestResponsavelHTML(step){
+  if (!step.responsavel || !step.responsavel.valor) return '';
+  return '<div class="req-resp-row"><div class="req-resp-avatar">'+esc(initials(step.responsavel.valor))+'</div>'+
+    '<div><div class="req-resp-name">'+esc(step.responsavel.valor)+'</div><div class="req-resp-role">'+esc(step.responsavel.tipo||'')+'</div></div></div>';
 }
 function initials(name){
   return (name||'').split(' ').filter(Boolean).slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
@@ -2406,7 +2417,7 @@ function requestActionCardHTML(sol, step, tipo){
   return '<div class="req-action-card '+colorClass+'">'+
     '<div class="req-action-top">'+ic(meta.icon,14)+'<b>'+esc(meta.label)+'</b></div>'+
     body+
-    '<button class="btn btn-sm req-action-confirm '+colorClass+'" style="width:100%;margin-top:2px" data-action="execute-request-action" data-solid="'+sol.id+'" data-tipo="'+tipo+'">'+ic('check',13)+'Confirmar</button>'+
+    '<button class="btn btn-sm req-action-confirm '+colorClass+'" style="margin-top:4px" data-action="execute-request-action" data-solid="'+sol.id+'" data-tipo="'+tipo+'">'+ic('check',13)+'Confirmar</button>'+
   '</div>';
 }
 

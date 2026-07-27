@@ -146,6 +146,16 @@ do produto real da Hywork. O conteúdo das telas continua branco — só a "mold
 app (menu + topo) mudou de tom, o que também faz o card do seletor de workspace no
 topo do menu se destacar mais. Sem mudança no tema escuro.
 
+**v22** — dois ajustes na modal de detalhes da solicitação: os botões "Confirmar" das
+ações não ocupam mais a largura toda do card (ficaram no tamanho do texto, como um
+botão normal), e a coluna da direita passou a mostrar o **responsável pela etapa
+atual** (avatar com iniciais + nome/vínculo, ex: "Gestor direto do solicitante");
+e na coluna da esquerda, o título "Formulário Inicial" ficou maior e em preto, com um
+resumo logo abaixo ("Solicitação de X · Enviada em dd/mm/aaaa") — texto que antes
+ficava só no cabeçalho da modal e agora vive ali. Também aumentei o painel lateral do
+construtor de **Automações** (de 392px para 460px), porque a linha de condição (campo +
+operador + valor) estava apertada demais nesse espaço.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -712,6 +722,23 @@ Administrador, agora sensíveis ao papel de quem está vendo):
   - Nenhuma funcionalidade foi removida: cabeçalho com ícone/título/descrição do
     processo, progresso horizontal no topo e as abas Histórico de
     atividades/Comentários no rodapé continuam iguais à v18/v19.
+
+## O que mudou na v22
+
+- **Botões de ação no tamanho do texto** — o botão "Confirmar" de cada ação (Aprovar,
+  Reprovar, Mover Etapa, Devolver, personalizada) não estica mais 100% da largura do
+  card; agora tem o tamanho do próprio texto, como um botão normal.
+- **Responsável pela etapa atual** — a seção "Etapa atual" na coluna da direita passou
+  a mostrar quem é responsável por ela: um avatar com iniciais e o nome/vínculo
+  configurado na etapa (ex.: "Gestor direto do solicitante", "Financeiro"). Não
+  aparece em etapas de sistema, que não têm responsável configurado.
+- **"Formulário Inicial" com resumo** — o título da coluna esquerda ficou maior e em
+  preto; logo abaixo dele agora aparece "Solicitação de X · Enviada em dd/mm/aaaa"
+  (esse texto saiu do cabeçalho da modal, que ficou só com ícone, nome e descrição do
+  processo).
+- **Painel de Automações mais largo** — o painel lateral "Se... / Então..." do
+  construtor de Automações cresceu de 392px para 460px, para a linha de condição
+  (campo + operador + valor) parar de ficar espremida.
 
 ## O que está implementado
 

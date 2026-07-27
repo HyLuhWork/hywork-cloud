@@ -87,6 +87,14 @@ para a coluna da direita); a **capa/banner ficou bem mais alta**; e agora dá pa
 No geral: o fundo cinza claro do módulo Processos virou **branco**. Ver "O que mudou
 na v14" abaixo.
 
+**v15** — as áreas de canvas com fundo pontilhado (**Etapas** e **Automações**) ganharam
+de volta um fundo levemente colorido — um cinza bem claro puxado para azul — para se
+diferenciarem do restante do módulo, que segue branco. E no Formulário, agora dá para
+**adicionar uma seção diretamente pelo canvas**: um botão "Adicionar nova Seção" abre,
+inline, um editor com Nome da seção, Descrição e botões de atalho para já criar campos
+dentro dela — sem precisar arrastar da paleta e configurar pela modal. Ver "O que mudou
+na v15" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -542,6 +550,31 @@ Administrador, agora sensíveis ao papel de quem está vendo):
   internas que usam tons de cinza de propósito (hover, badges, cabeçalho de tabela,
   colunas do Kanban) continuam como estavam — a mudança foi só no fundo geral da
   página.
+
+## O que mudou na v15
+
+**No geral:**
+
+- **Fundo das áreas de canvas (Etapas e Automações)** — as duas telas com fundo
+  pontilhado (o quadro kanban de Etapas e o editor visual de Automações) ganharam um
+  fundo cinza bem claro puxado para azul (`#F3F6FA` no tema claro) por baixo da grade
+  de pontos, para se diferenciarem do resto do módulo, que continua branco puro desde a
+  v14. O tema escuro ganhou um tom equivalente (`#191E26`).
+
+**No Formulário:**
+
+- **"Adicionar nova Seção" com editor inline** — abaixo dos campos do formulário, o
+  construtor agora sempre mostra um botão "+ Adicionar nova Seção". Clicar nele cria a
+  seção e abre, na hora, um editor expandido embutido no próprio canvas: campos de
+  **Nome da seção** e **Descrição**, e uma fileira de botões de atalho — um por tipo de
+  campo — para já adicionar campos direto dentro daquela seção, sem precisar arrastar
+  da paleta e sem passar pela modal genérica de campo. Um botão "Concluir seção" fecha
+  o editor e a seção volta a aparecer como o divisor compacto (título + descrição) já
+  existente desde a v14. Seções já configuradas continuam abrindo a modal de
+  configuração ao serem clicadas, como antes — o editor inline só aparece logo depois
+  de criar a seção. Campos adicionados pelos atalhos são inseridos logo após a seção
+  correspondente (e antes da próxima seção, se houver), não sempre no fim do
+  formulário.
 
 ## O que está implementado
 

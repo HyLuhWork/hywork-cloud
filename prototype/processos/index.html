@@ -772,6 +772,8 @@ var COLOR_OPTIONS = [
   {v:'#B8860B', name:'Âmbar'}, {v:'#1E9E5A', name:'Verde'}, {v:'#8EA1C7', name:'Azul claro'},
   {v:'#0B2233', name:'Grafite'}, {v:'#7A3B12', name:'Marrom'}
 ];
+var STEP_COLOR_PALETTE = ['#8EA1C7','#1E72A1','#B8860B','#1E9E5A','#D74326','#104A74','#7A3B12','#0B2233'];
+function defaultStepColor(idx){ return STEP_COLOR_PALETTE[idx % STEP_COLOR_PALETTE.length]; }
 var FIELD_TYPES = [
   {group:'Campos básicos', items:[
     {type:'short_text', label:'Texto curto', icon:'text'},
@@ -978,6 +980,7 @@ function richProcessData(){
         {data:'14/07/2026 17:02', texto:'Recursos Humanos reprovou em "Análise do RH". Motivo: Orçamento do trimestre já esgotado. Movido para "Finalizado".'}
       ]})
   ];
+  [start, s2, sFin, s3, end].forEach(function(s, i){ s.cor = defaultStepColor(i); });
   return {
     formFields:[f1,f2,f3,f4,f5],
     formConfig:{nome:'', descricao:'', capa:null, posicao:'header', colunas:1},
@@ -1018,7 +1021,7 @@ function emptyProcessData(){
     formFields:[],
     formConfig:{nome:'', descricao:'', capa:null, posicao:'header', colunas:1},
     viewConfig: defaultViewConfig([]),
-    steps:[{id:'s_start',name:'Formulário enviado',system:true,initial:true,kind:'sistema'},{id:'s_end',name:'Finalizado',system:true,final:true,kind:'sistema'}],
+    steps:[{id:'s_start',name:'Formulário enviado',system:true,initial:true,kind:'sistema',cor:defaultStepColor(0)},{id:'s_end',name:'Finalizado',system:true,final:true,kind:'sistema',cor:defaultStepColor(1)}],
     widgets:[],
     solicitacoes:[],
     permissions:[
@@ -3034,7 +3037,7 @@ document.addEventListener('click', function(e){
     case 'confirm-addstep': {
       if (!state.newStep.name.trim()) break;
       var dd3=currentData(); var endIdx = dd3.steps.findIndex(function(s){return s.system && s.final;});
-      var ns={id:uid(), name:state.newStep.name, kind:state.newStep.kind, campos:[], regras:[]};
+      var ns={id:uid(), name:state.newStep.name, kind:state.newStep.kind, campos:[], regras:[], cor:defaultStepColor(dd3.steps.length)};
       if (needsHuman(ns.kind)){ ns.responsavel={tipo:'Estrutura Organizacional', valor:'Recursos Humanos'}; ns.sla={prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}; }
       var endStep = dd3.steps[endIdx];
       ns.regras = [makeRegra({isDefault:true, label: ns.kind==='aprovacao' ? 'Aprovar' : 'Concluir', destinoStepId: endStep?endStep.id:null})];
@@ -3084,7 +3087,7 @@ document.addEventListener('click', function(e){
       var name = inputEl ? inputEl.value.trim() : '';
       if (!name) break;
       var dd4=currentData(); var endIdx2 = dd4.steps.findIndex(function(s){return s.system && s.final;});
-      var ns2={id:uid(), name:name, kind:'aprovacao', responsavel:{tipo:'Estrutura Organizacional', valor:'Recursos Humanos'}, sla:{prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}, campos:[], regras:[]};
+      var ns2={id:uid(), name:name, kind:'aprovacao', responsavel:{tipo:'Estrutura Organizacional', valor:'Recursos Humanos'}, sla:{prazo:1,unidade:'dias',aoVencer:'Notificar responsável'}, campos:[], regras:[], cor:defaultStepColor(dd4.steps.length)};
       var endStep2 = dd4.steps[endIdx2];
       ns2.regras=[makeRegra({isDefault:true, label:'Aprovar', destinoStepId:endStep2?endStep2.id:null})];
       dd4.steps.splice(endIdx2,0,ns2);

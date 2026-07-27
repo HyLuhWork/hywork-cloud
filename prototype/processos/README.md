@@ -125,6 +125,13 @@ agora tem duas abas — **Histórico de atividades** e **Comentários** (com cam
 escrever e enviar um novo comentário); e o rótulo "Fase atual" virou **"Etapa atual"**.
 Ver "O que mudou na v18" abaixo.
 
+**v19** — as etapas passaram a ganhar uma **cor padrão automaticamente** ao serem
+criadas (rotação de 8 cores da paleta do produto), em vez de ficarem cinza até o
+administrador escolher uma manualmente. Vale para as etapas de exemplo, para etapas
+novas criadas pelo construtor e para as duas etapas de sistema (Formulário
+enviado/Finalizado). O seletor de cor continua funcionando normalmente para trocar ou
+remover a cor de qualquer etapa não-sistema.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

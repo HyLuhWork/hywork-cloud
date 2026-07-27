@@ -407,10 +407,14 @@
   .pv-card-icon-stat{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--ink-faint);font-weight:600}
 
   /* ---------- modal de detalhes da solicitação ---------- */
-  .request-modal{max-width:960px}
-  .request-modal-body{display:flex;flex:1;min-height:0;overflow:hidden}
-  .request-modal-main{flex:1;min-width:0;overflow-y:auto;padding:20px 24px}
-  .request-modal-side{width:300px;flex:none;border-left:1px solid var(--border);overflow-y:auto;padding:20px}
+  .request-modal{max-width:1400px;max-height:92vh}
+  .request-modal-3col{display:flex;flex:1;min-height:0;overflow:hidden}
+  .req-col{overflow-y:auto;padding:20px 24px}
+  .req-col-form{flex:1.3;min-width:0}
+  .req-col-fase{flex:1;min-width:0;border-left:1px solid var(--border)}
+  .req-col-acoes{width:300px;flex:none;border-left:1px solid var(--border)}
+  .req-fase-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .request-modal-footer{border-top:1px solid var(--border);padding:18px 24px;overflow-y:auto;max-height:220px;flex:none}
   .req-field-row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px}
   .req-field-row:last-of-type{border-bottom:none;margin-bottom:14px}
   .req-field-label{color:var(--ink-faint);font-weight:600}
@@ -433,10 +437,25 @@
   .tracker-step.current .tracker-label,.tracker-step.done .tracker-label{color:var(--ink);font-weight:700}
   .tracker-line{width:2px;height:16px;background:var(--muted);margin-left:10px}
   .tracker-line.done{background:var(--success)}
-  .req-action-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;margin-bottom:10px;background:var(--surface)}
-  .req-action-top{display:flex;align-items:center;gap:7px;font-size:12.5px;margin-bottom:8px;color:var(--navy-800)}
-  .req-action-top svg{color:var(--primary)}
+  .req-action-card{border-radius:var(--radius-md);padding:12px 14px;margin-bottom:10px;background:var(--muted);border-left:3px solid var(--border-strong)}
+  .req-action-card.acao-aprovar{background:var(--success-50);border-left-color:var(--success)}
+  .req-action-card.acao-reprovar{background:var(--error-50);border-left-color:var(--error)}
+  .req-action-card.acao-devolver{background:var(--warning-50);border-left-color:var(--warning)}
+  .req-action-card.acao-mover{background:var(--info-50);border-left-color:var(--info)}
+  .req-action-card.acao-personalizada{background:var(--muted);border-left-color:var(--navy-600)}
+  .req-action-top{display:flex;align-items:center;gap:7px;font-size:12.5px;margin-bottom:8px;color:var(--ink)}
+  .req-action-card.acao-aprovar .req-action-top svg{color:var(--success)}
+  .req-action-card.acao-reprovar .req-action-top svg{color:var(--error)}
+  .req-action-card.acao-devolver .req-action-top svg{color:var(--warning)}
+  .req-action-card.acao-mover .req-action-top svg{color:var(--info)}
+  .req-action-card.acao-personalizada .req-action-top svg{color:var(--navy-600)}
   .req-action-card textarea{width:100%;font-size:12px;padding:8px;margin-top:4px;min-height:60px}
+  .req-action-confirm{border-radius:var(--radius-full);color:#fff}
+  .req-action-confirm.acao-aprovar{background:var(--success)}
+  .req-action-confirm.acao-reprovar{background:var(--error)}
+  .req-action-confirm.acao-devolver{background:var(--warning)}
+  .req-action-confirm.acao-mover{background:var(--info)}
+  .req-action-confirm.acao-personalizada{background:var(--navy-800)}
 
   /* ---------- config panel (right side of workflow) — single flat panel, no sub-tabs ---------- */
   .wf-panel{width:392px;flex:none;border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column}
@@ -2222,6 +2241,7 @@ function requestModalHTML(){
   var sol = findSolicitacao(state.requestModalOpen);
   if (!sol) return '';
   var d = currentData();
+  var p = currentProcess();
   var step = findStep(sol.stepId) || {};
 
   var formRows = d.formFields.map(function(f){
@@ -2230,30 +2250,59 @@ function requestModalHTML(){
     return '<div class="req-field-row"><div class="req-field-label">'+esc(f.label)+'</div><div class="req-field-value">'+(val?esc(val):'<em>—</em>')+'</div></div>';
   }).join('');
 
+  var anexosHTML = (sol.anexos&&sol.anexos.length) ? '<div class="req-anexos-row">'+sol.anexos.map(function(a){
+    return '<div class="req-anexo-chip">'+ic('doc',13)+'<span>'+esc(a.nome)+'</span><span class="req-anexo-size">'+esc(a.tamanho||'')+'</span></div>';
+  }).join('')+'</div>' : '<div class="field-hint">Nenhum anexo.</div>';
+
   var historico = (sol.historico||[]).slice().reverse();
   var historicoHTML = historico.length ? '<div class="req-hist-list">'+historico.map(function(h){
     return '<div class="req-hist-item"><div class="req-hist-dot"></div><div><div class="req-hist-text">'+esc(h.texto)+'</div><div class="req-hist-date">'+esc(h.data)+'</div></div></div>';
   }).join('')+'</div>' : '<div class="field-hint">Nenhum histórico ainda.</div>';
 
-  var anexosHTML = (sol.anexos&&sol.anexos.length) ? '<div class="req-anexos-row">'+sol.anexos.map(function(a){
-    return '<div class="req-anexo-chip">'+ic('doc',13)+'<span>'+esc(a.nome)+'</span><span class="req-anexo-size">'+esc(a.tamanho||'')+'</span></div>';
-  }).join('')+'</div>' : '<div class="field-hint">Nenhum anexo.</div>';
-
   var extraFieldsHTML = (step.camposExtras||[]).length ? step.camposExtras.map(function(f){
     return '<div class="field-row"><label class="field-label">'+esc(f.label)+'</label><input class="input" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'" value="'+esc(sol.valores[f.id]||'')+'"/></div>';
   }).join('') : '';
 
-  return '<div class="overlay" data-action="close-requestmodal-overlay"><div class="modal modal-lg request-modal">'+
-    '<div class="modal-head"><div><div class="dh-eyebrow" style="margin-bottom:4px">Solicitação de '+esc(sol.solicitante)+'</div><h3>'+esc(step.name||'—')+'</h3><p>Enviada em '+esc(sol.criadoEm)+'</p></div><button class="icon-btn" data-action="close-requestmodal">'+ic('x',16)+'</button></div>'+
-    '<div class="request-modal-body">'+
-      '<div class="request-modal-main">'+
-        '<div class="rule-mini-label" style="margin-top:0">Formulário enviado</div>'+formRows+
-        '<div class="rule-mini-label">Histórico de atividades</div>'+historicoHTML+
+  return '<div class="overlay" data-action="close-requestmodal-overlay"><div class="modal request-modal">'+
+    '<div class="modal-head"><div><div class="dh-eyebrow" style="margin-bottom:4px">'+esc(p?p.name:'')+'</div><h3>'+esc(sol.solicitante)+'</h3><p>Enviada em '+esc(sol.criadoEm)+'</p></div><button class="icon-btn" data-action="close-requestmodal">'+ic('x',16)+'</button></div>'+
+    '<div class="request-modal-3col">'+
+      '<div class="req-col req-col-form">'+
+        '<div class="rule-mini-label" style="margin-top:0">Formulário Inicial</div>'+
+        formRows+
         '<div class="rule-mini-label">Anexos</div>'+anexosHTML+
       '</div>'+
-      '<div class="request-modal-side">'+requestSidePanelHTML(sol, step, extraFieldsHTML)+'</div>'+
+      '<div class="req-col req-col-fase">'+
+        '<div class="rule-mini-label" style="margin-top:0">Progresso</div>'+stepTrackerHTML(sol)+
+        requestFaseColumnHTML(step, extraFieldsHTML)+
+      '</div>'+
+      '<div class="req-col req-col-acoes">'+requestAcoesColumnHTML(sol, step)+'</div>'+
+    '</div>'+
+    '<div class="request-modal-footer">'+
+      '<div class="rule-mini-label" style="margin-top:0">Histórico de atividades</div>'+historicoHTML+
     '</div>'+
   '</div></div>';
+}
+function requestFaseColumnHTML(step, extraFieldsHTML){
+  var badgeStyle = step.cor ? ' style="background:'+step.cor+'22;color:'+step.cor+'"' : '';
+  var head = '<div class="req-fase-head"><span class="rule-mini-label" style="margin:0">Fase atual</span><span class="req-step-badge"'+badgeStyle+'>'+esc(step.name||'—')+'</span></div>';
+  if (extraFieldsHTML) return head+'<div class="rule-mini-label" style="margin-top:0">Campos desta etapa</div>'+extraFieldsHTML;
+  return head+'<div class="field-hint" style="margin-top:6px">Nenhum campo adicional configurado para esta etapa.</div>';
+}
+function requestAcoesColumnHTML(sol, step){
+  var isColab = state.processViewRole==='colaborador';
+  if (isColab){
+    return '<div class="rule-mini-label" style="margin-top:0">Status</div>'+
+      '<div class="field-hint">'+(step.final?'Sua solicitação foi finalizada.':'Aguardando ação do responsável por esta etapa.')+'</div>';
+  }
+  if (step.system){
+    return '<div class="rule-mini-label" style="margin-top:0">Ações disponíveis</div>'+
+      '<div class="field-hint">'+(step.final?'Esta solicitação já foi finalizada.':'Aguardando o fluxo seguir automaticamente.')+'</div>';
+  }
+  var tipos = {}; (step.regras||[]).forEach(function(r){ tipos[r.tipo]=true; });
+  var order = ['aprovar','reprovar','mover_etapa','devolver_solicitante','personalizada'];
+  var cards = order.filter(function(t){return tipos[t];}).map(function(tipo){ return requestActionCardHTML(sol, step, tipo); }).join('');
+  return '<div class="rule-mini-label" style="margin-top:0">Ações disponíveis</div>'+
+    (cards || '<div class="field-hint">Nenhuma ação configurada para esta etapa.</div>');
 }
 function stepTrackerHTML(sol){
   var d = currentData();
@@ -2264,31 +2313,19 @@ function stepTrackerHTML(sol){
     return '<div class="tracker-step '+st+'"><div class="tracker-dot">'+(st==='done'?ic('check',11):(i+1))+'</div><div class="tracker-label">'+esc(s.name)+'</div></div>'+line;
   }).join('')+'</div>';
 }
-function requestSidePanelHTML(sol, step, extraFieldsHTML){
-  var isColab = state.processViewRole==='colaborador';
-  var trackerBlock = '<div class="rule-mini-label" style="margin-top:0">Progresso</div>'+stepTrackerHTML(sol);
-  if (isColab){
-    return trackerBlock+
-      '<div class="rule-mini-label">Etapa atual</div><div class="req-step-badge">'+esc(step.name)+'</div>'+
-      '<div class="field-hint" style="margin-top:10px">'+(step.final?'Sua solicitação foi finalizada.':'Aguardando ação do responsável por esta etapa.')+'</div>';
-  }
-  if (step.system){
-    return trackerBlock+'<div class="rule-mini-label">Etapa atual</div><div class="req-step-badge">'+esc(step.name)+'</div>'+
-      '<div class="field-hint" style="margin-top:10px">'+(step.final?'Esta solicitação já foi finalizada.':'Aguardando o fluxo seguir automaticamente.')+'</div>';
-  }
-  var tipos = {}; (step.regras||[]).forEach(function(r){ tipos[r.tipo]=true; });
-  var order = ['aprovar','reprovar','mover_etapa','devolver_solicitante','personalizada'];
-  var cards = order.filter(function(t){return tipos[t];}).map(function(tipo){ return requestActionCardHTML(sol, step, tipo); }).join('');
-  return trackerBlock+'<div class="rule-mini-label">Etapa atual</div><div class="req-step-badge">'+esc(step.name)+'</div>'+
-    (extraFieldsHTML ? '<div class="rule-mini-label">Campos desta etapa</div>'+extraFieldsHTML : '')+
-    '<div class="rule-mini-label">Ações disponíveis</div>'+
-    (cards || '<div class="field-hint">Nenhuma ação configurada para esta etapa.</div>');
+function acaoColorClass(tipo){
+  if (tipo==='aprovar') return 'acao-aprovar';
+  if (tipo==='reprovar') return 'acao-reprovar';
+  if (tipo==='devolver_solicitante') return 'acao-devolver';
+  if (tipo==='mover_etapa') return 'acao-mover';
+  return 'acao-personalizada';
 }
 function requestActionCardHTML(sol, step, tipo){
   var meta = acaoTipoMeta(tipo);
   var regra = resolveRegraForTipo(step, tipo, sol);
   if (!regra) return '';
   var draft = state.reqActionDrafts[tipo] || (state.reqActionDrafts[tipo] = {});
+  var colorClass = acaoColorClass(tipo);
   var body = '';
   if (tipo==='aprovar'){
     var dest = findStep(regra.destinoStepId);
@@ -2313,10 +2350,10 @@ function requestActionCardHTML(sol, step, tipo){
       body += '<div class="field-hint" style="margin:0 0 8px">Avança para <b>'+esc(dest3.name)+'</b></div>';
     }
   }
-  return '<div class="req-action-card">'+
+  return '<div class="req-action-card '+colorClass+'">'+
     '<div class="req-action-top">'+ic(meta.icon,14)+'<b>'+esc(meta.label)+'</b></div>'+
     body+
-    '<button class="btn btn-primary btn-sm" style="width:100%;margin-top:2px" data-action="execute-request-action" data-solid="'+sol.id+'" data-tipo="'+tipo+'">'+ic('check',13)+'Confirmar</button>'+
+    '<button class="btn btn-sm req-action-confirm '+colorClass+'" style="width:100%;margin-top:2px" data-action="execute-request-action" data-solid="'+sol.id+'" data-tipo="'+tipo+'">'+ic('check',13)+'Confirmar</button>'+
   '</div>';
 }
 

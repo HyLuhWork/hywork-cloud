@@ -108,6 +108,14 @@ tela de construção. E no Colaborador, a opção de ver o quadro Kanban foi rem
 sobrou a List, tanto ao abrir pelo card do processo quanto pelo botão do rastreador após
 enviar uma solicitação. Ver "O que mudou na v16" abaixo.
 
+**v17** — modal de detalhes da solicitação bem maior e reorganizada em 3 colunas, no
+estilo Pipefy: **Formulário Inicial** (todos os dados enviados + anexos) à esquerda,
+**Fase atual** no meio (progresso da etapa + campos específicos daquela etapa) e
+**Ações disponíveis** à direita, cada ação com sua própria cor (Aprovar em verde,
+Reprovar em vermelho, Devolver em âmbar, Mover Etapa em azul, Ação personalizada em
+neutro). O Histórico de atividades virou uma faixa de rodapé com largura total. Ver "O
+que mudou na v17" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -621,6 +629,26 @@ Administrador, agora sensíveis ao papel de quem está vendo):
   List); o botão "Ver quadro" no rastreador de solicitação enviada foi removido, e o
   ícone de atalho no card do processo na Central de Processos agora abre direto a List
   ("Ver solicitações").
+
+## O que mudou na v17
+
+- **Modal de detalhes bem maior** — de 960px para até 1400px de largura (quase a tela
+  toda em telas maiores), reorganizada em 3 colunas em vez de duas, inspirada num
+  layout de referência estilo Pipefy:
+  - **Formulário Inicial** (esquerda, coluna mais larga) — todos os campos enviados no
+    formulário e os anexos. Sem mudança de conteúdo, só reorganizado.
+  - **Fase atual** (meio) — o progresso de todas as etapas (o que antes era
+    "Progresso"), o selo com o nome da etapa atual (usando a cor da etapa, se
+    configurada) e os campos específicos daquela etapa, quando existirem.
+  - **Ações disponíveis** (direita, coluna fixa de 300px) — as ações da etapa atual,
+    agora cada uma com uma cor própria: Aprovar em verde, Reprovar em vermelho,
+    Devolver para o Solicitante em âmbar, Mover Etapa em azul e Ação personalizada em
+    tom neutro. O botão "Confirmar" de cada ação usa a mesma cor, em formato de
+    pílula.
+  - **Histórico de atividades** virou uma faixa de rodapé com largura total, abaixo
+    das 3 colunas, em vez de ficar empilhado dentro da coluna da esquerda.
+  - Para o Colaborador, a coluna da direita continua mostrando só o status (sem ações),
+    como antes.
 
 ## O que está implementado
 

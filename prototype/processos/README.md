@@ -202,6 +202,21 @@ registros-exemplo agora são calculadas em relação a hoje (`offsetDateStr`), e
 protótipo continua parecendo "vivo" independente de quando for aberto. Ver "O que
 mudou na v26" abaixo.
 
+**v27** — processo de exemplo completo: **Service Desk** (categoria TI, ícone de
+headset, cor azul), sempre publicado e sempre em primeiro lugar tanto na Home do
+Administrador quanto na Central de Processos do Colaborador. Usa praticamente todo
+recurso do construtor: formulário com 9 campos (incluindo 2 campos **automáticos**
+— Solicitante e Data da solicitação, um recurso novo que não existia antes); 5
+etapas (Abertura → Triagem → Em Atendimento → Validação → Finalizado) com
+responsável, SLA (inclusive uma etapa com **"Sem SLA"**, outro recurso novo) e
+ações próprias em cada uma; campos específicos por etapa (Diagnóstico/Solução/
+Tempo gasto só em "Em Atendimento"); e 19 automações cobrindo notificações,
+alteração de campos, mudança de etapa e integrações (Webhook, API, Microsoft
+Teams, tarefa externa, agente de IA — as 2 últimas são tipos de ação novos no
+construtor). 16 solicitações de exemplo espalhadas por todas as etapas. Ver "O que
+mudou na v27" abaixo para o detalhe completo, incluindo os pequenos ajustes no
+motor do produto que essa demonstração revelou serem necessários.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -915,6 +930,109 @@ Três ajustes pontuais pedidos direto sobre a v25, todos na visão Colaborador:
   processo virava o mesmo prazo), troquei a amostragem por uma seleção espaçada ao
   longo da lista ordenada (em vez de só os 6 primeiros), pra sempre aparecer uma
   variedade de prazos no cartão, não só repetições do mesmo dia.
+
+## O que mudou na v27
+
+Missão: usar o construtor de processos já existente para montar um processo de
+**Service Desk** completo, preenchendo o máximo possível das configurações
+disponíveis — um exemplo de referência para apresentações e validação de UX.
+Ele é publicado por padrão e sempre aparece em primeiro lugar (tanto na lista de
+processos do Administrador quanto na Central de Processos do Colaborador), então
+qualquer pessoa que abrir o protótipo já vê o exemplo mais completo assim que
+entra.
+
+**Processo**
+
+- Nome **Service Desk**, categoria **TI** (nova categoria — antes só existia
+  "Tecnologia"), ícone de **headset** (novo ícone) em **azul**, descrição
+  "Processo utilizado para abertura, atendimento e resolução de chamados
+  internos."
+
+**Formulário — 9 campos**
+
+- Título do chamado (texto curto, obrigatório), Categoria (seleção única:
+  Hardware/Software/Rede/Acesso a Sistemas/Outros, obrigatório), Prioridade
+  (seleção única: Baixa/Média/Alta/Crítica, obrigatório), Descrição (texto longo,
+  obrigatório), Anexos (campo de anexo, opcional), Unidade e Departamento (seleção
+  única, obrigatórios) — obrigatoriedade configurada só onde faz sentido.
+- **Solicitante** e **Data da solicitação** como campos **automáticos** — um tipo
+  de campo novo no construtor (`auto:true`), que aparece na paleta com uma badge
+  "Automático", some do formulário de preenchimento (o solicitante não precisa
+  digitar o próprio nome) e mostra o valor real (`sol.solicitante`/`sol.criadoEm`)
+  em qualquer lugar que exiba os campos do formulário — modal de detalhes, aba
+  Formulário do tracker pós-envio etc.
+
+**Etapas — 5, com responsável, SLA, campos e ações próprias**
+
+- **Abertura** — responsável Solicitante (via um novo vínculo "Solicitante" em
+  Vínculo do colaborador), **sem SLA** (`slaNone:true` — um novo estado que a aba
+  SLA da etapa sabe exibir como "esta etapa não tem SLA definido", em vez de cair
+  no prazo padrão de 1 dia) e a ação "Enviar Solicitação".
+- **Triagem** — responsável "Equipe de Service Desk" (novo grupo), SLA de 2 horas,
+  Categoria e Prioridade liberadas para edição nesta etapa (as demais continuam só
+  para visualização, que é o padrão), ações "Encaminhar Atendimento" e "Cancelar
+  Chamado" (reprova direto para Finalizado, com justificativa obrigatória).
+- **Em Atendimento** — responsável "Técnico de TI" (novo grupo), SLA de 8 horas,
+  três campos específicos desta etapa (Diagnóstico, Solução, Tempo gasto — só
+  existem aqui, exatamente como o mecanismo de "campos da etapa" já suportava) e
+  o campo Anexos liberado para edição; ações "Resolver Chamado" (exige o
+  preenchimento de Solução antes de concluir), "Solicitar Informações" e
+  "Transferir Atendimento" (usando o tipo **Mover Etapa**, que nenhum processo do
+  protótipo usava até agora).
+- **Validação** — responsável Solicitante, SLA de 3 dias, ações "Confirmar
+  Solução" e "Reabrir Chamado".
+- **Finalizado** — etapa do sistema, responsável "Sistema", sem SLA, sem ações.
+
+**Separação Ações × Automações**
+
+Seguindo a instrução explícita do pedido: as 5 ações que avançam de etapa
+("Enviar Solicitação", "Encaminhar Atendimento", "Resolver Chamado", "Confirmar
+Solução", "Reabrir Chamado") **não têm destino direto configurado nelas** — cada
+uma é só o botão que o responsável vê. Quem move a solicitação de fato é uma
+automação do tipo "Ação executada → Mudar etapa" para cada uma. Isso expôs duas
+frases confusas no construtor quando uma ação personalizada não tem destino
+direto (mostravam "→ a definir", como se estivesse mal configurada) — corrigidas
+para "→ via automação" no card compacto das Etapas e "conclui a ação — o destino
+é definido por uma automação deste processo" na frase completa dentro da modal
+da etapa.
+
+**Automações — 19, cobrindo as 4 categorias pedidas**
+
+- *Notificações*: novo chamado → equipe de TI; técnico atribuído → notificação
+  para ele; "Solicitar Informações" executada → e-mail ao solicitante; item entra
+  em Finalizado → pesquisa de satisfação.
+- *Alteração de campos*: Prioridade = Crítica → acelera o SLA para 1 hora;
+  Categoria = Hardware → grupo responsável Infraestrutura; Categoria = Software →
+  grupo responsável Sistemas.
+- *Mudança de etapa*: as 5 automações "ação executada → mudar etapa" descritas
+  acima.
+- *SLA*: lembrete 30 min antes do vencimento; notificação ao gestor da equipe
+  quando o SLA vence.
+- *Integrações*: Webhook, Chamar API, Mensagem no Teams, Criar tarefa (sistema
+  externo) e Executar agente de IA.
+
+Duas dessas integrações não existiam no construtor — **Mensagem no Teams** e
+**Executar agente de IA** foram adicionadas como novos tipos de ação (junto com
+**Atualizar SLA** e **Definir responsável**, usados nas automações de alteração
+de campos), cada uma com seus próprios campos de configuração no painel lateral
+("Então...").
+
+**Dados de exemplo** — 16 solicitações reais espalhadas pelas 5 etapas (2 em
+Abertura, 3 em Triagem, 4 em Em Atendimento, 2 em Validação, 5 em Finalizado),
+com nomes, categorias, prioridades, unidades e departamentos variados, histórico
+narrando a passagem por cada etapa/ação, e os campos Diagnóstico/Solução/Tempo
+gasto preenchidos nos chamados que já passaram por atendimento. Indicadores (3
+KPIs + 2 gráficos) e Permissões (4 grupos, incluindo Equipe de Service Desk e
+Técnico de TI) também configurados.
+
+**Ajuste que beneficia todos os processos** — o badge de "Prioridade" no
+Kanban/List do Administrador e nas tabelas do Colaborador procurava só um campo
+chamado exatamente "Tipo de solicitação"; como o Service Desk usa "Prioridade"
+como nome do próprio campo, o badge ficava sempre "Não definido". Agora ele cai
+para um campo chamado "Prioridade" quando "Tipo de solicitação" não existe, e a
+cor do badge passou a diferenciar "Crítica" (vermelho) e "Alta" (âmbar), além de
+"Urgente" (que já existia) — sem mudar nada para os processos que já usavam
+"Tipo de solicitação".
 
 ## O que está implementado
 

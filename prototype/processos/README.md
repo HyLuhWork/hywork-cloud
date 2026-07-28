@@ -240,6 +240,38 @@ espaço reservado para ela simplesmente não aparece (em vez do placeholder
 construtor de formulário do Administrador continua com a borda tracejada,
 já que ali faz sentido parecer uma área de montagem.
 
+**v31** — mudança estrutural pedida direto: a visão **Colaborador** deixou de
+usar o mesmo shell (sidebar + topbar) da visão Administrador e virou uma
+**intranet de verdade**, no estilo de um exemplo de referência enviado
+(header horizontal, sem sidebar). O construtor de processos continua sendo,
+como sempre, coisa da visão Administrativa — só o "invólucro" ao redor da
+experiência do Colaborador mudou.
+
+- **Novo header de intranet** — logo à esquerda, menu horizontal (Página
+  Inicial, Processos, Institucional, Gente & Gestão, Conteúdos, "..."), e à
+  direita o mesmo seletor Administrador/Colaborador, tema, busca, sino de
+  notificações (com contador) e avatar de sempre — só reorganizados num
+  cabeçalho, sem a coluna lateral.
+- **Nova "Página Inicial"** — a página que a visão Colaborador mostra por
+  padrão agora é uma home de intranet de verdade, no mesmo espírito visual do
+  exemplo enviado: banner de boas-vindas, Aniversariantes, Links (com ícones,
+  sem emoji — os únicos ícones usados são os do próprio sistema de ícones SVG
+  do protótipo), PodCast (card ilustrativo), Calendário (grade real do mês
+  atual), Novos Contratados e Calendário de Férias, e Outros conteúdos
+  (Notícias/Comunicados). Todo o conteúdo é fictício/ilustrativo — o objetivo
+  é só mostrar como o módulo de Processos se encaixaria dentro de uma
+  intranet real.
+- **Item "Processos" no menu** — clicar nele abre exatamente a Central de
+  Processos que já existia (Todos os processos / Minhas Solicitações /
+  Minhas Pendências / Histórico, Kanban, List etc.) — nada dessa parte
+  mudou, só passou a viver dentro do novo cabeçalho em vez da sidebar.
+- A visão **Administrador** não foi tocada — sidebar, topbar e o construtor
+  de processos continuam idênticos a antes; só o `renderShell()` interno
+  passou a escolher entre os dois "invólucros" (sidebar-shell vs.
+  intranet-shell) de acordo com o modo selecionado, e a recriar o shell só
+  quando o modo realmente muda (evitando re-render desnecessário a cada
+  clique).
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

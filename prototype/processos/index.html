@@ -91,6 +91,77 @@
   .mode-toggle button.active{background:var(--primary);color:#fff}
   .user-chip{display:flex;align-items:center;gap:9px}
   .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex:none}
+
+  /* ---------- Intranet shell (visão Colaborador) ---------- */
+  .itn-topnav{height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 26px;border-bottom:1px solid var(--border);background:var(--shell-bg)}
+  .itn-left{display:flex;align-items:center;gap:30px;min-width:0}
+  .itn-logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;color:var(--ink);flex:none}
+  .itn-nav{display:flex;align-items:center;gap:22px;flex-wrap:nowrap;overflow:hidden}
+  .itn-link{display:flex;align-items:center;gap:4px;font-size:13.5px;font-weight:600;color:var(--ink-muted);white-space:nowrap;padding:4px 0;border-bottom:2px solid transparent}
+  .itn-link:hover{color:var(--ink)}
+  .itn-link.active{color:var(--primary);font-weight:700;border-bottom-color:var(--primary)}
+  .itn-link-more{padding:4px 2px}
+  .itn-right{display:flex;align-items:center;gap:10px;flex:none}
+  .itn-bell{position:relative}
+  .itn-bell-badge{position:absolute;top:-3px;right:-5px;background:var(--primary);color:#fff;font-size:9.5px;font-weight:800;border-radius:999px;min-width:15px;height:15px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+  .itn-avatar{cursor:pointer}
+
+  /* ---------- Intranet landing (Página Inicial) ---------- */
+  .itn-landing{padding:24px 28px 40px;max-width:1400px;margin:0 auto}
+  .itn-grid{display:grid;grid-template-columns:2fr 1fr;gap:22px;align-items:start}
+  .itn-col{display:flex;flex-direction:column;gap:20px;min-width:0}
+  .itn-banner{border-radius:var(--radius-xl);padding:34px 36px;background:linear-gradient(120deg,#0B2233 0%,#12203a 45%,#1c2b45 100%);position:relative;overflow:hidden;color:#fff}
+  .itn-banner::before{content:"";position:absolute;top:-60px;right:-40px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(215,67,38,.35),transparent 70%)}
+  .itn-banner::after{content:"";position:absolute;bottom:-70px;right:60px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(30,114,161,.4),transparent 70%)}
+  .itn-banner-title{font-size:26px;font-weight:800;line-height:1.25;position:relative}
+  .itn-banner-title em{color:var(--primary-light);font-style:normal}
+  .itn-banner-sub{font-size:13.5px;color:#C6D4E0;margin-top:10px;max-width:480px;position:relative}
+  .itn-banner-cta{font-size:12.5px;font-weight:700;color:#fff;margin-top:16px;position:relative;display:flex;align-items:center;gap:6px}
+  .itn-banner-cta b{color:var(--primary-light)}
+  .itn-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px}
+  .itn-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .itn-card-head h4{font-size:14.5px;font-weight:800;color:var(--ink)}
+  .itn-card-action{font-size:12px;font-weight:700;color:var(--primary-dark);display:flex;align-items:center;gap:4px}
+  .itn-bday-list{display:flex;gap:12px;flex-wrap:wrap}
+  .itn-bday-row{flex:1;min-width:220px;display:flex;align-items:center;gap:11px;background:var(--primary-50);border-radius:var(--radius-md);padding:10px 12px}
+  .itn-bday-avatar{width:38px;height:38px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex:none}
+  .itn-bday-name{font-size:13px;font-weight:700;color:var(--ink)}
+  .itn-bday-date{font-size:11.5px;color:var(--ink-faint);margin-top:1px}
+  .itn-bday-btn{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--primary-dark);white-space:nowrap}
+  .itn-links-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .itn-link-tile{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:var(--radius-md);padding:11px 12px}
+  .itn-link-tile-ic{width:38px;height:38px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex:none;color:#fff}
+  .itn-link-tile-title{font-size:13px;font-weight:700;color:var(--ink)}
+  .itn-link-tile-desc{font-size:11px;color:var(--ink-faint);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .itn-link-tile-more{font-size:11px;font-weight:700;color:var(--primary-dark);margin-top:3px;display:inline-flex;align-items:center;gap:3px}
+  .itn-podcast-thumb{border-radius:var(--radius-md);background:linear-gradient(135deg,#1a0f2e,#3a1550);padding:26px;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;min-height:170px;position:relative;overflow:hidden}
+  .itn-podcast-play{width:46px;height:46px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;position:absolute;top:20px;left:20px}
+  .itn-podcast-title{font-size:19px;font-weight:800;line-height:1.2;max-width:80%}
+  .mcal{width:100%}
+  .mcal-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .mcal-month{font-size:12.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:4px}
+  .mcal-arrows{display:flex;align-items:center;gap:2px;color:var(--ink-faint);font-size:12px}
+  .mcal-arrows span{padding:2px 5px;cursor:default}
+  .mcal-head{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px}
+  .mcal-wd{text-align:center;font-size:10px;font-weight:700;color:var(--ink-faint);text-transform:uppercase}
+  .mcal-body{display:grid;grid-template-columns:repeat(7,1fr);row-gap:6px}
+  .mcal-cell{text-align:center;font-size:12px;color:var(--ink);padding:5px 0;position:relative;border-radius:var(--radius-sm)}
+  .mcal-cell.muted{color:var(--ink-faint)}
+  .mcal-cell.today{background:var(--navy-800);color:#fff;font-weight:700;width:26px;height:26px;margin:0 auto;display:flex;align-items:center;justify-content:center;padding:0}
+  .mcal-dot{position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--primary)}
+  .itn-newhire{display:flex;align-items:center;gap:11px;background:var(--muted);border-radius:var(--radius-md);padding:11px 12px}
+  .itn-newhire-avatar{width:38px;height:38px;border-radius:50%;background:var(--navy-600);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex:none}
+  .itn-newhire-name{font-size:13px;font-weight:700;color:var(--ink)}
+  .itn-newhire-role{font-size:11px;color:var(--ink-faint);margin-top:1px}
+  .itn-newhire-btn{margin-left:auto;font-size:11px;font-weight:700;color:var(--primary-dark);white-space:nowrap}
+  .itn-feed-item{padding:12px 0;border-bottom:1px solid var(--border)}
+  .itn-feed-item:last-child{border-bottom:none;padding-bottom:0}
+  .itn-feed-tags{display:flex;gap:6px;margin-bottom:6px}
+  .itn-feed-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px}
+  .itn-feed-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+  .itn-feed-desc{font-size:11.5px;color:var(--ink-faint);line-height:1.4;margin-bottom:6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .itn-feed-date{font-size:10.5px;color:var(--ink-faint);display:flex;align-items:center;gap:4px}
+  @media (max-width:980px){ .itn-grid{grid-template-columns:1fr} .itn-nav{display:none} }
   .user-chip .u-name{font-size:12.5px;font-weight:600}
   .user-chip .u-mail{font-size:11px;color:var(--ink-faint)}
 
@@ -1648,10 +1719,37 @@ function render(){
 
 function renderShell(){
   var root = qs('#app-root');
-  if (root.dataset.built) { updateThemeToggle(); updateModeToggle(); return; }
-  root.dataset.built = '1';
-  root.innerHTML =
-    '<aside class="sidebar">'+
+  if (root.dataset.builtMode !== state.appMode){
+    root.dataset.builtMode = state.appMode;
+    root.innerHTML = state.appMode==='colaborador' ? intranetShellHTML() : adminShellHTML();
+  }
+  updateThemeToggle();
+  updateModeToggle();
+  updateIntranetNavActive();
+}
+function updateIntranetNavActive(){
+  var nav = qs('.itn-nav'); if (!nav) return;
+  Array.prototype.forEach.call(nav.querySelectorAll('.itn-link'), function(a){
+    var action = a.dataset.action;
+    var active = (action==='nav-intranet-landing' && state.screen==='intranet-landing') ||
+      (action==='nav-processos' && (state.screen==='intranet-home' || state.screen==='processview' || state.screen==='editor'));
+    a.classList.toggle('active', active);
+  });
+}
+function modeToggleHTML(){
+  return '<div class="mode-toggle" id="mode-toggle">'+
+      '<button data-action="set-appmode" data-mode="admin">Administrador</button>'+
+      '<button data-action="set-appmode" data-mode="colaborador">Colaborador</button>'+
+    '</div>';
+}
+function themeToggleHTML(){
+  return '<div class="theme-toggle" id="theme-toggle">'+
+      '<button data-theme-choice="light" title="Tema claro">'+ic('sun',14)+'</button>'+
+      '<button data-theme-choice="dark" title="Tema escuro">'+ic('moon',14)+'</button>'+
+    '</div>';
+}
+function adminShellHTML(){
+  return '<aside class="sidebar">'+
       '<div class="brand"><div class="brand-mark">H</div><div class="brand-name">hywork</div></div>'+
       '<div class="workspace-switcher"><div class="ws-icon">H</div><div class="ws-text"><div class="ws-title">Hywork</div><div class="ws-sub">Espaço atual</div></div>'+ic('chevronDown',14)+'</div>'+
       navItem('home','Home',false)+
@@ -1677,21 +1775,43 @@ function renderShell(){
       '<header class="topbar">'+
         '<div class="topbar-search">'+ic('search',15)+'<input type="text" placeholder="Pesquise por aqui..." /></div>'+
         '<div class="topbar-spacer"></div>'+
-        '<div class="mode-toggle" id="mode-toggle">'+
-          '<button data-action="set-appmode" data-mode="admin">Administrador</button>'+
-          '<button data-action="set-appmode" data-mode="colaborador">Colaborador</button>'+
-        '</div>'+
-        '<div class="theme-toggle" id="theme-toggle">'+
-          '<button data-theme-choice="light" title="Tema claro">'+ic('sun',14)+'</button>'+
-          '<button data-theme-choice="dark" title="Tema escuro">'+ic('moon',14)+'</button>'+
-        '</div>'+
+        modeToggleHTML()+
+        themeToggleHTML()+
         '<button class="icon-btn" title="Notificações">'+ic('bell',17)+'</button>'+
         '<div class="user-chip"><div class="avatar">LV</div><div><div class="u-name">'+esc(CURRENT_USER_NAME)+'</div><div class="u-mail">lu@hwprod.com.br</div></div></div>'+
       '</header>'+
       '<main class="screen-root" id="screen-root"></main>'+
     '</div>';
-  updateThemeToggle();
-  updateModeToggle();
+}
+function intranetShellHTML(){
+  var links = [
+    ['intranet-landing','Página Inicial','nav-intranet-landing'],
+    ['intranet-processos','Processos','nav-processos'],
+  ];
+  var navHTML = links.map(function(l){
+    var active = state.screen===l[0] || (l[0]==='intranet-processos' && (state.screen==='intranet-home' || state.screen==='processview' || state.screen==='editor'));
+    return '<a href="#" class="itn-link'+(active?' active':'')+'" data-action="'+l[2]+'">'+esc(l[1])+'</a>';
+  }).join('')+
+    '<a href="#" class="itn-link" data-action="noop">Institucional'+ic('chevronDown',12)+'</a>'+
+    '<a href="#" class="itn-link" data-action="noop">Gente &amp; Gestão'+ic('chevronDown',12)+'</a>'+
+    '<a href="#" class="itn-link" data-action="noop">Conteúdos'+ic('chevronDown',12)+'</a>'+
+    '<a href="#" class="itn-link itn-link-more" data-action="noop">'+ic('more',15)+'</a>';
+  return '<div class="app-main" style="width:100%">'+
+    '<header class="itn-topnav">'+
+      '<div class="itn-left">'+
+        '<div class="itn-logo"><div class="brand-mark">H</div><span>hywork</span></div>'+
+        '<nav class="itn-nav">'+navHTML+'</nav>'+
+      '</div>'+
+      '<div class="itn-right">'+
+        modeToggleHTML()+
+        themeToggleHTML()+
+        '<button class="icon-btn" title="Pesquisar">'+ic('search',17)+'</button>'+
+        '<button class="icon-btn itn-bell" title="Notificações">'+ic('bell',17)+'<span class="itn-bell-badge">23</span></button>'+
+        '<div class="avatar itn-avatar" title="'+esc(CURRENT_USER_NAME)+'">LV</div>'+
+      '</div>'+
+    '</header>'+
+    '<main class="screen-root" id="screen-root"></main>'+
+  '</div>';
 }
 function navItem(icon,label,active){
   var action = (label==='Processos') ? 'nav-processos' : 'noop';
@@ -1717,6 +1837,7 @@ function renderScreen(){
   var root = qs('#screen-root');
   if (state.screen==='home') root.innerHTML = homeHTML();
   else if (state.screen==='processview') root.innerHTML = processViewHTML();
+  else if (state.screen==='intranet-landing') root.innerHTML = intranetLandingHTML();
   else if (state.screen==='intranet-home') root.innerHTML = intranetHomeHTML();
   else root.innerHTML = editorHTML();
 }
@@ -2659,6 +2780,93 @@ function pvCustomizeModalHTML(){
 }
 
 /* ============ INTRANET (visão do Colaborador) ============ */
+var MONTH_NAMES_PT = ['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'];
+function miniCalendarHTML(markedDays){
+  var now = new Date();
+  var year = now.getFullYear(), month = now.getMonth(), today = now.getDate();
+  var first = new Date(year, month, 1);
+  var startOffset = first.getDay();
+  var daysInMonth = new Date(year, month+1, 0).getDate();
+  var daysInPrevMonth = new Date(year, month, 0).getDate();
+  var cells = [];
+  for (var i=0;i<startOffset;i++) cells.push({day: daysInPrevMonth-startOffset+1+i, muted:true});
+  for (var d=1; d<=daysInMonth; d++) cells.push({day:d, muted:false, today:d===today});
+  var nextDay = 1;
+  while (cells.length % 7 !== 0){ cells.push({day:nextDay++, muted:true}); }
+  var weekLabels = ['D','S','T','Q','Q','S','S'];
+  var head = weekLabels.map(function(w){return '<div class="mcal-wd">'+w+'</div>';}).join('');
+  var body = cells.map(function(c){
+    var marked = !c.muted && (markedDays||[]).indexOf(c.day)!==-1;
+    return '<div class="mcal-cell'+(c.muted?' muted':'')+(c.today?' today':'')+'">'+c.day+(marked?'<span class="mcal-dot"></span>':'')+'</div>';
+  }).join('');
+  return '<div class="mcal">'+
+    '<div class="mcal-toolbar"><span class="mcal-month">'+MONTH_NAMES_PT[month]+' de '+year+ic('chevronDown',11)+'</span><div class="mcal-arrows"><span>«</span><span>‹</span><span>›</span><span>»</span></div></div>'+
+    '<div class="mcal-head">'+head+'</div><div class="mcal-body">'+body+'</div>'+
+  '</div>';
+}
+function intranetLandingHTML(){
+  var banner = '<div class="itn-banner">'+
+      '<div class="itn-banner-title">Bem-vindo ao<br/><em>novo espaço interno!</em></div>'+
+      '<div class="itn-banner-sub">Um ambiente feito para conectar pessoas, compartilhar conhecimento e impulsionar o que nos move juntos.</div>'+
+      '<div class="itn-banner-cta">'+ic('arrowLeft',12).replace('19 12H5','5 12H19').replace('m11 18-6-6 6-6','m13 18 6-6-6-6')+' Explore. Conecte-se. <b>Faça a diferença.</b></div>'+
+    '</div>';
+
+  var bdayRows = [
+    {nome:'Luiza Vieira', data:'04/07'},
+    {nome:'Márcio Sodré', data:'19/07'}
+  ].map(function(b){
+    return '<div class="itn-bday-row"><div class="itn-bday-avatar">'+esc(initials(b.nome))+'</div>'+
+      '<div><div class="itn-bday-name">'+esc(b.nome)+'</div><div class="itn-bday-date">'+ic('calendar',11)+' '+b.data+'</div></div>'+
+      '<span class="itn-bday-btn">Desejar parabéns</span></div>';
+  }).join('');
+  var bdayCard = '<div class="itn-card"><div class="itn-card-head"><h4>Aniversariantes</h4></div><div class="itn-bday-list">'+bdayRows+'</div></div>';
+
+  var links = [
+    {icon:'gradcap', color:'#1E72A1', titulo:'Academy', desc:'Veja o fluxo do colaborador'},
+    {icon:'ai', color:'#104A74', titulo:'Agente IÃN', desc:'Nosso agente que te ajuda'},
+    {icon:'doc', color:'#0B2233', titulo:'Base de Conhecimento', desc:'Comece por aqui'},
+    {icon:'chart', color:'#D74326', titulo:'Roadmap (Clientes)', desc:'O que estamos planejando'},
+    {icon:'flow', color:'#1E9E5A', titulo:'Roadmap (Interno)', desc:'Cronograma com entregas'}
+  ].map(function(l){
+    return '<div class="itn-link-tile"><div class="itn-link-tile-ic" style="background:'+l.color+'">'+ic(l.icon,18)+'</div>'+
+      '<div style="min-width:0"><div class="itn-link-tile-title">'+esc(l.titulo)+'</div><div class="itn-link-tile-desc">'+esc(l.desc)+'</div>'+
+      '<div class="itn-link-tile-more">Ver Mais '+ic('arrowLeft',10).replace('19 12H5','5 12H19').replace('m11 18-6-6 6-6','m13 18 6-6-6-6')+'</div></div>'+
+    '</div>';
+  }).join('');
+  var linksCard = '<div class="itn-card"><div class="itn-card-head"><h4>Links</h4><span class="itn-card-action">'+ic('plus',12)+'Novo</span></div><div class="itn-links-grid">'+links+'</div></div>';
+
+  var podcastCard = '<div class="itn-card">'+
+    '<div class="itn-card-head"><h4>PodCast</h4></div>'+
+    '<div class="field-hint" style="margin:-8px 0 12px">O Futuro da Comunicação Interna nas Empresas | Hywork no 2Clicks Pod</div>'+
+    '<div class="itn-podcast-thumb"><div class="itn-podcast-play">'+ic('play',18)+'</div><div class="itn-podcast-title">O Futuro da Comunicação Interna nas Empresas</div></div>'+
+  '</div>';
+
+  var calCard = '<div class="itn-card"><div class="itn-card-head"><h4>Calendário</h4><span class="itn-card-action">'+ic('plus',12)+'Novo</span></div>'+miniCalendarHTML([8,22,28])+'</div>';
+
+  var newHireCard = '<div class="itn-card"><div class="itn-card-head"><h4>Novos Contratados</h4></div>'+
+    '<div class="itn-newhire"><div class="itn-newhire-avatar">VF</div>'+
+      '<div><div class="itn-newhire-name">Vitor Ferreira</div><div class="itn-newhire-role">'+ic('calendar',10)+' 20 de jul. de 2026 · CRO</div></div>'+
+      '<span class="itn-newhire-btn">Dar boas-vindas</span>'+
+    '</div></div>';
+
+  var feriasCard = '<div class="itn-card"><div class="itn-card-head"><h4>Calendário de Férias</h4><span class="itn-card-action">'+ic('plus',12)+'Novo</span></div>'+miniCalendarHTML([24])+'</div>';
+
+  var feedItems = [
+    {tag:'Notícias', tagClass:'badge-danger', titulo:'Release Notes — V2026 0.12', desc:'Esta atualização foca em três pilares estratégicos: fortalecimento da cultura, produtividade e experiência do colaborador.', data:'20 de julho de 2026'},
+    {tag:'Notícias', tagClass:'badge-danger', titulo:'Release Notes — V2026 0.11', desc:'O release reúne 23 itens: 16 bugs corrigidos, 2 tarefas validadas e 5 histórias, com destaque para o módulo de Processos.', data:'14 de julho de 2026'},
+    {tag:'Comunicados', tagClass:'badge-info', titulo:'Importante! Evolução da Estratégia de Publicação do Aplicativo Hywork Cloud', desc:'Estamos avançando nas adequações necessárias para disponibilizar o aplicativo em novas plataformas.', data:'13 de julho de 2026'}
+  ].map(function(f){
+    return '<div class="itn-feed-item"><div class="itn-feed-tags"><span class="itn-feed-tag '+f.tagClass+'">'+esc(f.tag)+'</span></div>'+
+      '<div class="itn-feed-title">'+esc(f.titulo)+'</div><div class="itn-feed-desc">'+esc(f.desc)+'</div>'+
+      '<div class="itn-feed-date">'+ic('calendar',10)+esc(f.data)+'</div></div>';
+  }).join('');
+  var feedCard = '<div class="itn-card"><div class="itn-card-head"><h4>Outros conteúdos</h4><span class="itn-card-action">Ver todas '+ic('arrowLeft',11).replace('19 12H5','5 12H19').replace('m11 18-6-6 6-6','m13 18 6-6-6-6')+'</span></div>'+feedItems+'</div>';
+
+  return '<div class="itn-landing"><div class="itn-grid">'+
+    '<div class="itn-col">'+banner+bdayCard+linksCard+podcastCard+'</div>'+
+    '<div class="itn-col">'+calCard+newHireCard+feriasCard+feedCard+'</div>'+
+  '</div></div>';
+}
 function intranetHomeHTML(){
   var pend = filaAprovacao();
   var tabs = [['todos','Todos os processos'],['minhas','Minhas Solicitações'],['fila','Minhas Pendências'],['historico','Histórico']];
@@ -3578,7 +3786,7 @@ document.addEventListener('click', function(e){
     case 'go-home': state.screen = state.appMode==='colaborador' ? 'intranet-home' : 'home'; state.selectedStepId=null; break;
     case 'set-appmode': {
       state.appMode = t.dataset.mode;
-      state.screen = state.appMode==='colaborador' ? 'intranet-home' : 'home';
+      state.screen = state.appMode==='colaborador' ? 'intranet-landing' : 'home';
       state.intranetTab = 'todos';
       break;
     }
@@ -3586,6 +3794,7 @@ document.addEventListener('click', function(e){
       state.screen = state.appMode==='colaborador' ? 'intranet-home' : 'home';
       break;
     }
+    case 'nav-intranet-landing': state.screen = 'intranet-landing'; break;
     case 'open-wizard':
       state.wizardOpen = true;
       state.wizardDraft = {name:'',description:'',category:CATEGORIES[0],icon:ICON_OPTIONS[0],color:COLOR_OPTIONS[0].v};

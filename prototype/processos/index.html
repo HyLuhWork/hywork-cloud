@@ -64,6 +64,10 @@
   .brand{display:flex;align-items:center;gap:9px;padding:6px 8px 14px}
   .brand-mark{width:26px;height:26px;border-radius:7px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex:none}
   .brand-name{font-weight:800;font-size:16px;letter-spacing:-.01em}
+  .hw-wordmark{font-weight:800;font-size:16px;letter-spacing:-.01em}
+  .hw-hy{color:#0B2233}
+  .hw-work{color:#1E72A1}
+  [data-theme="dark"] .hw-hy{color:#F4F4F6}
   .workspace-switcher{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--radius-md);border:1px solid var(--border);margin-bottom:14px;background:var(--muted)}
   .workspace-switcher .ws-icon{width:28px;height:28px;border-radius:7px;background:var(--ink);color:var(--surface);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex:none}
   .workspace-switcher .ws-text{flex:1;min-width:0}
@@ -880,6 +884,20 @@ function ic(name, size){
   };
   var body = p[name] || p.info;
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+body+'</svg>';
+}
+function hyworkLogoMarkHTML(size){
+  size = size || 26;
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'+
+    '<defs>'+
+      '<linearGradient id="hwOrange" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F2A25C"/><stop offset="100%" stop-color="#D74326"/></linearGradient>'+
+      '<linearGradient id="hwBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4CADDD"/><stop offset="100%" stop-color="#104A74"/></linearGradient>'+
+    '</defs>'+
+    '<path d="M20 2 A18 18 0 0 1 20 38 A9 9 0 0 1 20 20 A9 9 0 0 0 20 2 Z" fill="url(#hwOrange)"/>'+
+    '<path d="M20 38 A18 18 0 0 1 20 2 A9 9 0 0 1 20 20 A9 9 0 0 0 20 38 Z" fill="url(#hwBlue)"/>'+
+  '</svg>';
+}
+function hyworkWordmarkHTML(){
+  return '<span class="hw-wordmark"><span class="hw-hy">hy</span><span class="hw-work">work</span></span>';
 }
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
@@ -1750,7 +1768,7 @@ function themeToggleHTML(){
 }
 function adminShellHTML(){
   return '<aside class="sidebar">'+
-      '<div class="brand"><div class="brand-mark">H</div><div class="brand-name">hywork</div></div>'+
+      '<div class="brand">'+hyworkLogoMarkHTML(26)+hyworkWordmarkHTML()+'</div>'+
       '<div class="workspace-switcher"><div class="ws-icon">H</div><div class="ws-text"><div class="ws-title">Hywork</div><div class="ws-sub">Espaço atual</div></div>'+ic('chevronDown',14)+'</div>'+
       navItem('home','Home',false)+
       navItem('chart','Analytics',false)+
@@ -1799,7 +1817,7 @@ function intranetShellHTML(){
   return '<div class="app-main" style="width:100%">'+
     '<header class="itn-topnav">'+
       '<div class="itn-left">'+
-        '<div class="itn-logo"><div class="brand-mark">H</div><span>hywork</span></div>'+
+        '<div class="itn-logo">'+hyworkLogoMarkHTML(26)+hyworkWordmarkHTML()+'</div>'+
         '<nav class="itn-nav">'+navHTML+'</nav>'+
       '</div>'+
       '<div class="itn-right">'+

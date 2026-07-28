@@ -272,6 +272,13 @@ experiência do Colaborador mudou.
   quando o modo realmente muda (evitando re-render desnecessário a cada
   clique).
 
+**v32** — logo real da Hywork no lugar do quadradinho "H": um ícone circular
+em degradê (laranja → azul, nas mesmas cores já usadas no resto do produto)
+mais a marca "hywork" em dois tons (hy em navy, work em azul), como um SVG
+embutido — sem depender de nenhuma imagem externa. Aparece nos dois lugares
+onde havia só o quadrado com "H": no topo da sidebar da visão Administrador e
+no cabeçalho da intranet da visão Colaborador.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

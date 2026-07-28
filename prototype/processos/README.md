@@ -328,6 +328,26 @@ construtor de processos e o caso de uso Service Desk:
   Chamado etc.) exibem o card de configuração corretamente, sem blocos de
   condição vazios.
 
+**v34** — dois ajustes pedidos direto:
+
+- Na modal de detalhes da solicitação, as respostas do formulário inicial
+  (coluna "Formulário Inicial") deixaram de aparecer em negrito.
+- A etapa **Triagem** do Service Desk ganhou uma **"Devolver para o
+  Solicitante"** (retorna para "Formulário enviado", com justificativa
+  obrigatória) ao lado de "Encaminhar Atendimento" e "Cancelar Chamado". A
+  ação "Encaminhar Atendimento" agora exige o preenchimento de três campos
+  antes de confirmar — **Categoria**, um novo campo de texto **"Detalhes da
+  triagem"** e um novo **"Checklist de triagem"** (3 itens, todos precisam
+  estar marcados) — exibidos diretamente dentro do card da própria ação.
+  Isso exigiu generalizar o mecanismo de "Exigir preenchimento de campo"
+  das Ações personalizadas: antes só suportava **um** campo obrigatório por
+  ação (`campoPreenchimentoId`), agora suporta uma **lista** de campos
+  (`camposPreenchimentoIds`), escolhidos por uma checklist no editor em vez
+  de um único dropdown. Também foi adicionado um novo tipo de campo,
+  **Checklist**, ao construtor de formulário/campos de etapa (renderizado
+  como uma lista de caixas de seleção; "preenchido" significa todos os itens
+  marcados).
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

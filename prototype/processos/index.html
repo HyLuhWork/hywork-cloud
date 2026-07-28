@@ -937,6 +937,7 @@ var FIELD_TYPES = [
     {type:'signature', label:'Assinatura', icon:'sig'},
     {type:'user', label:'Usuário / Responsável', icon:'users'},
     {type:'department', label:'Departamento', icon:'dept'},
+    {type:'checklist', label:'Checklist', icon:'task'},
   ]},
   {group:'Estrutura', items:[
     {type:'section', label:'Divisor de seção', icon:'divider'},
@@ -1020,7 +1021,7 @@ function makeRegra(o){
   return Object.assign({
     id: uid(), tipo:'personalizada', isDefault:false, label:'', destinoStepId:null,
     exigirJustificativa:false,
-    exigirPreenchimento:false, campoPreenchimentoId:null,
+    exigirPreenchimento:false, camposPreenchimentoIds:[],
     condicoes:[{campo:'Valor total', operador:'maior ou igual a', valor:''}],
     automacoes:[]
   }, o);
@@ -1182,6 +1183,10 @@ function serviceDeskProcessData(){
   var fSolucao = {id:uid(), type:'long_text', label:'Solução', required:false};
   var fTempoGasto = {id:uid(), type:'short_text', label:'Tempo gasto', required:false, placeholder:'Ex: 45 min'};
 
+  var fDetalhesTriagem = {id:uid(), type:'long_text', label:'Detalhes da triagem', required:false};
+  var fChecklistTriagem = {id:uid(), type:'checklist', label:'Checklist de triagem', required:false,
+    options:['Categoria e prioridade conferidas','Descrição tem informação suficiente para o time técnico','Unidade/departamento confirmados com o solicitante']};
+
   var stFormularioEnviado = {id:'s_start', name:'Formulário enviado', system:true, initial:true, kind:'sistema'};
   var stAbertura = {
     id:uid(), name:'Abertura', kind:'tarefa',
@@ -1200,8 +1205,11 @@ function serviceDeskProcessData(){
       {fieldId:fCategoria.id, visibility:'editable'},
       {fieldId:fPrioridade.id, visibility:'editable'}
     ],
+    camposExtras:[fDetalhesTriagem, fChecklistTriagem],
     regras:[
-      makeRegra({tipo:'personalizada', label:'Encaminhar Atendimento', destinoStepId:null, condicoes:[]}),
+      makeRegra({tipo:'personalizada', label:'Encaminhar Atendimento', destinoStepId:null,
+        exigirPreenchimento:true, camposPreenchimentoIds:[fCategoria.id, fDetalhesTriagem.id, fChecklistTriagem.id], condicoes:[]}),
+      makeRegra({tipo:'devolver_solicitante', label:'Devolver para o Solicitante', destinoStepId:'s_start', exigirJustificativa:true}),
       makeRegra({tipo:'reprovar', label:'Cancelar Chamado', destinoStepId:null, exigirJustificativa:true, condicoes:[]})
     ]
   };
@@ -1215,7 +1223,7 @@ function serviceDeskProcessData(){
     ],
     camposExtras:[fDiagnostico, fSolucao, fTempoGasto],
     regras:[
-      makeRegra({tipo:'personalizada', label:'Resolver Chamado', destinoStepId:null, exigirPreenchimento:true, campoPreenchimentoId:fSolucao.id, condicoes:[]}),
+      makeRegra({tipo:'personalizada', label:'Resolver Chamado', destinoStepId:null, exigirPreenchimento:true, camposPreenchimentoIds:[fSolucao.id], condicoes:[]}),
       makeRegra({tipo:'personalizada', label:'Solicitar Informações', destinoStepId:null, condicoes:[]}),
       makeRegra({tipo:'mover_etapa', label:'Transferir Atendimento', destinoStepId:null, condicoes:[]})
     ]
@@ -1235,7 +1243,7 @@ function serviceDeskProcessData(){
     id:'s_end', name:'Finalizado', system:true, final:true, kind:'sistema',
     responsavel:{tipo:'Vínculo do colaborador', valor:'Sistema'}
   };
-  stTriagem.regras[1].destinoStepId = stFinalizado.id;
+  stTriagem.regras.find(function(r){return r.label==='Cancelar Chamado';}).destinoStepId = stFinalizado.id;
 
   var steps = [stFormularioEnviado, stAbertura, stTriagem, stAtendimento, stValidacao, stFinalizado];
   steps.forEach(function(s, i){ s.cor = defaultStepColor(i); });
@@ -2410,9 +2418,10 @@ function ruleSentenceHTML(step, r){
   if (r.isDefault) parts.push('Sempre que nenhuma outra ação valer');
   else if (condTxt) parts.push(condTxt.replace(/, $/,''));
   else parts.push('Sempre');
-  var campoObrig = (r.exigirPreenchimento && r.campoPreenchimentoId) ? allProcessFields().find(function(f){return f.id===r.campoPreenchimentoId;}) : null;
+  var camposObrig = (r.exigirPreenchimento && r.camposPreenchimentoIds && r.camposPreenchimentoIds.length)
+    ? allProcessFields().filter(function(f){return r.camposPreenchimentoIds.indexOf(f.id)!==-1;}) : [];
   var moveTxt = r.destinoStepId ? 'move a solicitação para '+destTxt : null;
-  var campoTxt = campoObrig ? 'exige o preenchimento de <b>'+esc(campoObrig.label)+'</b>' : null;
+  var campoTxt = camposObrig.length ? 'exige o preenchimento de '+camposObrig.map(function(f){return '<b>'+esc(f.label)+'</b>';}).join(', ') : null;
   var actionTxt = [moveTxt, campoTxt].filter(Boolean).join(' e ') || (dest ? 'move a solicitação para '+destTxt : 'conclui a ação — o destino é definido por uma automação deste processo');
   return parts[0]+', '+actionTxt+'.';
 }
@@ -2491,11 +2500,15 @@ function ruleCardHTML(step, r){
     var labelField = '<div class="field-row" style="margin-bottom:10px"><input class="input" placeholder="Nome da ação" data-bind="rule.label" data-stepid="'+step.id+'" data-regraid="'+r.id+'" value="'+esc(r.label||'')+'"/></div>';
     var condBlock = r.isDefault ? '' : optionalCondBlockHTML(step, r);
     var camposDisp = allProcessFields();
-    var campoOptions = camposDisp.map(function(f){ return '<option value="'+f.id+'"'+(f.id===r.campoPreenchimentoId?' selected':'')+'>'+esc(f.label)+'</option>'; }).join('');
-    var exigirCampoBlock = '<div class="switch-row"><div class="sr-text"><div class="sr-title">Exigir preenchimento de campo</div><div class="sr-sub">Ex: se Tipo de solicitação for X, pede que o responsável preencha um campo específico</div></div>'+
+    var camposSel = r.camposPreenchimentoIds || [];
+    var campoChecklist = camposDisp.map(function(f){
+      var checked = camposSel.indexOf(f.id)!==-1;
+      return '<label class="pv-filter-check"><input type="checkbox" data-action="toggle-rule-campo-preench" data-stepid="'+step.id+'" data-regraid="'+r.id+'" data-fieldid="'+f.id+'" '+(checked?'checked':'')+'/>'+esc(f.label)+'</label>';
+    }).join('');
+    var exigirCampoBlock = '<div class="switch-row"><div class="sr-text"><div class="sr-title">Exigir preenchimento de campo</div><div class="sr-sub">Ex: se Tipo de solicitação for X, pede que o responsável preencha um ou mais campos específicos antes de confirmar</div></div>'+
       '<label class="switch"><input type="checkbox" data-bind="rule.exigirPreenchimento" data-stepid="'+step.id+'" data-regraid="'+r.id+'" '+(r.exigirPreenchimento?'checked':'')+'/><span class="track"><span class="thumb"></span></span></label></div>'+
       (r.exigirPreenchimento ? (camposDisp.length ?
-        '<div class="rule-dest-row"><select class="select" data-bind="rule.campoPreenchimento" data-stepid="'+step.id+'" data-regraid="'+r.id+'"><option value="">Escolher campo…</option>'+campoOptions+'</select></div>' :
+        '<div class="quick-rule-row" style="flex-direction:column;align-items:flex-start;gap:6px">'+campoChecklist+'</div>' :
         '<div class="field-hint">Nenhum campo no processo ainda.</div>') : '');
     var destOptions3 = dests.map(function(s){ return '<option value="'+s.id+'"'+(s.id===r.destinoStepId?' selected':'')+'>'+esc(s.name)+'</option>'; }).join('');
     var destBlock = '<div class="rule-mini-label">Mover para a etapa (opcional)</div>'+
@@ -3231,7 +3244,7 @@ function requestModalHTML(){
   var historicoHTML = solHistoricoHTML(sol);
 
   var extraFieldsHTML = (step.camposExtras||[]).length ? step.camposExtras.map(function(f){
-    return '<div class="field-row"><label class="field-label">'+esc(f.label)+'</label><input class="input" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'" value="'+esc(sol.valores[f.id]||'')+'"/></div>';
+    return inlineRequiredFieldHTML(f, sol);
   }).join('') : '';
 
   var commentCount = (sol.comentarios||[]).length;
@@ -3327,6 +3340,31 @@ function acaoColorClass(tipo){
   if (tipo==='mover_etapa') return 'acao-mover';
   return 'acao-personalizada';
 }
+function campoPreenchidoOk(fieldId, sol){
+  var f = allProcessFields().find(function(x){return x.id===fieldId;});
+  var val = sol.valores[fieldId];
+  if (f && f.type==='checklist') return Array.isArray(val) && f.options && val.length===f.options.length;
+  return !!(val && String(val).trim());
+}
+function inlineRequiredFieldHTML(f, sol){
+  if (!f) return '';
+  var val = sol.valores[f.id];
+  if (f.type==='checklist'){
+    var checked = Array.isArray(val) ? val : [];
+    var items = (f.options||[]).map(function(opt){
+      return '<label class="pv-filter-check"><input type="checkbox" data-bind="sol.checklist" data-solid="'+sol.id+'" data-fieldid="'+f.id+'" data-item="'+esc(opt)+'" '+(checked.indexOf(opt)!==-1?'checked':'')+'/>'+esc(opt)+'</label>';
+    }).join('');
+    return '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+esc(f.label)+'</label><div class="quick-rule-row" style="flex-direction:column;align-items:flex-start;gap:6px">'+items+'</div></div>';
+  }
+  if (f.type==='long_text'){
+    return '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+esc(f.label)+'</label><textarea class="textarea" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'">'+esc(val||'')+'</textarea></div>';
+  }
+  if (f.type==='single_select' && f.options){
+    var opts = f.options.map(function(o){ return '<option value="'+esc(o)+'"'+(o===val?' selected':'')+'>'+esc(o)+'</option>'; }).join('');
+    return '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+esc(f.label)+'</label><select class="select" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'"><option value="">Escolher…</option>'+opts+'</select></div>';
+  }
+  return '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+esc(f.label)+'</label><input class="input" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'" value="'+esc(val||'')+'"/></div>';
+}
 function requestActionCardHTML(sol, step, tipo){
   var meta = acaoTipoMeta(tipo);
   var regra = resolveRegraForTipo(step, tipo, sol);
@@ -3347,10 +3385,11 @@ function requestActionCardHTML(sol, step, tipo){
     var opts = otherSteps(step.id).map(function(s){return '<option value="'+s.id+'"'+(draft.destino===s.id?' selected':'')+'>'+esc(s.name)+'</option>';}).join('');
     body = '<select class="select" data-bind="reqdraft.destino" data-tipo="mover_etapa"><option value="">Escolher etapa…</option>'+opts+'</select>';
   } else {
-    if (regra.exigirPreenchimento && regra.campoPreenchimentoId){
-      var f = allProcessFields().find(function(x){return x.id===regra.campoPreenchimentoId;});
-      var curVal = sol.valores[regra.campoPreenchimentoId] || '';
-      body += '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+esc(f?f.label:'Campo')+'</label><input class="input" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+regra.campoPreenchimentoId+'" value="'+esc(curVal)+'"/></div>';
+    if (regra.exigirPreenchimento && regra.camposPreenchimentoIds && regra.camposPreenchimentoIds.length){
+      body += regra.camposPreenchimentoIds.map(function(fid){
+        var f = allProcessFields().find(function(x){return x.id===fid;});
+        return inlineRequiredFieldHTML(f, sol);
+      }).join('');
     }
     if (regra.destinoStepId){
       var dest3 = findStep(regra.destinoStepId);
@@ -4062,6 +4101,13 @@ document.addEventListener('click', function(e){
       var st7=findStep(t.dataset.stepid); st7.regras = st7.regras.filter(function(r){return r.id!==t.dataset.regraid;});
       break;
     }
+    case 'toggle-rule-campo-preench': {
+      var r8 = findRegra(t.dataset.stepid, t.dataset.regraid);
+      r8.camposPreenchimentoIds = r8.camposPreenchimentoIds || [];
+      var idx8 = r8.camposPreenchimentoIds.indexOf(t.dataset.fieldid);
+      if (idx8>=0) r8.camposPreenchimentoIds.splice(idx8,1); else r8.camposPreenchimentoIds.push(t.dataset.fieldid);
+      break;
+    }
     case 'toggle-new-step': {
       var cur = state.openNewStepFor;
       state.openNewStepFor = (cur && cur.regraId===t.dataset.regraid) ? null : {stepId:t.dataset.stepid, regraId:t.dataset.regraid};
@@ -4207,9 +4253,13 @@ document.addEventListener('click', function(e){
       if (tipo6==='mover_etapa' && !draft6.destino){
         showToast('Escolha a etapa de destino antes de confirmar.'); break;
       }
-      if (tipo6==='personalizada' && regra6.exigirPreenchimento && regra6.campoPreenchimentoId){
-        var curVal6 = sol6.valores[regra6.campoPreenchimentoId];
-        if (!curVal6 || !String(curVal6).trim()){ showToast('Preencha o campo obrigatório antes de confirmar.'); break; }
+      if (tipo6==='personalizada' && regra6.exigirPreenchimento && regra6.camposPreenchimentoIds && regra6.camposPreenchimentoIds.length){
+        var camposFaltando6 = regra6.camposPreenchimentoIds.filter(function(fid){ return !campoPreenchidoOk(fid, sol6); });
+        if (camposFaltando6.length){
+          var faltandoField6 = allProcessFields().find(function(f){return f.id===camposFaltando6[0];});
+          showToast('Preencha o campo obrigatório "'+(faltandoField6?faltandoField6.label:'')+'" antes de confirmar.');
+          break;
+        }
       }
       var destinoId6 = tipo6==='mover_etapa' ? draft6.destino : regra6.destinoStepId;
       var destStep6 = findStep(destinoId6);
@@ -4416,7 +4466,14 @@ document.addEventListener('change', function(e){
   else if (bind==='rule.condOp') { var r3=findRegra(el.dataset.stepid, el.dataset.regraid); r3.condicoes[0]=r3.condicoes[0]||{}; r3.condicoes[0].operador=val; }
   else if (bind==='rule.exigirJustificativa') { var r5=findRegra(el.dataset.stepid, el.dataset.regraid); r5.exigirJustificativa=val; }
   else if (bind==='rule.exigirPreenchimento') { var r6=findRegra(el.dataset.stepid, el.dataset.regraid); r6.exigirPreenchimento=val; }
-  else if (bind==='rule.campoPreenchimento') { var r7=findRegra(el.dataset.stepid, el.dataset.regraid); r7.campoPreenchimentoId=val||null; }
+  else if (bind==='sol.checklist') {
+    var sol8=findSolicitacao(el.dataset.solid);
+    var arr8 = Array.isArray(sol8.valores[el.dataset.fieldid]) ? sol8.valores[el.dataset.fieldid] : [];
+    var pos8 = arr8.indexOf(el.dataset.item);
+    if (val && pos8===-1) arr8 = arr8.concat([el.dataset.item]);
+    else if (!val && pos8!==-1) arr8 = arr8.filter(function(x){return x!==el.dataset.item;});
+    sol8.valores[el.dataset.fieldid] = arr8;
+  }
   else if (bind==='automacao.evento_tipo') { var auT=findAutomacao(el.dataset.autoid); auT.evento = {tipo:val}; }
   else if (bind==='automacao.evento_campo') { var au1=findAutomacao(el.dataset.autoid); au1.evento.campoId=val; }
   else if (bind==='automacao.evento_etapa') { var au2=findAutomacao(el.dataset.autoid); au2.evento.etapaId=val; }
@@ -4426,6 +4483,7 @@ document.addEventListener('change', function(e){
   else if (bind==='automacao.acaoAlvo') { var b3=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(b3) b3.alvo=val; }
   else if (bind==='reqdraft.destino') { state.reqActionDrafts[el.dataset.tipo] = state.reqActionDrafts[el.dataset.tipo]||{}; state.reqActionDrafts[el.dataset.tipo].destino=val; }
   else if (bind==='novasol.campo') { state.novaSolicitacaoDraft.valores[el.dataset.fieldid]=val; }
+  else if (bind==='sol.campo') { var sol9=findSolicitacao(el.dataset.solid); sol9.valores[el.dataset.fieldid]=val; }
   else matched = false;
   if (matched) render();
 });

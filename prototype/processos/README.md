@@ -279,6 +279,55 @@ embutido — sem depender de nenhuma imagem externa. Aparece nos dois lugares
 onde havia só o quadrado com "H": no topo da sidebar da visão Administrador e
 no cabeçalho da intranet da visão Colaborador.
 
+**v33** — rodada de ajustes pedida direto sobre a visão Colaborador, o
+construtor de processos e o caso de uso Service Desk:
+
+- **Minhas Pendências** agora só lista solicitações paradas numa etapa com
+  pelo menos uma ação configurada (`filaAprovacao()` passou a exigir
+  `step.regras.length>0`) — etapas de backlog sem ação, como a nova
+  "Abertura" do Service Desk, não aparecem mais como pendência de ninguém.
+- As linhas de **"Solicitações prestes a vencer"** no dashboard de Minhas
+  Pendências agora são clicáveis e abrem a modal de detalhes da solicitação
+  (com a coluna de ações da etapa atual), em vez de serem só texto estático.
+- **Histórico** passou a mostrar só as solicitações finalizadas do próprio
+  usuário logado (Luiza Vieira), não mais todas as solicitações finalizadas
+  da organização — a função `historicoFinalizadas()` continua compartilhada
+  (o KPI "Atendidas" do dashboard permanece organizacional), só a aba
+  Histórico ganhou um filtro extra por `solicitante`. Foram adicionadas
+  solicitações de exemplo com Luiza Vieira como solicitante (uma em
+  andamento, duas finalizadas) para a aba deixar de aparecer vazia.
+- **Todos os processos**: o botão de "Ver solicitações" no card de cada
+  processo voltou a usar o ícone de quadro (grid/board) em vez do ícone de
+  documento. A visão do processo publicado deixou de restringir o
+  Colaborador à aba **List** — agora ele também vê Kanban e Dashboard, como
+  o Administrador.
+- **Permissões** do construtor de processos foram reduzidas de 5 para 3
+  colunas (Criar, Editar, Administrar — "Visualizar" e "Acompanhar" saíram
+  do modelo), cada uma com tooltip explicando o que ela libera: Criar
+  ("Podem criar novas solicitações e acompanhar suas solicitações"), Editar
+  ("Podem editar visualizações de quadros, lists, dashboard") e Administrar
+  ("Podem administrar a construção de processos").
+- **"Comece a partir de modelos"**, na Home do construtor: clicar num card
+  de template não abre mais o wizard direto — agora mostra antes uma modal
+  de prévia no estilo **HyStore** (o marketplace de templates), com badge
+  "HyStore", ícone/título/categoria do template, descrição, um espaço de
+  prévia em vídeo/imagem (placeholder visual, sem mídia real) e um botão
+  "Iniciar contratação" que só então segue para o wizard já pré-preenchido.
+- **Caso de uso Service Desk**: a etapa "Abertura" virou um backlog puro sem
+  nenhuma ação configurada (era uma ação "Enviar Solicitação" que não fazia
+  sentido nela), e a etapa de sistema **"Formulário enviado"** passou a vir
+  antes dela — a ordem correta agora é Formulário enviado → Abertura →
+  Triagem → Em Atendimento → Validação → Finalizado. A automação que tirava
+  o chamado do backlog foi adaptada de "ação executada" para "entrou na
+  etapa Abertura", já que não existe mais uma ação ali. Também foi corrigido
+  um bug (pré-existente, exposto pelo Service Desk por ser o primeiro
+  processo a usar bastante "Ação personalizada") em que ações sem condição
+  real configurada mostravam o editor de condição vazio em vez do link
+  opcional "+ Adicionar condição" — agora todas as ações do Service Desk
+  (Resolver Chamado, Solicitar Informações, Confirmar Solução, Reabrir
+  Chamado etc.) exibem o card de configuração corretamente, sem blocos de
+  condição vazios.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

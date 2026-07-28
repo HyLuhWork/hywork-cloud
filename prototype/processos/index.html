@@ -270,6 +270,13 @@
   .template-card:hover{border-color:var(--navy-400);box-shadow:var(--shadow-sm)}
   .template-card .tpl-ic{width:38px;height:38px;border-radius:50%;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center}
   .template-card .tpl-label{font-size:12.5px;font-weight:600;color:var(--ink)}
+  .hystore-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#fff;padding:5px 12px 5px 8px;border-radius:var(--radius-full);background:linear-gradient(90deg,#D74326,#104A74)}
+  .hystore-title-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .hystore-title{font-size:16px;font-weight:700;color:var(--ink)}
+  .hystore-category{font-size:12px;color:var(--ink-muted);margin-top:2px}
+  .hystore-desc{font-size:13px;color:var(--ink-muted);line-height:1.5;margin-bottom:16px}
+  .hystore-media{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:36px 16px;border:1.5px dashed var(--border);border-radius:var(--radius-lg);background:var(--muted);color:var(--ink-muted);font-size:12.5px}
+  .hystore-media-play{width:44px;height:44px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);color:var(--ink)}
 
   .process-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
   .process-row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer}
@@ -1143,10 +1150,10 @@ function richProcessData(){
       ]}
     ],
     permissions:[
-      {id:uid(),group:'Todos os colaboradores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:false},
-      {id:uid(),group:'Gestores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:true},
-      {id:uid(),group:'Recursos Humanos',criar:true,visualizar:true,editar:true,administrar:true,acompanhar:true},
-      {id:uid(),group:'Administradores',criar:true,visualizar:true,editar:true,administrar:true,acompanhar:true}
+      {id:uid(),group:'Todos os colaboradores',criar:true,editar:false,administrar:false},
+      {id:uid(),group:'Gestores',criar:true,editar:false,administrar:false},
+      {id:uid(),group:'Recursos Humanos',criar:true,editar:true,administrar:true},
+      {id:uid(),group:'Administradores',criar:true,editar:true,administrar:true}
     ],
     automacoes:[
       makeAutomacao({
@@ -1175,15 +1182,14 @@ function serviceDeskProcessData(){
   var fSolucao = {id:uid(), type:'long_text', label:'Solução', required:false};
   var fTempoGasto = {id:uid(), type:'short_text', label:'Tempo gasto', required:false, placeholder:'Ex: 45 min'};
 
+  var stFormularioEnviado = {id:'s_start', name:'Formulário enviado', system:true, initial:true, kind:'sistema'};
   var stAbertura = {
-    id:'s_start', name:'Abertura', kind:'tarefa', initial:true,
-    description:'O solicitante confirma a abertura do chamado antes de seguir para a triagem.',
+    id:uid(), name:'Abertura', kind:'tarefa',
+    description:'Backlog de chamados recém-abertos, aguardando a triagem da equipe de Service Desk.',
     responsavel:{tipo:'Vínculo do colaborador', valor:'Solicitante'},
     slaNone:true,
     campos:[],
-    regras:[
-      makeRegra({tipo:'personalizada', label:'Enviar Solicitação', destinoStepId:null, condicoes:[]})
-    ]
+    regras:[]
   };
   var stTriagem = {
     id:uid(), name:'Triagem', kind:'tarefa',
@@ -1231,10 +1237,9 @@ function serviceDeskProcessData(){
   };
   stTriagem.regras[1].destinoStepId = stFinalizado.id;
 
-  var steps = [stAbertura, stTriagem, stAtendimento, stValidacao, stFinalizado];
+  var steps = [stFormularioEnviado, stAbertura, stTriagem, stAtendimento, stValidacao, stFinalizado];
   steps.forEach(function(s, i){ s.cor = defaultStepColor(i); });
 
-  var regraEnviar = stAbertura.regras[0];
   var regraEncaminhar = stTriagem.regras[0];
   var regraResolver = stAtendimento.regras[0];
   var regraSolicitarInfo = stAtendimento.regras[1];
@@ -1277,7 +1282,7 @@ function serviceDeskProcessData(){
         unidade:'Matriz - São Paulo', departamento:'Operações'},
       historico:[
         {data:offsetDateTimeStr(-1,10,5), texto:'Marcos Vidal enviou a solicitação.'},
-        {data:offsetDateTimeStr(-1,10,6), texto:'Marcos Vidal executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'}
+        {data:offsetDateTimeStr(-1,10,6), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'}
       ]}),
     sdSol({stepId:stTriagem.id, solicitante:'Patrícia Lima', dias:-1,
       v:{titulo:'Erro ao emitir nota fiscal no sistema', categoria:'Software', prioridade:'Alta',
@@ -1285,7 +1290,7 @@ function serviceDeskProcessData(){
         unidade:'Matriz - São Paulo', departamento:'Financeiro'},
       historico:[
         {data:offsetDateTimeStr(-1,13,20), texto:'Patrícia Lima enviou a solicitação.'},
-        {data:offsetDateTimeStr(-1,13,21), texto:'Patrícia Lima executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'}
+        {data:offsetDateTimeStr(-1,13,21), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'}
       ]}),
     sdSol({stepId:stTriagem.id, solicitante:'Henrique Souza', dias:-1,
       v:{titulo:'Solicitação de novo notebook para contratação', categoria:'Hardware', prioridade:'Média',
@@ -1293,7 +1298,7 @@ function serviceDeskProcessData(){
         unidade:'Filial - Belo Horizonte', departamento:'Recursos Humanos'},
       historico:[
         {data:offsetDateTimeStr(-1,15,0), texto:'Henrique Souza enviou a solicitação.'},
-        {data:offsetDateTimeStr(-1,15,1), texto:'Henrique Souza executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'}
+        {data:offsetDateTimeStr(-1,15,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'}
       ]}),
 
     sdSol({stepId:stAtendimento.id, solicitante:'Camila Duarte', dias:-2,
@@ -1303,7 +1308,7 @@ function serviceDeskProcessData(){
         diagnostico:'Identificada instabilidade no concentrador de VPN da filial RJ; possível sobrecarga.', tempoGasto:'1h30'},
       historico:[
         {data:offsetDateTimeStr(-2,7,50), texto:'Camila Duarte enviou a solicitação.'},
-        {data:offsetDateTimeStr(-2,7,51), texto:'Camila Duarte executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-2,7,51), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-2,8,30), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'}
       ]}),
     sdSol({stepId:stAtendimento.id, solicitante:'Thiago Rocha', dias:-2,
@@ -1313,7 +1318,7 @@ function serviceDeskProcessData(){
         diagnostico:'Servidor de relatórios com uso de CPU acima de 90% no horário de pico.', tempoGasto:'2h'},
       historico:[
         {data:offsetDateTimeStr(-2,12,10), texto:'Thiago Rocha enviou a solicitação.'},
-        {data:offsetDateTimeStr(-2,12,11), texto:'Thiago Rocha executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-2,12,11), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-2,13,0), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'}
       ]}),
     sdSol({stepId:stAtendimento.id, solicitante:'Beatriz Nunes', dias:-1,
@@ -1323,7 +1328,7 @@ function serviceDeskProcessData(){
         diagnostico:'Licença disponível no portal de TI, aguardando instalação remota.'},
       historico:[
         {data:offsetDateTimeStr(-1,9,0), texto:'Beatriz Nunes enviou a solicitação.'},
-        {data:offsetDateTimeStr(-1,9,1), texto:'Beatriz Nunes executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-1,9,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-1,9,45), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'}
       ]}),
     sdSol({stepId:stAtendimento.id, solicitante:'Rodrigo Alves', dias:-1,
@@ -1333,7 +1338,7 @@ function serviceDeskProcessData(){
         diagnostico:'Acesso solicitado no diretório da empresa, aguardando aprovação do gestor da área.'},
       historico:[
         {data:offsetDateTimeStr(-1,11,15), texto:'Rodrigo Alves enviou a solicitação.'},
-        {data:offsetDateTimeStr(-1,11,16), texto:'Rodrigo Alves executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-1,11,16), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-1,14,0), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'}
       ]}),
 
@@ -1344,7 +1349,7 @@ function serviceDeskProcessData(){
         diagnostico:'Teclado com desgaste identificado na visita técnica.', solucao:'Teclado substituído por um novo modelo. Testado e funcionando normalmente.', tempoGasto:'20 min'},
       historico:[
         {data:offsetDateTimeStr(-3,8,0), texto:'Fernanda Castro enviou a solicitação.'},
-        {data:offsetDateTimeStr(-3,8,1), texto:'Fernanda Castro executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-3,8,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-3,9,0), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'},
         {data:offsetDateTimeStr(-2,10,30), texto:'Técnico de TI resolveu o chamado em "Em Atendimento". Avançou para "Validação".'}
       ]}),
@@ -1355,7 +1360,7 @@ function serviceDeskProcessData(){
         diagnostico:'Conta desbloqueada manualmente pelo time de TI.', solucao:'Senha redefinida e enviada por canal seguro ao solicitante.', tempoGasto:'15 min'},
       historico:[
         {data:offsetDateTimeStr(-4,9,0), texto:'Ana Souza enviou a solicitação.'},
-        {data:offsetDateTimeStr(-4,9,1), texto:'Ana Souza executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-4,9,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-4,9,40), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'},
         {data:offsetDateTimeStr(-3,11,0), texto:'Técnico de TI resolveu o chamado em "Em Atendimento". Avançou para "Validação".'}
       ]}),
@@ -1367,7 +1372,7 @@ function serviceDeskProcessData(){
         diagnostico:'Monitor validado e cabo HDMI substituído.', solucao:'Segundo monitor instalado e configurado com sucesso.', tempoGasto:'30 min'},
       historico:[
         {data:offsetDateTimeStr(-6,8,0), texto:'Bruno Lima enviou a solicitação.'},
-        {data:offsetDateTimeStr(-6,8,1), texto:'Bruno Lima executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-6,8,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-6,9,0), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'},
         {data:offsetDateTimeStr(-5,10,0), texto:'Técnico de TI resolveu o chamado em "Em Atendimento". Avançou para "Validação".'},
         {data:offsetDateTimeStr(-5,14,0), texto:'Solicitante confirmou a solução em "Validação". Avançou para "Finalizado".'}
@@ -1379,7 +1384,7 @@ function serviceDeskProcessData(){
         diagnostico:'Identificado erro de configuração após deploy da última versão.', solucao:'Rollback da versão aplicado e portal restabelecido.', tempoGasto:'3h'},
       historico:[
         {data:offsetDateTimeStr(-7,8,0), texto:'Carla Menezes enviou a solicitação.'},
-        {data:offsetDateTimeStr(-7,8,1), texto:'Carla Menezes executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-7,8,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-7,8,15), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'},
         {data:offsetDateTimeStr(-7,11,15), texto:'Técnico de TI resolveu o chamado em "Em Atendimento". Avançou para "Validação".'},
         {data:offsetDateTimeStr(-6,9,0), texto:'Solicitante confirmou a solução em "Validação". Avançou para "Finalizado".'}
@@ -1391,7 +1396,7 @@ function serviceDeskProcessData(){
         diagnostico:'Perfil de acesso criado conforme política comercial.', solucao:'Acesso liberado com perfil de vendedor.', tempoGasto:'25 min'},
       historico:[
         {data:offsetDateTimeStr(-8,9,0), texto:'Diego Ferreira enviou a solicitação.'},
-        {data:offsetDateTimeStr(-8,9,1), texto:'Diego Ferreira executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-8,9,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-8,10,0), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'},
         {data:offsetDateTimeStr(-8,15,0), texto:'Técnico de TI resolveu o chamado em "Em Atendimento". Avançou para "Validação".'},
         {data:offsetDateTimeStr(-7,10,0), texto:'Solicitante confirmou a solução em "Validação". Avançou para "Finalizado".'}
@@ -1403,7 +1408,7 @@ function serviceDeskProcessData(){
         diagnostico:'Roteador do andar com firmware desatualizado.', solucao:'Firmware atualizado e roteador reposicionado. Sinal estabilizado.', tempoGasto:'1h'},
       historico:[
         {data:offsetDateTimeStr(-9,8,0), texto:'Elaine Prado enviou a solicitação.'},
-        {data:offsetDateTimeStr(-9,8,1), texto:'Elaine Prado executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-9,8,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-9,8,30), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'},
         {data:offsetDateTimeStr(-9,11,0), texto:'Técnico de TI resolveu o chamado em "Em Atendimento". Avançou para "Validação".'},
         {data:offsetDateTimeStr(-8,9,0), texto:'Solicitante confirmou a solução em "Validação". Avançou para "Finalizado".'}
@@ -1415,10 +1420,43 @@ function serviceDeskProcessData(){
         diagnostico:'Cabo com dano físico confirmado na inspeção.', solucao:'Cabo substituído por um novo. Conexão estável.', tempoGasto:'15 min'},
       historico:[
         {data:offsetDateTimeStr(-10,8,0), texto:'Fábio Nogueira enviou a solicitação.'},
-        {data:offsetDateTimeStr(-10,8,1), texto:'Fábio Nogueira executou "Enviar Solicitação" em "Abertura". Avançou para "Triagem".'},
+        {data:offsetDateTimeStr(-10,8,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
         {data:offsetDateTimeStr(-10,9,0), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'},
         {data:offsetDateTimeStr(-10,13,0), texto:'Técnico de TI resolveu o chamado em "Em Atendimento". Avançou para "Validação".'},
         {data:offsetDateTimeStr(-9,10,0), texto:'Solicitante confirmou a solução em "Validação". Avançou para "Finalizado".'}
+      ]}),
+
+    sdSol({stepId:stTriagem.id, solicitante:'Luiza Vieira', dias:0,
+      v:{titulo:'Mouse sem fio parou de funcionar', categoria:'Hardware', prioridade:'Baixa',
+        descricao:'O mouse sem fio parou de responder de uma hora para outra, já troquei a pilha e o problema persiste.',
+        unidade:'Matriz - São Paulo', departamento:'Marketing'},
+      historico:[
+        {data:offsetDateTimeStr(0,9,15), texto:'Luiza Vieira enviou a solicitação.'},
+        {data:offsetDateTimeStr(0,9,16), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'}
+      ]}),
+    sdSol({stepId:stFinalizado.id, solicitante:'Luiza Vieira', dias:-4,
+      v:{titulo:'Solicitação de acesso ao sistema de gestão de conteúdo', categoria:'Acesso a Sistemas', prioridade:'Média',
+        descricao:'Preciso de acesso ao CMS para publicar os conteúdos do blog corporativo.',
+        unidade:'Matriz - São Paulo', departamento:'Marketing',
+        diagnostico:'Perfil de acesso criado conforme política de conteúdo.', solucao:'Acesso liberado com perfil de editor.', tempoGasto:'20 min'},
+      historico:[
+        {data:offsetDateTimeStr(-4,9,0), texto:'Luiza Vieira enviou a solicitação.'},
+        {data:offsetDateTimeStr(-4,9,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
+        {data:offsetDateTimeStr(-4,9,40), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'},
+        {data:offsetDateTimeStr(-3,11,0), texto:'Técnico de TI resolveu o chamado em "Em Atendimento". Avançou para "Validação".'},
+        {data:offsetDateTimeStr(-3,15,0), texto:'Luiza Vieira confirmou a solução em "Validação". Avançou para "Finalizado".'}
+      ]}),
+    sdSol({stepId:stFinalizado.id, solicitante:'Luiza Vieira', dias:-13,
+      v:{titulo:'Configuração de e-mail no celular corporativo', categoria:'Software', prioridade:'Baixa',
+        descricao:'Preciso configurar o e-mail corporativo no meu celular novo.',
+        unidade:'Matriz - São Paulo', departamento:'Marketing',
+        diagnostico:'Configuração validada por chamada remota.', solucao:'E-mail configurado e testado no aparelho.', tempoGasto:'15 min'},
+      historico:[
+        {data:offsetDateTimeStr(-13,10,0), texto:'Luiza Vieira enviou a solicitação.'},
+        {data:offsetDateTimeStr(-13,10,1), texto:'Chamado saiu do backlog e avançou automaticamente para "Triagem".'},
+        {data:offsetDateTimeStr(-13,10,30), texto:'Equipe de Service Desk encaminhou o atendimento em "Triagem". Avançou para "Em Atendimento".'},
+        {data:offsetDateTimeStr(-12,9,0), texto:'Técnico de TI resolveu o chamado em "Em Atendimento". Avançou para "Validação".'},
+        {data:offsetDateTimeStr(-12,14,0), texto:'Luiza Vieira confirmou a solução em "Validação". Avançou para "Finalizado".'}
       ]})
   ];
 
@@ -1445,10 +1483,10 @@ function serviceDeskProcessData(){
       ]}
     ],
     permissions:[
-      {id:uid(),group:'Todos os colaboradores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:false},
-      {id:uid(),group:'Equipe de Service Desk',criar:true,visualizar:true,editar:true,administrar:false,acompanhar:true},
-      {id:uid(),group:'Técnico de TI',criar:true,visualizar:true,editar:true,administrar:false,acompanhar:true},
-      {id:uid(),group:'Administradores de TI',criar:true,visualizar:true,editar:true,administrar:true,acompanhar:true}
+      {id:uid(),group:'Todos os colaboradores',criar:true,editar:false,administrar:false},
+      {id:uid(),group:'Equipe de Service Desk',criar:true,editar:true,administrar:false},
+      {id:uid(),group:'Técnico de TI',criar:true,editar:true,administrar:false},
+      {id:uid(),group:'Administradores de TI',criar:true,editar:true,administrar:true}
     ],
     automacoes:[
       makeAutomacao({nome:'Notificar TI sobre novo chamado',
@@ -1481,8 +1519,8 @@ function serviceDeskProcessData(){
           {id:uid(), kind:'condicao', grupos:[{id:uid(), condicoes:[{campo:'Categoria', operador:'igual a', valor:'Software'}]}]},
           {id:uid(), kind:'acao', tipo:'definir_responsavel', alvo:'Sistemas'}
         ]}),
-      makeAutomacao({nome:'Enviar Solicitação avança para Triagem',
-        evento:{tipo:'acao_executada', regraId:regraEnviar.id},
+      makeAutomacao({nome:'Chamado sai do backlog e avança para Triagem',
+        evento:{tipo:'entrou_etapa', etapaId:stAbertura.id},
         blocos:[{id:uid(), kind:'acao', tipo:'mudar_etapa', alvo:stTriagem.id}]}),
       makeAutomacao({nome:'Encaminhar Atendimento avança para Em Atendimento',
         evento:{tipo:'acao_executada', regraId:regraEncaminhar.id},
@@ -1529,7 +1567,7 @@ function emptyProcessData(){
     widgets:[],
     solicitacoes:[],
     permissions:[
-      {id:uid(),group:'Todos os colaboradores',criar:true,visualizar:true,editar:false,administrar:false,acompanhar:false}
+      {id:uid(),group:'Todos os colaboradores',criar:true,editar:false,administrar:false}
     ],
     automacoes:[]
   };
@@ -1580,6 +1618,7 @@ var state = {
   processData: seed.data,
   wizardOpen:false,
   wizardDraft:null,
+  hystoreTemplateOpen:null, // template index | null
   currentProcessId:null,
   editorTab:'workflow',
   selectedStepId:null,
@@ -1713,7 +1752,7 @@ function minhasSolicitacoes(){
 function filaAprovacao(){
   return allSolicitacoesFlat().filter(function(x){
     var step = findStepIn(x.processo, x.sol.stepId);
-    return step && !step.system && needsHuman(step.kind);
+    return step && !step.system && needsHuman(step.kind) && step.regras && step.regras.length>0;
   });
 }
 function historicoFinalizadas(){
@@ -1899,8 +1938,29 @@ function hyaBuilderHTML(){
 function templatesHTML(){
   return '<div class="fb-group-label" style="margin-top:0">Comece a partir de modelos</div>'+
     '<div class="template-row">'+PROCESS_TEMPLATES.map(function(t,i){
-      return '<button class="template-card" data-action="use-template" data-idx="'+i+'"><div class="tpl-ic">'+ic(t.icon,19)+'</div><div class="tpl-label">'+esc(t.label)+'</div></button>';
+      return '<button class="template-card" data-action="open-hystore-preview" data-idx="'+i+'"><div class="tpl-ic">'+ic(t.icon,19)+'</div><div class="tpl-label">'+esc(t.label)+'</div></button>';
     }).join('')+'</div>';
+}
+function hystorePreviewModalHTML(){
+  var tpl = PROCESS_TEMPLATES[state.hystoreTemplateOpen];
+  if (!tpl) return '';
+  return '<div class="overlay" data-action="close-hystore-preview-overlay"><div class="modal modal-md hystore-modal">'+
+    '<div class="modal-head">'+
+      '<div class="hystore-badge">'+hyworkLogoMarkHTML(15)+'<span>HyStore</span></div>'+
+      '<button class="icon-btn" data-action="close-hystore-preview">'+ic('x',16)+'</button>'+
+    '</div>'+
+    '<div class="modal-body">'+
+      '<div class="hystore-title-row"><div class="editor-icon" style="background:'+tpl.color+'1c;color:'+tpl.color+'">'+ic(tpl.icon,20)+'</div>'+
+        '<div><div class="hystore-title">'+esc(tpl.label)+'</div><div class="hystore-category">'+esc(tpl.category)+'</div></div>'+
+      '</div>'+
+      '<div class="hystore-desc">'+esc(tpl.desc)+'</div>'+
+      '<div class="hystore-media"><div class="hystore-media-play">'+ic('play',20)+'</div><span>Prévia em vídeo/imagem do template</span></div>'+
+    '</div>'+
+    '<div class="modal-foot">'+
+      '<button class="btn btn-ghost" data-action="close-hystore-preview">Cancelar</button>'+
+      '<button class="btn btn-primary" data-action="hystore-contratar">'+ic('cart',14)+'Iniciar contratação</button>'+
+    '</div>'+
+  '</div></div>';
 }
 function filteredProcesses(){
   return state.processes.filter(function(p){
@@ -2429,7 +2489,7 @@ function ruleCardHTML(step, r){
       '<label class="switch"><input type="checkbox" data-bind="rule.exigirJustificativa" data-stepid="'+step.id+'" data-regraid="'+r.id+'" '+(r.exigirJustificativa?'checked':'')+'/><span class="track"><span class="thumb"></span></span></label></div>';
   } else {
     var labelField = '<div class="field-row" style="margin-bottom:10px"><input class="input" placeholder="Nome da ação" data-bind="rule.label" data-stepid="'+step.id+'" data-regraid="'+r.id+'" value="'+esc(r.label||'')+'"/></div>';
-    var condBlock = r.isDefault ? '' : ruleCondEditorHTML(step, r);
+    var condBlock = r.isDefault ? '' : optionalCondBlockHTML(step, r);
     var camposDisp = allProcessFields();
     var campoOptions = camposDisp.map(function(f){ return '<option value="'+f.id+'"'+(f.id===r.campoPreenchimentoId?' selected':'')+'>'+esc(f.label)+'</option>'; }).join('');
     var exigirCampoBlock = '<div class="switch-row"><div class="sr-text"><div class="sr-title">Exigir preenchimento de campo</div><div class="sr-sub">Ex: se Tipo de solicitação for X, pede que o responsável preencha um campo específico</div></div>'+
@@ -2507,16 +2567,14 @@ function processViewHTML(){
   var d = currentData();
   ensureViewConfig(d);
   var role = state.processViewRole;
-  if (role==='colaborador' && state.processViewTab!=='list') state.processViewTab = 'list';
-  var allTabs = [['kanban','Kanban','grid'],['list','List','doc'],['dashboard','Dashboard','chart']];
-  var tabs = role==='colaborador' ? allTabs.filter(function(t){return t[0]==='list';}) : allTabs;
+  var tabs = [['kanban','Kanban','grid'],['list','List','doc'],['dashboard','Dashboard','chart']];
   var tabsHTML = tabs.map(function(t){
     return '<button class="mtab'+(state.processViewTab===t[0]?' active':'')+'" data-action="set-processview-tab" data-tab="'+t[0]+'">'+ic(t[2],14)+esc(t[1])+'</button>';
   }).join('');
   var showToolbar = state.processViewTab==='kanban' || state.processViewTab==='list';
   var body;
   if (state.processViewTab==='list') body = processViewListHTML();
-  else if (state.processViewTab==='dashboard' && role!=='colaborador') body = processViewDashboardHTML();
+  else if (state.processViewTab==='dashboard') body = processViewDashboardHTML();
   else body = processViewKanbanHTML();
 
   var actionsRight = role==='colaborador'
@@ -2541,7 +2599,7 @@ function refreshProcessViewBodyArea(){
   var area = qs('#pv-body-area'); if (!area) return;
   var body;
   if (state.processViewTab==='list') body = processViewListHTML();
-  else if (state.processViewTab==='dashboard' && state.processViewRole!=='colaborador') body = processViewDashboardHTML();
+  else if (state.processViewTab==='dashboard') body = processViewDashboardHTML();
   else body = processViewKanbanHTML();
   area.innerHTML = body;
 }
@@ -2899,7 +2957,7 @@ function intranetHomeHTML(){
     '<div class="req-form-title" style="margin-bottom:12px">Todas as solicitações em aberto</div>'+
     intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.');
   else if (state.intranetTab==='historico') body = '<div class="req-form-title" style="margin-bottom:12px">Histórico das suas solicitações</div>'+
-    intranetTableHTML(historicoFinalizadas(), 'Nenhuma solicitação finalizada ainda.');
+    intranetTableHTML(historicoFinalizadas().filter(function(x){ return x.sol.solicitante===CURRENT_USER_NAME; }), 'Você ainda não tem solicitações finalizadas.');
   else body = '<div id="intranet-grid-area">'+intranetProcessesGridHTML()+'</div>';
 
   return '<div class="screen-inner">'+
@@ -2934,7 +2992,7 @@ function intranetProcessCardHTML(p){
     '<div class="ipc-desc">'+esc(p.description)+'</div>'+
     '<div class="ipc-foot"><span>'+stepCount+' Etapas</span>'+
       '<div style="display:flex;gap:6px">'+
-        '<button class="icon-btn" data-action="open-processview-colab" data-id="'+p.id+'" title="Ver solicitações">'+ic('doc',14)+'</button>'+
+        '<button class="icon-btn" data-action="open-processview-colab" data-id="'+p.id+'" title="Ver solicitações">'+ic('grid',14)+'</button>'+
         '<button class="btn btn-primary btn-xs" data-action="open-nova-solicitacao" data-id="'+p.id+'">'+ic('plus',12)+'Iniciar Solicitação</button>'+
       '</div>'+
     '</div>'+
@@ -3059,7 +3117,7 @@ function intranetPendenciasDashboardHTML(){
       var restante = v.restante;
       var badgeClass = restante<=0 ? 'badge-danger' : (restante<=2 ? 'badge-warning' : 'badge-info');
       var label = restante<0 ? 'vencida há '+Math.abs(restante)+'d' : (restante===0 ? 'vence hoje' : 'vence em '+restante+'d');
-      return '<div class="venc-row"><span class="vr-name">'+esc(v.x.sol.solicitante)+' · '+esc(v.x.processo.name)+'</span><span class="badge '+badgeClass+'">'+esc(label)+'</span></div>';
+      return '<div class="venc-row" style="cursor:pointer" data-action="open-request-from-list" data-solid="'+v.x.sol.id+'" data-pid="'+v.x.processo.id+'"><span class="vr-name">'+esc(v.x.sol.solicitante)+' · '+esc(v.x.processo.name)+'</span><span class="badge '+badgeClass+'">'+esc(label)+'</span></div>';
     }).join('')+
   '</div>' : chartEmptyCardHTML('Solicitações prestes a vencer', 'Nenhuma solicitação com prazo definido no momento.');
 
@@ -3543,20 +3601,29 @@ function acaoExtraFieldsHTML(auto, bloco){
 }
 
 /* ---- Permissões tab ---- */
+var PERM_TOOLTIPS = {
+  criar:'Podem criar novas solicitações e acompanhar suas solicitações',
+  editar:'Podem editar visualizações de quadros, lists, dashboard',
+  administrar:'Podem administrar a construção de processos'
+};
 function permissoesTabHTML(){
   var d = currentData();
   var rows = d.permissions.map(function(r){
     return '<tr><td><span class="perm-avatar">'+esc(r.group.slice(0,2).toUpperCase())+'</span>'+esc(r.group)+'</td>'+
-      ['criar','visualizar','editar','administrar','acompanhar'].map(function(k){
+      ['criar','editar','administrar'].map(function(k){
         return '<td><input type="checkbox" class="checkbox" data-action="toggle-perm" data-id="'+r.id+'" data-key="'+k+'" '+(r[k]?'checked':'')+'/></td>';
       }).join('')+
     '</tr>';
   }).join('');
   return '<div class="screen-inner" style="padding:26px 0 0">'+
-    '<div class="section-head"><div><h3>Permissões</h3><p>Defina quem pode criar, visualizar, editar, administrar ou acompanhar este processo.</p></div>'+
+    '<div class="section-head"><div><h3>Permissões</h3><p>Defina quem pode criar, editar ou administrar este processo.</p></div>'+
       '<button class="btn btn-outline btn-sm" data-action="add-perm-group">'+ic('plus',14)+'Adicionar grupo</button></div>'+
-    '<div class="table-wrap"><table class="perm-table"><thead><tr><th>Grupo / Cargo</th><th>Criar</th><th>Visualizar</th><th>Editar</th><th>Administrar</th><th>Acompanhar</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
-    '<div class="perm-note">'+ic('info',16)+'<div>Colaboradores só verão este processo no catálogo se tiverem permissão de <strong>Criar</strong> ou <strong>Acompanhar</strong>.</div></div>'+
+    '<div class="table-wrap"><table class="perm-table"><thead><tr><th>Grupo / Cargo</th>'+
+      ['criar','editar','administrar'].map(function(k){
+        return '<th title="'+esc(PERM_TOOLTIPS[k])+'">'+esc(k.charAt(0).toUpperCase()+k.slice(1))+'</th>';
+      }).join('')+
+    '</tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="perm-note">'+ic('info',16)+'<div>Colaboradores só verão este processo no catálogo se tiverem permissão de <strong>Criar</strong>.</div></div>'+
   '</div>';
 }
 
@@ -3574,6 +3641,7 @@ function renderModal(){
   if (state.novaSolicitacaoOpen){ root.innerHTML = novaSolicitacaoModalHTML(); return; }
   if (state.trackerModalOpen){ root.innerHTML = trackerModalHTML(); return; }
   if (state.pvCustomizeOpen){ root.innerHTML = pvCustomizeModalHTML(); return; }
+  if (state.hystoreTemplateOpen!=null){ root.innerHTML = hystorePreviewModalHTML(); return; }
   root.innerHTML='';
 }
 function wizardModalHTML(){
@@ -3834,8 +3902,11 @@ document.addEventListener('click', function(e){
     case 'open-editor':
       state.currentProcessId = t.dataset.id; state.screen='editor'; state.editorTab='workflow'; state.selectedStepId=null;
       break;
-    case 'use-template': {
-      var tpl = PROCESS_TEMPLATES[+t.dataset.idx];
+    case 'open-hystore-preview': state.hystoreTemplateOpen = +t.dataset.idx; break;
+    case 'close-hystore-preview': case 'close-hystore-preview-overlay': state.hystoreTemplateOpen = null; break;
+    case 'hystore-contratar': {
+      var tpl = PROCESS_TEMPLATES[state.hystoreTemplateOpen];
+      state.hystoreTemplateOpen = null;
       state.wizardOpen = true;
       state.wizardDraft = {name:tpl.label, description:tpl.desc, category:tpl.category, icon:tpl.icon, color:tpl.color};
       break;
@@ -4046,7 +4117,7 @@ document.addEventListener('click', function(e){
     case 'remove-widget': { var d6=currentData(); d6.widgets=d6.widgets.filter(function(w){return w.id!==t.dataset.id;}); break; }
 
     /* permissions */
-    case 'add-perm-group': { var d7=currentData(); d7.permissions.push({id:uid(),group:'Novo grupo',criar:false,visualizar:true,editar:false,administrar:false,acompanhar:false}); break; }
+    case 'add-perm-group': { var d7=currentData(); d7.permissions.push({id:uid(),group:'Novo grupo',criar:false,editar:false,administrar:false}); break; }
 
     /* automações */
     case 'set-automacoes-subtab': state.automacoesSubTab = t.dataset.tab; break;

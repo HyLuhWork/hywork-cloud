@@ -2661,7 +2661,8 @@ function intranetHomeHTML(){
     return '<button class="intranet-tab'+(state.intranetTab===t[0]?' active':'')+'" data-action="set-intranet-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+'</button>';
   }).join('');
   var body;
-  if (state.intranetTab==='minhas') body = intranetTableHTML(minhasSolicitacoes(), 'Você ainda não enviou nenhuma solicitação.');
+  if (state.intranetTab==='minhas') body = '<div class="req-form-title" style="margin-bottom:12px">Minhas Solicitações</div>'+
+    intranetTableHTML(minhasSolicitacoes(), 'Você ainda não enviou nenhuma solicitação.');
   else if (state.intranetTab==='fila') body = intranetPendenciasDashboardHTML()+
     '<div class="req-form-title" style="margin-bottom:12px">Todas as solicitações em aberto</div>'+
     intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.');

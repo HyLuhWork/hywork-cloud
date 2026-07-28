@@ -217,6 +217,10 @@ construtor). 16 solicitações de exemplo espalhadas por todas as etapas. Ver "O
 mudou na v27" abaixo para o detalhe completo, incluindo os pequenos ajustes no
 motor do produto que essa demonstração revelou serem necessários.
 
+**v28** — a tabela de "Minhas Solicitações" (visão Colaborador) ganhou o título
+"Minhas Solicitações" acima da tabela, no mesmo padrão já usado em "Minhas
+Pendências" (v26) e "Histórico" (v26).
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

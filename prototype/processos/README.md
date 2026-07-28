@@ -228,6 +228,18 @@ cores da identidade visual do processo (gradiente navy → azul). Aparece no
 construtor de formulário, na modal "Personalizar formulário" e na tela real de
 "Nova solicitação" que o colaborador preenche.
 
+**v30** — a modal "Nova solicitação" (o formulário real que o colaborador
+preenche para abrir uma solicitação) reaproveitava, sem querer, a mesma borda
+tracejada e o placeholder cinza "Sem capa" da tela de construção do formulário
+no Administrador — o que fazia a experiência de preenchimento parecer "um
+editor", não um formulário de verdade. Agora a modal de preenchimento tem um
+layout próprio, sem borda tracejada, com o título/descrição maiores e mais
+espaço antes dos campos; e quando o processo não tem capa configurada, o
+espaço reservado para ela simplesmente não aparece (em vez do placeholder
+"Sem capa", que era uma dica só para quem está montando o formulário). O
+construtor de formulário do Administrador continua com a borda tracejada,
+já que ali faz sentido parecer uma área de montagem.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

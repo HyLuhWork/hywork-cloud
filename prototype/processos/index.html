@@ -300,6 +300,12 @@
   .form-preview-capa{height:200px;border-radius:var(--radius-md);background:var(--muted);color:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;gap:6px;margin-bottom:12px;background-size:cover;background-position:center}
   .form-layout-lateral .form-preview-capa{width:200px;height:100%;min-height:280px;flex:none;margin-bottom:0}
   .form-layout-lateral .form-preview-main{flex:1;min-width:0}
+  .ns-form-layout-header{margin-bottom:20px}
+  .ns-form-layout-lateral{display:flex;gap:22px;align-items:flex-start;margin-bottom:20px}
+  .ns-form-layout-lateral .form-preview-capa{width:220px;height:100%;min-height:300px;flex:none;margin-bottom:0}
+  .ns-form-layout-lateral .form-preview-main{flex:1;min-width:0}
+  .ns-form-layout-header .form-preview-name,.ns-form-layout-lateral .form-preview-name{font-size:19px}
+  .ns-form-layout-header .form-preview-desc,.ns-form-layout-lateral .form-preview-desc{font-size:13.5px;margin-bottom:20px}
   .form-preview-name{font-size:16px;font-weight:800;color:var(--ink)}
   .form-preview-desc{font-size:12.5px;color:var(--ink-faint);margin-top:3px;margin-bottom:14px}
   .cover-upload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);padding:20px;color:var(--ink-muted);font-weight:700;font-size:12.5px;cursor:pointer;text-align:center}
@@ -2846,13 +2852,12 @@ function novaSolicitacaoModalHTML(){
   if (!p || !d) return '';
   var cfg = d.formConfig || {};
   var draft = state.novaSolicitacaoDraft;
-  var capaStyle = cfg.capa ? ' style="background-image:url('+cfg.capa+')"' : '';
-  var capaBlock = '<div class="form-preview-capa"'+capaStyle+'>'+(cfg.capa?'':ic('image',18)+' Sem capa')+'</div>';
+  var capaBlock = cfg.capa ? '<div class="form-preview-capa" style="background-image:url('+cfg.capa+')"></div>' : '';
   var headText = '<div class="form-preview-name">'+esc(cfg.nome||p.name)+'</div><div class="form-preview-desc">'+esc(cfg.descricao||p.description)+'</div>';
   var fieldsHTML = '<div class="ns-fields">'+novaSolicitacaoSegmentsHTML(d, cfg, draft)+'</div>';
-  var layout = cfg.posicao==='lateral' ?
-    '<div class="form-layout-lateral">'+capaBlock+'<div class="form-preview-main">'+headText+fieldsHTML+'</div></div>' :
-    '<div class="form-layout-header">'+capaBlock+headText+fieldsHTML+'</div>';
+  var layout = (cfg.posicao==='lateral' && cfg.capa) ?
+    '<div class="ns-form-layout-lateral">'+capaBlock+'<div class="form-preview-main">'+headText+fieldsHTML+'</div></div>' :
+    '<div class="ns-form-layout-header">'+capaBlock+headText+fieldsHTML+'</div>';
   return '<div class="overlay" data-action="close-nova-solicitacao-overlay"><div class="modal modal-lg">'+
     '<div class="modal-head"><div><h3>Nova solicitação</h3><p>Preencha o formulário para iniciar — '+esc(p.name)+'</p></div><button class="icon-btn" data-action="close-nova-solicitacao">'+ic('x',16)+'</button></div>'+
     '<div class="modal-body">'+layout+'</div>'+

@@ -988,25 +988,25 @@ function richProcessData(){
     makeRegra({tipo:'reprovar', label:'Reprovar', isDefault:true, destinoStepId:'s_end', exigirJustificativa:true})
   ];
   var solicitacoes = [
-    makeSolicitacao({stepId:s2.id, solicitante:'Ana Souza', criadoEm:'24/07/2026',
+    makeSolicitacao({stepId:s2.id, solicitante:'Ana Souza', criadoEm:offsetDateStr(0),
       valores:(function(){var o={}; o[f1.id]='10/08/2026'; o[f2.id]='20/08/2026'; o[f3.id]='R$ 1.200,00'; o[f4.id]='Férias de verão em família.'; o[f5.id]='Padrão'; return o;})(),
-      historico:[{data:'24/07/2026 09:14', texto:'Ana Souza enviou a solicitação.'}],
-      comentarios:[{id:uid(), autor:'Mariana Rocha (RH)', texto:'Confirmando que o período está dentro da política de férias.', data:'24/07/2026 10:02'}]}),
-    makeSolicitacao({stepId:s2.id, solicitante:'Bruno Lima', criadoEm:'23/07/2026',
+      historico:[{data:offsetDateTimeStr(0,9,14), texto:'Ana Souza enviou a solicitação.'}],
+      comentarios:[{id:uid(), autor:'Mariana Rocha (RH)', texto:'Confirmando que o período está dentro da política de férias.', data:offsetDateTimeStr(0,10,2)}]}),
+    makeSolicitacao({stepId:s2.id, solicitante:'Bruno Lima', criadoEm:offsetDateStr(0),
       valores:(function(){var o={}; o[f1.id]='01/09/2026'; o[f2.id]='15/09/2026'; o[f3.id]='R$ 7.800,00'; o[f4.id]='Viagem internacional programada.'; o[f5.id]='Urgente'; return o;})(),
-      historico:[{data:'23/07/2026 14:02', texto:'Bruno Lima enviou a solicitação.'}]}),
-    makeSolicitacao({stepId:sFin.id, solicitante:'Carla Menezes', criadoEm:'20/07/2026',
+      historico:[{data:offsetDateTimeStr(0,14,2), texto:'Bruno Lima enviou a solicitação.'}]}),
+    makeSolicitacao({stepId:sFin.id, solicitante:'Carla Menezes', criadoEm:offsetDateStr(0),
       valores:(function(){var o={}; o[f1.id]='05/08/2026'; o[f2.id]='12/08/2026'; o[f3.id]='R$ 6.500,00'; o[f4.id]='Acompanhamento médico de familiar.'; o[f5.id]='Urgente'; return o;})(),
       historico:[
-        {data:'20/07/2026 10:00', texto:'Carla Menezes enviou a solicitação.'},
-        {data:'22/07/2026 11:30', texto:'Gestor direto do solicitante aprovou em "Análise do Gestor". Avançou para "Análise do Financeiro".'}
+        {data:offsetDateTimeStr(0,10,0), texto:'Carla Menezes enviou a solicitação.'},
+        {data:offsetDateTimeStr(0,11,30), texto:'Gestor direto do solicitante aprovou em "Análise do Gestor". Avançou para "Análise do Financeiro".'}
       ],
       anexos:[{nome:'comprovante-medico.pdf', tamanho:'182 KB'}]}),
-    makeSolicitacao({stepId:s3.id, solicitante:'Diego Ferreira', criadoEm:'19/07/2026',
+    makeSolicitacao({stepId:s3.id, solicitante:'Diego Ferreira', criadoEm:offsetDateStr(-1),
       valores:(function(){var o={}; o[f1.id]='02/09/2026'; o[f2.id]='22/09/2026'; o[f3.id]='R$ 12.000,00'; o[f4.id]='Férias de 20 dias corridos.'; o[f5.id]='Padrão'; return o;})(),
       historico:[
-        {data:'19/07/2026 08:40', texto:'Diego Ferreira enviou a solicitação.'},
-        {data:'21/07/2026 16:12', texto:'Gestor direto do solicitante aprovou em "Análise do Gestor". Avançou para "Análise do RH".'}
+        {data:offsetDateTimeStr(-1,8,40), texto:'Diego Ferreira enviou a solicitação.'},
+        {data:offsetDateTimeStr(0,16,12), texto:'Gestor direto do solicitante aprovou em "Análise do Gestor". Avançou para "Análise do RH".'}
       ]}),
     makeSolicitacao({stepId:'s_end', solicitante:'Elaine Prado', criadoEm:'14/07/2026',
       valores:(function(){var o={}; o[f1.id]='01/08/2026'; o[f2.id]='08/08/2026'; o[f3.id]='R$ 2.300,00'; o[f4.id]='Férias de aniversário.'; o[f5.id]='Padrão'; return o;})(),
@@ -1203,6 +1203,16 @@ function nowStr(){
   var d = new Date();
   function pad(n){ return (n<10?'0':'')+n; }
   return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+function offsetDateStr(daysOffset){
+  var d = new Date(Date.now()+daysOffset*86400000);
+  function pad(n){ return (n<10?'0':'')+n; }
+  return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
+}
+function offsetDateTimeStr(daysOffset, hh, mm){
+  var d = new Date(Date.now()+daysOffset*86400000);
+  function pad(n){ return (n<10?'0':'')+n; }
+  return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(hh)+':'+pad(mm);
 }
 function makeSolicitacao(o){
   return Object.assign({
@@ -2270,8 +2280,11 @@ function intranetHomeHTML(){
   }).join('');
   var body;
   if (state.intranetTab==='minhas') body = intranetTableHTML(minhasSolicitacoes(), 'Você ainda não enviou nenhuma solicitação.');
-  else if (state.intranetTab==='fila') body = intranetPendenciasDashboardHTML()+intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.');
-  else if (state.intranetTab==='historico') body = intranetTableHTML(historicoFinalizadas(), 'Nenhuma solicitação finalizada ainda.');
+  else if (state.intranetTab==='fila') body = intranetPendenciasDashboardHTML()+
+    '<div class="req-form-title" style="margin-bottom:12px">Todas as solicitações em aberto</div>'+
+    intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.');
+  else if (state.intranetTab==='historico') body = '<div class="req-form-title" style="margin-bottom:12px">Histórico das suas solicitações</div>'+
+    intranetTableHTML(historicoFinalizadas(), 'Nenhuma solicitação finalizada ainda.');
   else body = '<div id="intranet-grid-area">'+intranetProcessesGridHTML()+'</div>';
 
   return '<div class="screen-inner">'+
@@ -2419,7 +2432,13 @@ function intranetPendenciasDashboardHTML(){
     return {x:x, restante:restante};
   }).filter(Boolean);
   vencendoRaw.sort(function(a,b){ return a.restante-b.restante; });
-  var vencendoTop = vencendoRaw.slice(0,6);
+  var vencendoTop;
+  if (vencendoRaw.length<=6) vencendoTop = vencendoRaw;
+  else {
+    var step = vencendoRaw.length/6;
+    vencendoTop = [];
+    for (var vi=0; vi<6; vi++) vencendoTop.push(vencendoRaw[Math.floor(vi*step)]);
+  }
   var vencendoHTML = vencendoTop.length ? '<div class="chart-card widget-shell"><div class="cc-label">Solicitações prestes a vencer</div>'+
     vencendoTop.map(function(v){
       var restante = v.restante;

@@ -192,6 +192,16 @@ administrativa (v24); e a modal de confirmação pós-envio ganhou abas **Status
 (etapa atual + linha do tempo do histórico) e **Formulário** (valores enviados). Ver
 "O que mudou na v25" abaixo.
 
+**v26** — três ajustes finos na visão Colaborador, a partir de feedback direto sobre
+a v25: a tabela abaixo do dashboard em "Minhas Pendências" ganhou o título "Todas as
+solicitações em aberto"; a aba Histórico ganhou o título "Histórico das suas
+solicitações"; e os dados de exemplo foram ajustados para sempre ter algumas
+solicitações "prestes a vencer" (vence hoje/em 1d/em 2d) no gráfico da dashboard, em
+vez de aparecerem só como vencidas — as datas de criação de alguns
+registros-exemplo agora são calculadas em relação a hoje (`offsetDateStr`), então o
+protótipo continua parecendo "vivo" independente de quando for aberto. Ver "O que
+mudou na v26" abaixo.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
@@ -884,6 +894,27 @@ Colaborador (3 itens):
   de etapas e o histórico de atividades da solicitação) e **Formulário** (os
   valores exatamente como foram enviados no formulário inicial), reaproveitando os
   mesmos componentes já usados na modal de detalhes da solicitação.
+
+## O que mudou na v26
+
+Três ajustes pontuais pedidos direto sobre a v25, todos na visão Colaborador:
+
+- **Título "Todas as solicitações em aberto"** acima da tabela que fica logo abaixo
+  do dashboard em "Minhas Pendências" — antes a tabela aparecia sem nenhum título
+  próprio, só com a barra de Filtrar/Ordenar.
+- **Título "Histórico das suas solicitações"** acima da tabela da aba Histórico,
+  pelo mesmo motivo.
+- **Solicitações de exemplo "prestes a vencer"** — os dados de exemplo tinham datas
+  de criação fixas (`24/07/2026` etc.), então, conforme o tempo passava, todo mundo
+  ia ficando com o prazo vencido há vários dias e o gráfico "Solicitações prestes a
+  vencer" nunca mostrava nada realmente "prestes a vencer" (só "vencida há Xd").
+  Quatro solicitações-exemplo por processo agora usam datas calculadas em relação a
+  hoje (`offsetDateStr(0)`, `offsetDateStr(-1)`) — o gráfico sempre mostra uma
+  mistura de "vence hoje", "vence em 1d" e "vence em 2d", não só itens vencidos. Como
+  o gráfico pegava sempre os 6 itens mais urgentes (e a maioria das cópias do
+  processo virava o mesmo prazo), troquei a amostragem por uma seleção espaçada ao
+  longo da lista ordenada (em vez de só os 6 primeiros), pra sempre aparecer uma
+  variedade de prazos no cartão, não só repetições do mesmo dia.
 
 ## O que está implementado
 

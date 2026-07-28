@@ -221,6 +221,13 @@ motor do produto que essa demonstração revelou serem necessários.
 "Minhas Solicitações" acima da tabela, no mesmo padrão já usado em "Minhas
 Pendências" (v26) e "Histórico" (v26).
 
+**v29** — o formulário do processo **Service Desk** ganhou uma **foto de capa
+fixa** (antes estava com "Sem capa"): um banner ilustrado (SVG, sem depender de
+imagem externa) com o nome do processo, a descrição e um ícone de headset, nas
+cores da identidade visual do processo (gradiente navy → azul). Aparece no
+construtor de formulário, na modal "Personalizar formulário" e na tela real de
+"Nova solicitação" que o colaborador preenche.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

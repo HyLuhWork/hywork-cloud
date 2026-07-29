@@ -97,14 +97,22 @@
   .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex:none}
 
   /* ---------- Intranet shell (visão Colaborador) ---------- */
-  .itn-topnav{height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 26px;border-bottom:1px solid var(--border);background:var(--shell-bg)}
+  .itn-topnav{position:relative;z-index:15;height:64px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 26px;border-bottom:1px solid var(--border);background:var(--shell-bg)}
   .itn-left{display:flex;align-items:center;gap:30px;min-width:0}
   .itn-logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;color:var(--ink);flex:none}
-  .itn-nav{display:flex;align-items:center;gap:22px;flex-wrap:nowrap;overflow:hidden}
+  .itn-nav{display:flex;align-items:center;gap:22px;flex-wrap:nowrap}
   .itn-link{display:flex;align-items:center;gap:4px;font-size:13.5px;font-weight:600;color:var(--ink-muted);white-space:nowrap;padding:4px 0;border-bottom:2px solid transparent}
   .itn-link:hover{color:var(--ink)}
   .itn-link.active{color:var(--primary);font-weight:700;border-bottom-color:var(--primary)}
   .itn-link-more{padding:4px 2px}
+  .itn-nav-dropdown-wrap{position:relative}
+  .itn-app-dropdown{display:none;position:absolute;top:32px;left:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);min-width:230px;padding:8px;z-index:20}
+  .itn-app-dropdown.open{display:block}
+  .itn-app-dropdown-item{display:flex;align-items:center;gap:10px;width:100%;padding:8px;font-size:13px;font-weight:600;color:var(--ink);text-align:left;border-radius:var(--radius-sm)}
+  .itn-app-dropdown-item:hover{background:var(--muted)}
+  .itn-app-dropdown-item.active{background:var(--primary-50);color:var(--primary-dark)}
+  .itn-app-dropdown-ic{width:26px;height:26px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex:none}
+  .itn-app-dropdown-empty{padding:10px 8px;font-size:12px;color:var(--ink-faint)}
   .itn-right{display:flex;align-items:center;gap:10px;flex:none}
   .itn-bell{position:relative}
   .itn-bell-badge{position:absolute;top:-3px;right:-5px;background:var(--primary);color:#fff;font-size:9.5px;font-weight:800;border-radius:999px;min-width:15px;height:15px;display:flex;align-items:center;justify-content:center;padding:0 3px}
@@ -787,7 +795,6 @@
     .fb-layout{grid-template-columns:195px 1fr}
     .widget-grid{grid-template-columns:repeat(2,1fr)}
     .chart-card{grid-column:span 2}
-    .intranet-process-grid{grid-template-columns:repeat(2,1fr)}
   }
 
   /* ---------- intranet (visão do colaborador) ---------- */
@@ -801,13 +808,9 @@
   .intranet-tab:hover{color:var(--ink)}
   .intranet-tab.active{background:var(--muted);color:var(--ink)}
   .intranet-tab-badge{background:var(--error);color:#fff;font-size:10px;font-weight:800;border-radius:var(--radius-full);padding:1px 6px}
-  .intranet-process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-  .intranet-process-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
-  .intranet-process-card:hover{border-color:var(--navy-400);box-shadow:var(--shadow-sm)}
-  .ipc-icon{width:40px;height:40px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:19px;flex:none}
-  .ipc-name{font-size:14px;font-weight:800;color:var(--ink)}
-  .ipc-desc{font-size:11.5px;color:var(--ink-faint);line-height:1.4;flex:1}
-  .ipc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--ink-faint);font-weight:700}
+  .app-tab-admin-tag{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink-faint);background:var(--muted-strong);border-radius:var(--radius-full);padding:2px 6px}
+  .intranet-tab.active .app-tab-admin-tag{color:var(--primary-dark);background:var(--primary-50)}
+  .app-tab-sep{width:1px;align-self:stretch;background:var(--border);margin:0 4px}
   .ns-fields{margin-top:18px}
 </style>
 
@@ -1660,8 +1663,8 @@ var state = {
   reqDetailTab:'historico', // 'historico' | 'comentarios'
   reqCommentDraft:'',
   appMode:'admin', // 'admin' | 'colaborador'
-  intranetTab:'todos', // 'todos' | 'minhas' | 'fila' | 'historico'
-  intranetSearch:'',
+  appTab:'minhas', // 'minhas' | 'pendencias' | 'historico' | 'dashboard' | 'kanban' | 'todas' | 'configurar'
+  appNavOpen:false, // dropdown "Processos" aberto no topnav da intranet
   novaSolicitacaoOpen:null, // processId
   novaSolicitacaoDraft:null, // {valores:{}}
   trackerModalOpen:null, // solicitacao id
@@ -1772,6 +1775,14 @@ function historicoFinalizadas(){
 function findAutomacao(id){ var d=currentData(); return d && (d.automacoes||[]).find(function(a){return a.id===id;}); }
 function findAutomacaoBloco(autoId, blocoId){ var a=findAutomacao(autoId); return a && a.blocos.find(function(b){return b.id===blocoId;}); }
 
+/* ---- Variantes por processo (usadas pelo Aplicativo de cada processo na Intranet) ---- */
+function minhasSolicitacoesFor(pid){ return minhasSolicitacoes().filter(function(x){return x.processo.id===pid;}); }
+function filaAprovacaoFor(pid){ return filaAprovacao().filter(function(x){return x.processo.id===pid;}); }
+function historicoFinalizadasFor(pid){
+  return historicoFinalizadas().filter(function(x){ return x.processo.id===pid && x.sol.solicitante===CURRENT_USER_NAME; });
+}
+function openSolicitacoesFor(pid){ return openSolicitacoes().filter(function(x){return x.processo.id===pid;}); }
+
 /* ============ RENDER ROOT ============ */
 function render(){
   renderShell();
@@ -1797,9 +1808,16 @@ function updateIntranetNavActive(){
   Array.prototype.forEach.call(nav.querySelectorAll('.itn-link'), function(a){
     var action = a.dataset.action;
     var active = (action==='nav-intranet-landing' && state.screen==='intranet-landing') ||
-      (action==='nav-processos' && (state.screen==='intranet-home' || state.screen==='processview' || state.screen==='editor'));
+      (action==='toggle-app-nav' && (state.screen==='app' || state.screen==='editor'));
     a.classList.toggle('active', active);
   });
+  var dd = qs('#app-nav-dropdown');
+  if (dd){
+    dd.classList.toggle('open', !!state.appNavOpen);
+    Array.prototype.forEach.call(dd.querySelectorAll('[data-action="open-app"]'), function(b){
+      b.classList.toggle('active', b.dataset.id===state.currentProcessId && (state.screen==='app' || state.screen==='editor'));
+    });
+  }
 }
 function modeToggleHTML(){
   return '<div class="mode-toggle" id="mode-toggle">'+
@@ -1849,14 +1867,22 @@ function adminShellHTML(){
     '</div>';
 }
 function intranetShellHTML(){
-  var links = [
-    ['intranet-landing','Página Inicial','nav-intranet-landing'],
-    ['intranet-processos','Processos','nav-processos'],
-  ];
-  var navHTML = links.map(function(l){
-    var active = state.screen===l[0] || (l[0]==='intranet-processos' && (state.screen==='intranet-home' || state.screen==='processview' || state.screen==='editor'));
-    return '<a href="#" class="itn-link'+(active?' active':'')+'" data-action="'+l[2]+'">'+esc(l[1])+'</a>';
-  }).join('')+
+  var landingActive = state.screen==='intranet-landing';
+  var appsActive = state.screen==='app' || state.screen==='editor';
+  var apps = enabledProcesses();
+  var appDropdown = '<div class="itn-nav-dropdown-wrap">'+
+    '<a href="#" class="itn-link'+(appsActive?' active':'')+'" data-action="toggle-app-nav">Processos'+ic('chevronDown',12)+'</a>'+
+    '<div class="itn-app-dropdown'+(state.appNavOpen?' open':'')+'" id="app-nav-dropdown">'+
+      (apps.length ? apps.map(function(p){
+        var active = p.id===state.currentProcessId && appsActive;
+        return '<button class="itn-app-dropdown-item'+(active?' active':'')+'" data-action="open-app" data-id="'+p.id+'">'+
+          '<span class="itn-app-dropdown-ic" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,15)+'</span>'+esc(p.name)+
+        '</button>';
+      }).join('') : '<div class="itn-app-dropdown-empty">Nenhum processo publicado ainda.</div>')+
+    '</div>'+
+  '</div>';
+  var navHTML = '<a href="#" class="itn-link'+(landingActive?' active':'')+'" data-action="nav-intranet-landing">Página Inicial</a>'+
+    appDropdown+
     '<a href="#" class="itn-link" data-action="noop">Institucional'+ic('chevronDown',12)+'</a>'+
     '<a href="#" class="itn-link" data-action="noop">Gente &amp; Gestão'+ic('chevronDown',12)+'</a>'+
     '<a href="#" class="itn-link" data-action="noop">Conteúdos'+ic('chevronDown',12)+'</a>'+
@@ -1903,7 +1929,7 @@ function renderScreen(){
   if (state.screen==='home') root.innerHTML = homeHTML();
   else if (state.screen==='processview') root.innerHTML = processViewHTML();
   else if (state.screen==='intranet-landing') root.innerHTML = intranetLandingHTML();
-  else if (state.screen==='intranet-home') root.innerHTML = intranetHomeHTML();
+  else if (state.screen==='app') root.innerHTML = appHTML();
   else root.innerHTML = editorHTML();
 }
 
@@ -2956,59 +2982,55 @@ function intranetLandingHTML(){
     '<div class="itn-col">'+calCard+newHireCard+feriasCard+feedCard+'</div>'+
   '</div></div>';
 }
-function intranetHomeHTML(){
-  var pend = filaAprovacao();
-  var tabs = [['todos','Todos os processos'],['minhas','Minhas Solicitações'],['fila','Minhas Pendências'],['historico','Histórico']];
-  var tabsHTML = tabs.map(function(t){
-    var badge = t[0]==='fila' && pend.length ? '<span class="intranet-tab-badge">'+pend.length+'</span>' : '';
-    return '<button class="intranet-tab'+(state.intranetTab===t[0]?' active':'')+'" data-action="set-intranet-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+'</button>';
-  }).join('');
-  var body;
-  if (state.intranetTab==='minhas') body = '<div class="req-form-title" style="margin-bottom:12px">Minhas Solicitações</div>'+
-    intranetTableHTML(minhasSolicitacoes(), 'Você ainda não enviou nenhuma solicitação.');
-  else if (state.intranetTab==='fila') body = intranetPendenciasDashboardHTML()+
-    '<div class="req-form-title" style="margin-bottom:12px">Todas as solicitações em aberto</div>'+
-    intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.');
-  else if (state.intranetTab==='historico') body = '<div class="req-form-title" style="margin-bottom:12px">Histórico das suas solicitações</div>'+
-    intranetTableHTML(historicoFinalizadas().filter(function(x){ return x.sol.solicitante===CURRENT_USER_NAME; }), 'Você ainda não tem solicitações finalizadas.');
-  else body = '<div id="intranet-grid-area">'+intranetProcessesGridHTML()+'</div>';
+/* ============ APLICATIVO DO PROCESSO (Intranet) ============
+   Cada processo publicado vira um Aplicativo dentro da Intranet, com suas
+   próprias páginas — não existe mais uma Central/Catálogo de Processos
+   compartilhada entre todos os processos. */
+var APP_TABS = [
+  ['minhas','Minhas Solicitações',false],
+  ['pendencias','Minhas Pendências',false],
+  ['historico','Meu Histórico',false],
+  ['dashboard','Dashboard',true],
+  ['kanban','Kanban',true],
+  ['todas','Todas as Solicitações',true],
+];
+function appHTML(){
+  var p = currentProcess();
+  if (!p){ state.screen = 'intranet-landing'; return intranetLandingHTML(); }
+  var d = currentData();
+  ensureViewConfig(d);
+  var pid = p.id;
+  var pend = filaAprovacaoFor(pid);
 
-  return '<div class="screen-inner">'+
-    '<div class="intranet-hero">'+
-      '<div class="intranet-hero-title">Central de Processos</div>'+
-      '<div class="intranet-hero-sub">Abra novas solicitações, peça feedback a líderes ou pares, solicite férias, reembolsos e acompanhe o andamento de cada etapa em tempo real.</div>'+
-      '<div class="topbar-search intranet-hero-search">'+ic('search',14)+'<input type="text" id="intranet-search" placeholder="Pesquise por aqui..." value="'+esc(state.intranetSearch)+'"/></div>'+
+  var tabsHTML = APP_TABS.map(function(t, i){
+    var badge = t[0]==='pendencias' && pend.length ? '<span class="intranet-tab-badge">'+pend.length+'</span>' : '';
+    var adminTag = t[2] ? '<span class="app-tab-admin-tag">Administrador</span>' : '';
+    var sep = (i===3) ? '<span class="app-tab-sep"></span>' : '';
+    return sep+'<button class="intranet-tab'+(state.appTab===t[0]?' active':'')+'" data-action="set-app-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+adminTag+'</button>';
+  }).join('')+
+    '<span class="app-tab-sep"></span>'+
+    '<button class="intranet-tab" data-action="open-app-configurar">'+ic('gear',13)+'Configurar Processo<span class="app-tab-admin-tag">Administrador</span></button>';
+
+  var body;
+  if (state.appTab==='pendencias') body = intranetPendenciasDashboardHTML(pid)+
+    '<div class="req-form-title" style="margin-bottom:12px">Solicitações aguardando ação</div>'+
+    intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.', true);
+  else if (state.appTab==='historico') body = '<div class="req-form-title" style="margin-bottom:12px">Meu Histórico</div>'+
+    intranetTableHTML(historicoFinalizadasFor(pid), 'Você ainda não tem solicitações finalizadas neste processo.', true);
+  else if (state.appTab==='dashboard') body = '<div class="pv-body" id="pv-body-area">'+processViewDashboardHTML()+'</div>';
+  else if (state.appTab==='kanban') body = processViewToolbarHTML()+'<div class="pv-body" id="pv-body-area">'+processViewKanbanHTML()+'</div>';
+  else if (state.appTab==='todas') body = processViewToolbarHTML()+'<div class="pv-body" id="pv-body-area">'+processViewListHTML()+'</div>';
+  else body = '<div class="req-form-title" style="margin-bottom:12px">Minhas Solicitações</div>'+
+    intranetTableHTML(minhasSolicitacoesFor(pid), 'Você ainda não enviou nenhuma solicitação neste processo.', true);
+
+  return '<div class="screen-inner" style="padding-bottom:0">'+
+    '<div class="pv-hero">'+
+      '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,20)+'</div>'+
+      '<div class="pv-hero-info"><div class="pv-hero-name">'+esc(d.formConfig.nome||p.name)+'</div><div class="pv-hero-desc">'+esc(d.formConfig.descricao||p.description)+'</div></div>'+
+      '<button class="btn btn-primary btn-sm" style="margin-left:auto;flex:none" data-action="open-nova-solicitacao" data-id="'+p.id+'">'+ic('plus',14)+'Iniciar Solicitação</button>'+
     '</div>'+
     '<div class="intranet-tabs">'+tabsHTML+'</div>'+
     '<div style="margin-top:18px">'+body+'</div>'+
-  '</div>';
-}
-function refreshIntranetGridArea(){
-  var area = qs('#intranet-grid-area'); if (!area) return;
-  area.innerHTML = intranetProcessesGridHTML();
-}
-function intranetProcessesGridHTML(){
-  var procs = enabledProcesses().filter(function(p){
-    if (state.intranetSearch && p.name.toLowerCase().indexOf(state.intranetSearch.toLowerCase())===-1) return false;
-    return true;
-  });
-  var cards = procs.map(intranetProcessCardHTML).join('');
-  return procs.length ? '<div class="intranet-process-grid">'+cards+'</div>' :
-    '<div class="empty-state"><div class="es-ic">'+ic('search',22)+'</div><div class="es-title">Nenhum processo disponível</div><div class="es-sub">Fale com o administrador para habilitar processos para o seu time.</div></div>';
-}
-function intranetProcessCardHTML(p){
-  var d = state.processData[p.id];
-  var stepCount = (d.steps||[]).filter(function(s){return !s.system;}).length;
-  return '<div class="intranet-process-card">'+
-    '<div class="ipc-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,19)+'</div>'+
-    '<div class="ipc-name">'+esc(p.name)+'</div>'+
-    '<div class="ipc-desc">'+esc(p.description)+'</div>'+
-    '<div class="ipc-foot"><span>'+stepCount+' Etapas</span>'+
-      '<div style="display:flex;gap:6px">'+
-        '<button class="icon-btn" data-action="open-processview-colab" data-id="'+p.id+'" title="Ver solicitações">'+ic('grid',14)+'</button>'+
-        '<button class="btn btn-primary btn-xs" data-action="open-nova-solicitacao" data-id="'+p.id+'">'+ic('plus',12)+'Iniciar Solicitação</button>'+
-      '</div>'+
-    '</div>'+
   '</div>';
 }
 function intranetFilterSortList(list){
@@ -3021,7 +3043,7 @@ function intranetFilterSortList(list){
   else out.sort(function(a,b){ return parseDataBR(b.sol.criadoEm)-parseDataBR(a.sol.criadoEm); });
   return out;
 }
-function intranetTableToolbarHTML(rawList){
+function intranetTableToolbarHTML(rawList, hideProcFilter){
   var procsInList = [];
   rawList.forEach(function(x){ if (procsInList.indexOf(x.processo)===-1) procsInList.push(x.processo); });
   var filterActive = state.intranetFilterProcs && state.intranetFilterProcs.length ? ' active' : '';
@@ -3041,17 +3063,17 @@ function intranetTableToolbarHTML(rawList){
   return '<div class="pv-toolbar" style="padding:0 0 12px;border-bottom:none">'+
     '<div></div>'+
     '<div class="pv-toolbar-right">'+
-      '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn'+filterActive+'" data-action="toggle-intranet-menu" data-menu="filter">'+ic('filter',13)+'Filtrar'+ic('chevronDown',12)+'</button>'+filterDropdown+'</div>'+
+      (hideProcFilter ? '' : '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn'+filterActive+'" data-action="toggle-intranet-menu" data-menu="filter">'+ic('filter',13)+'Filtrar'+ic('chevronDown',12)+'</button>'+filterDropdown+'</div>')+
       '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn" data-action="toggle-intranet-menu" data-menu="sort">'+ic('sort',13)+'Ordenar: '+sortLabel+ic('chevronDown',12)+'</button>'+sortDropdown+'</div>'+
     '</div>'+
   '</div>';
 }
-function intranetTableHTML(rawList, emptyMsg){
+function intranetTableHTML(rawList, emptyMsg, hideProcCol){
   if (!rawList.length) return '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nada por aqui</div><div class="es-sub">'+esc(emptyMsg)+'</div></div>';
-  var toolbar = intranetTableToolbarHTML(rawList);
+  var toolbar = intranetTableToolbarHTML(rawList, hideProcCol);
   var list = intranetFilterSortList(rawList);
-  var gridStyle = 'grid-template-columns:minmax(180px,1.6fr) minmax(140px,1fr) 150px 150px 130px';
-  var colHead = '<div class="pv-list-colhead" style="'+gridStyle+'"><span>Processo</span><span>Solicitante</span><span>Etapa atual</span><span>Prioridade</span><span>Criado em</span></div>';
+  var gridStyle = hideProcCol ? 'grid-template-columns:minmax(160px,1.6fr) 150px 150px 130px' : 'grid-template-columns:minmax(180px,1.6fr) minmax(140px,1fr) 150px 150px 130px';
+  var colHead = '<div class="pv-list-colhead" style="'+gridStyle+'">'+(hideProcCol?'':'<span>Processo</span>')+'<span>Solicitante</span><span>Etapa atual</span><span>Prioridade</span><span>Criado em</span></div>';
   var rows = list.map(function(x){
     var d = state.processData[x.processo.id];
     var step = findStepIn(x.processo, x.sol.stepId);
@@ -3059,8 +3081,9 @@ function intranetTableHTML(rawList, emptyMsg){
     var tipoField = tipoSolicitacaoField(d);
     var tipoVal = tipoField ? x.sol.valores[tipoField.id] : null;
     var priorityBadge = tipoVal ? '<span class="badge '+priorityBadgeClass(tipoVal)+'">'+esc(tipoVal)+'</span>' : '<span class="pv-list-unset">Não definido</span>';
+    var procCell = hideProcCol ? '' : '<span style="display:flex;align-items:center;gap:8px;overflow:hidden"><span style="display:flex;flex:none;color:'+x.processo.color+'">'+ic(x.processo.icon,15)+'</span><span class="pv-list-name">'+esc(x.processo.name)+'</span></span>';
     return '<div class="pv-list-row" style="'+gridStyle+'" data-action="open-request-from-list" data-solid="'+x.sol.id+'" data-pid="'+x.processo.id+'">'+
-      '<span style="display:flex;align-items:center;gap:8px;overflow:hidden"><span style="display:flex;flex:none;color:'+x.processo.color+'">'+ic(x.processo.icon,15)+'</span><span class="pv-list-name">'+esc(x.processo.name)+'</span></span>'+
+      procCell+
       '<span class="pv-list-name">'+esc(x.sol.solicitante)+'</span>'+
       '<span>'+stepBadge+'</span>'+
       '<span>'+priorityBadge+'</span>'+
@@ -3090,9 +3113,9 @@ function openSolicitacoes(){
 function chartEmptyCardHTML(label, msg){
   return '<div class="chart-card widget-shell"><div class="cc-label">'+esc(label)+'</div><div class="field-hint" style="margin-top:6px">'+esc(msg)+'</div></div>';
 }
-function intranetPendenciasDashboardHTML(){
-  var pend = filaAprovacao();
-  var atendidas = historicoFinalizadas();
+function intranetPendenciasDashboardHTML(pid){
+  var pend = pid ? filaAprovacaoFor(pid) : filaAprovacao();
+  var atendidas = pid ? historicoFinalizadasFor(pid) : historicoFinalizadas();
   var urgentCount = pend.filter(function(x){
     var d = state.processData[x.processo.id];
     var tf = tipoSolicitacaoField(d);
@@ -3134,11 +3157,15 @@ function intranetPendenciasDashboardHTML(){
     }).join('')+
   '</div>' : chartEmptyCardHTML('Solicitações prestes a vencer', 'Nenhuma solicitação com prazo definido no momento.');
 
-  var open = openSolicitacoes();
-  var byProc = {};
-  open.forEach(function(x){ byProc[x.processo.name] = (byProc[x.processo.name]||0)+1; });
-  var barData = Object.keys(byProc).map(function(k){ return {name:k, value:byProc[k]}; });
-  var barHTML = barData.length ? widgetHTML({type:'bar', id:'intranet-bar-open', label:'Todas as solicitações em aberto', data:barData}, true) : chartEmptyCardHTML('Todas as solicitações em aberto', 'Nenhuma solicitação em aberto no momento.');
+  var open = pid ? openSolicitacoesFor(pid) : openSolicitacoes();
+  var byGroup = {};
+  open.forEach(function(x){
+    var key = pid ? ((findStepIn(x.processo, x.sol.stepId)||{}).name || '—') : x.processo.name;
+    byGroup[key] = (byGroup[key]||0)+1;
+  });
+  var barData = Object.keys(byGroup).map(function(k){ return {name:k, value:byGroup[k]}; });
+  var barLabel = pid ? 'Solicitações em aberto por etapa' : 'Todas as solicitações em aberto';
+  var barHTML = barData.length ? widgetHTML({type:'bar', id:'intranet-bar-open', label:barLabel, data:barData}, true) : chartEmptyCardHTML(barLabel, 'Nenhuma solicitação em aberto no momento.');
 
   return '<div class="widget-grid" style="margin-bottom:22px">'+kpisHTML+vencendoHTML+barHTML+'</div>';
 }
@@ -3905,18 +3932,23 @@ document.addEventListener('click', function(e){
   if (state.pvToolbarMenu && !/^(toggle-pv-menu|pv-toggle-filter-step|pv-clear-filter|pv-set-group|pv-set-sort|pv-mock-export)$/.test(action)) state.pvToolbarMenu = null;
   if (state.intranetToolbarMenu && !/^(toggle-intranet-menu|intranet-toggle-filter-proc|intranet-clear-filter|intranet-set-sort)$/.test(action)) state.intranetToolbarMenu = null;
   if (state.pvColMenuFor && action!=='toggle-pv-col-menu') state.pvColMenuFor = null;
+  if (state.appNavOpen && !/^(toggle-app-nav|open-app)$/.test(action)) state.appNavOpen = false;
   var handled = true;
   switch(action){
     case 'noop': e.preventDefault(); break;
-    case 'go-home': state.screen = state.appMode==='colaborador' ? 'intranet-home' : 'home'; state.selectedStepId=null; break;
+    case 'go-home': state.screen = state.appMode==='colaborador' ? 'app' : 'home'; state.selectedStepId=null; break;
     case 'set-appmode': {
       state.appMode = t.dataset.mode;
       state.screen = state.appMode==='colaborador' ? 'intranet-landing' : 'home';
-      state.intranetTab = 'todos';
       break;
     }
-    case 'nav-processos': {
-      state.screen = state.appMode==='colaborador' ? 'intranet-home' : 'home';
+    case 'toggle-app-nav': state.appNavOpen = !state.appNavOpen; break;
+    case 'open-app': {
+      state.currentProcessId = t.dataset.id;
+      state.screen = 'app';
+      state.appTab = 'minhas';
+      state.appNavOpen = false;
+      resetPvSessionState(state.processData[t.dataset.id]);
       break;
     }
     case 'nav-intranet-landing': state.screen = 'intranet-landing'; break;
@@ -4375,16 +4407,16 @@ document.addEventListener('click', function(e){
     }
     case 'back-to-editor': state.screen='editor'; break;
 
-    /* intranet (visão do colaborador) */
-    case 'set-intranet-tab': state.intranetTab = t.dataset.tab; break;
-    case 'open-processview-colab': {
-      state.currentProcessId = t.dataset.id;
-      state.processViewRole = 'colaborador';
-      state.processViewTab = 'list';
-      state.screen = 'processview';
-      resetPvSessionState(currentData());
+    /* intranet (visão do colaborador) — Aplicativo de cada processo */
+    case 'set-app-tab': {
+      state.appTab = t.dataset.tab;
+      if (state.appTab==='kanban'){ state.processViewRole='admin'; state.processViewTab='kanban'; }
+      else if (state.appTab==='todas'){ state.processViewRole='admin'; state.processViewTab='list'; }
+      else if (state.appTab==='dashboard'){ state.processViewRole='admin'; }
+      state.pvToolbarMenu=null; state.pvColMenuFor=null;
       break;
     }
+    case 'open-app-configurar': state.screen='editor'; state.editorTab='workflow'; break;
     case 'open-request-from-list': {
       state.currentProcessId = t.dataset.pid;
       state.processViewRole = 'colaborador';
@@ -4526,7 +4558,6 @@ document.addEventListener('input', function(e){
     return;
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }
-  if (e.target.id==='intranet-search'){ state.intranetSearch = e.target.value; refreshIntranetGridArea(); }
   if (e.target.id==='pv-search-input'){ state.pvSearch = e.target.value; refreshProcessViewBodyArea(); }
   if (e.target.id==='req-comment-input'){ state.reqCommentDraft = e.target.value; }
 });

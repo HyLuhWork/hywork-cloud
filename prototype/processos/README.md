@@ -348,6 +348,41 @@ construtor de processos e o caso de uso Service Desk:
   como uma lista de caixas de seleção; "preenchido" significa todos os itens
   marcados).
 
+**v35** — mudança de arquitetura pedida direto: a visão **Colaborador**
+deixou de ter uma **Central/Catálogo de Processos** única, compartilhada
+entre todos os processos. Agora, cada processo publicado vira o seu próprio
+**Aplicativo** dentro da Intranet — nada da lógica de workflow, automações,
+regras de ação ou permissões foi alterado, só a forma como o Colaborador
+navega até essas telas.
+
+- **"Processos" virou um dropdown** no topo da Intranet, listando cada
+  processo publicado (e ativo) como um item clicável com ícone — exatamente
+  como já acontecia com "Institucional"/"Gente & Gestão", só que agora
+  funcional e alimentado pela lista real de processos.
+- **Cada Aplicativo tem sua própria tela**, com cabeçalho (ícone, nome,
+  descrição do processo) e uma barra de abas fixa: **Minhas Solicitações**
+  (página inicial do app), **Minhas Pendências** e **Meu Histórico** —
+  visíveis a qualquer colaborador — seguidas de **Dashboard**, **Kanban** e
+  **Todas as Solicitações** (reaproveitando 100% as telas de Kanban/List/
+  Dashboard que já existiam na visão do processo publicado) e **Configurar
+  Processo**, que abre o construtor já existente. Essas últimas 4 abas
+  ganharam uma etiqueta "Administrador" — no protótipo, sem um motor de
+  papel/permissão por usuário, elas ficam visíveis para todo mundo (mesma
+  simplificação já usada desde a v26), só sinalizadas visualmente.
+- **Minhas Solicitações, Minhas Pendências e Meu Histórico agora são
+  filtradas por processo** — antes essas páginas existiam uma única vez,
+  somando todos os processos; agora cada Aplicativo mostra só os dados dele
+  (`minhasSolicitacoesFor`, `filaAprovacaoFor`, `historicoFinalizadasFor`,
+  `openSolicitacoesFor`). A tabela desses painéis perdeu a coluna
+  "Processo" e o filtro "Filtrar por processo" (redundantes agora que já se
+  está dentro de um processo só), e o gráfico "Solicitações em aberto" do
+  painel de Minhas Pendências passou a agrupar por **etapa** em vez de por
+  processo.
+- A visão **Administrador** (sidebar, o Home com a lista de processos para
+  criar/editar/publicar, o construtor, a visão Kanban/List/Dashboard do
+  processo aberto a partir dali) **não foi tocada** — continua exatamente
+  como antes; só o "invólucro" da experiência do Colaborador mudou.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

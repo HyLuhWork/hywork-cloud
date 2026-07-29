@@ -380,8 +380,36 @@ navega até essas telas.
   processo.
 - A visão **Administrador** (sidebar, o Home com a lista de processos para
   criar/editar/publicar, o construtor, a visão Kanban/List/Dashboard do
-  processo aberto a partir dali) **não foi tocada** — continua exatamente
-  como antes; só o "invólucro" da experiência do Colaborador mudou.
+  processo aberto a partir dali) não teve nenhuma regra alterada nesta
+  rodada — só o "invólucro" da experiência do Colaborador mudou. (A v36,
+  logo abaixo, trouxe o mesmo conceito de Aplicativo para dentro do menu
+  do Administrador também.)
+
+**v36** — dois ajustes pedidos direto sobre a v35: o menu lateral do
+**Administrador** também passou a gerar automaticamente um item por
+processo publicado, e o menu foi reorganizado em grupos por tipo.
+
+- **Cada processo publicado agora também aparece no menu do Administrador**
+  — dentro de um novo grupo **"Processos"**, logo abaixo de "Central de
+  Processos" (que continua sendo a lista de gerenciamento/criação). Clicar
+  num processo abre exatamente o mesmo **Aplicativo** (`appHTML()`, com as
+  mesmas 7 abas) usado pelo Colaborador — a tela é agnóstica de shell, então
+  funciona idêntica dentro da sidebar do Administrador ou do topbar da
+  Intranet, sem nenhum código novo de renderização.
+- **O menu lateral foi reorganizado em grupos "por tipo"**: Geral (Home,
+  Analytics), Processos (Central de Processos + cada Aplicativo),
+  Comunicação (Conteúdos, TV Corporativa, Fórum, Assinatura de Email),
+  Pessoas & Cultura (Reconhecimentos, Academy, Integração RH/HCM),
+  Ferramentas (Modelos, Integrações de Documentos, Dados) e Administração
+  (Usuários) — antes era uma lista única, sem seções.
+- Como consequência de abrir o construtor tanto a partir da Central de
+  Processos quanto de dentro de um Aplicativo, o botão "Voltar para
+  Processos" do construtor precisou aprender **para onde voltar**: agora
+  guarda isso em `state.editorReturnTo` (`'home'` ou `'app'`, setado no
+  momento em que se entra no construtor por cada caminho) — clicar em
+  "Configurar Processo" a partir de um Aplicativo e depois em "Voltar"
+  retorna para aquele mesmo Aplicativo, em vez de cair na Central de
+  Processos.
 
 ## Como abrir
 

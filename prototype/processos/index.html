@@ -60,7 +60,7 @@
 
   /* ---------- app shell ---------- */
   .app{display:flex;min-height:100vh;width:100%;overflow-x:hidden}
-  .sidebar{width:var(--sidebar-w);flex:0 0 auto;background:var(--shell-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px;gap:2px}
+  .sidebar{width:var(--sidebar-w);flex:0 0 auto;background:var(--shell-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px;gap:2px;height:100vh;overflow-y:auto}
   .brand{display:flex;align-items:center;gap:9px;padding:6px 8px 14px}
   .brand-mark{width:26px;height:26px;border-radius:7px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex:none}
   .brand-name{font-weight:800;font-size:16px;letter-spacing:-.01em}
@@ -79,6 +79,10 @@
   .nav-item:hover{background:var(--muted);color:var(--ink)}
   .nav-item.active{color:var(--primary);border-left-color:var(--primary)}
   .nav-item.active svg{opacity:1;color:var(--primary)}
+  .nav-subitem{display:flex;align-items:center;gap:9px;padding:6px 10px 6px 24px;border-radius:var(--radius-sm);color:var(--ink-muted);font-size:12.5px;font-weight:600;text-decoration:none;border-left:2.5px solid transparent}
+  .nav-subitem:hover{background:var(--muted);color:var(--ink)}
+  .nav-subitem.active{color:var(--primary);border-left-color:var(--primary);background:var(--primary-50)}
+  .nav-app-ic{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex:none}
   .sidebar-foot{margin-top:auto;padding-top:10px}
 
   .app-main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
@@ -1664,6 +1668,7 @@ var state = {
   reqCommentDraft:'',
   appMode:'admin', // 'admin' | 'colaborador'
   appTab:'minhas', // 'minhas' | 'pendencias' | 'historico' | 'dashboard' | 'kanban' | 'todas' | 'configurar'
+  editorReturnTo:'home', // onde "Voltar para Processos" no editor deve levar: 'home' (catálogo do admin) ou 'app' (o Aplicativo de onde veio via Configurar Processo)
   appNavOpen:false, // dropdown "Processos" aberto no topnav da intranet
   novaSolicitacaoOpen:null, // processId
   novaSolicitacaoDraft:null, // {valores:{}}
@@ -1802,6 +1807,11 @@ function renderShell(){
   updateThemeToggle();
   updateModeToggle();
   updateIntranetNavActive();
+  updateAdminNavApps();
+}
+function updateAdminNavApps(){
+  var el = qs('#admin-nav-apps'); if (!el) return;
+  el.innerHTML = adminNavAppsHTML();
 }
 function updateIntranetNavActive(){
   var nav = qs('.itn-nav'); if (!nav) return;
@@ -1831,22 +1841,39 @@ function themeToggleHTML(){
       '<button data-theme-choice="dark" title="Tema escuro">'+ic('moon',14)+'</button>'+
     '</div>';
 }
+function adminNavAppsHTML(){
+  var apps = enabledProcesses();
+  var homeActive = state.screen==='home';
+  var homeItem = '<a href="#" class="nav-subitem'+(homeActive?' active':'')+'" data-action="go-home">'+ic('flow',15)+'Central de Processos</a>';
+  var appItems = apps.map(function(p){
+    var active = p.id===state.currentProcessId && (state.screen==='app' || state.screen==='editor' || state.screen==='processview');
+    return '<a href="#" class="nav-subitem'+(active?' active':'')+'" data-action="open-app" data-id="'+p.id+'">'+
+      '<span class="nav-app-ic" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,12)+'</span>'+esc(p.name)+
+    '</a>';
+  }).join('');
+  return homeItem+appItems;
+}
 function adminShellHTML(){
   return '<aside class="sidebar">'+
       '<div class="brand">'+hyworkLogoMarkHTML(26)+hyworkWordmarkHTML()+'</div>'+
       '<div class="workspace-switcher"><div class="ws-icon">H</div><div class="ws-text"><div class="ws-title">Hywork</div><div class="ws-sub">Espaço atual</div></div>'+ic('chevronDown',14)+'</div>'+
+      '<div class="nav-group-label" style="padding-top:2px">Geral</div>'+
       navItem('home','Home',false)+
       navItem('chart','Analytics',false)+
-      navItem('grid','Modelos',false)+
+      '<div class="nav-group-label">Processos</div>'+
+      '<div id="admin-nav-apps">'+adminNavAppsHTML()+'</div>'+
+      '<div class="nav-group-label">Comunicação</div>'+
       navItem('doc','Conteúdos',false)+
+      navItem('tv','TV Corporativa',false)+
+      navItem('forum','Fórum',false)+
+      navItem('mail','Assinatura de Email',false)+
+      '<div class="nav-group-label">Pessoas &amp; Cultura</div>'+
       navItem('award','Reconhecimentos',false)+
       navItem('gradcap','Academy',false)+
-      navItem('tv','TV Corporativa',false)+
-      navItem('mail','Assinatura de Email',false)+
-      navItem('link','Integrações de Documentos',false)+
-      navItem('forum','Fórum',false)+
       navItem('hcm','Integração RH / HCM',false)+
-      navItem('flow','Processos',true)+
+      '<div class="nav-group-label">Ferramentas</div>'+
+      navItem('grid','Modelos',false)+
+      navItem('link','Integrações de Documentos',false)+
       navItem('db','Dados',false)+
       '<div id="admin-nav-group">'+
         '<div class="nav-group-label">Administração</div>'+
@@ -1905,8 +1932,7 @@ function intranetShellHTML(){
   '</div>';
 }
 function navItem(icon,label,active){
-  var action = (label==='Processos') ? 'nav-processos' : 'noop';
-  return '<a href="#" class="nav-item'+(active?' active':'')+'" data-action="'+action+'">'+ic(icon,17)+'<span>'+label+'</span></a>';
+  return '<a href="#" class="nav-item'+(active?' active':'')+'" data-action="noop">'+ic(icon,17)+'<span>'+label+'</span></a>';
 }
 function updateThemeToggle(){
   var el = qs('#theme-toggle'); if(!el) return;
@@ -2056,7 +2082,7 @@ function editorHTML(){
 
   return ''+
     '<div class="editor-topbar">'+
-      '<a href="#" class="back-link" data-action="go-home">'+ic('arrowLeft',14)+'Voltar para Processos</a>'+
+      '<a href="#" class="back-link" data-action="editor-back">'+ic('arrowLeft',14)+'Voltar para Processos</a>'+
       '<div class="editor-header">'+
         '<div class="editor-header-left">'+
           '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,20)+'</div>'+
@@ -3937,6 +3963,7 @@ document.addEventListener('click', function(e){
   switch(action){
     case 'noop': e.preventDefault(); break;
     case 'go-home': state.screen = state.appMode==='colaborador' ? 'app' : 'home'; state.selectedStepId=null; break;
+    case 'editor-back': state.screen = state.editorReturnTo; state.selectedStepId=null; break;
     case 'set-appmode': {
       state.appMode = t.dataset.mode;
       state.screen = state.appMode==='colaborador' ? 'intranet-landing' : 'home';
@@ -3967,11 +3994,13 @@ document.addEventListener('click', function(e){
       state.processData[id] = emptyProcessData();
       state.wizardOpen=false;
       state.currentProcessId=id; state.screen='editor'; state.editorTab='form'; state.selectedStepId=null;
+      state.editorReturnTo='home';
       showToast('Processo criado. Agora monte o formulário.');
       break;
     }
     case 'open-editor':
       state.currentProcessId = t.dataset.id; state.screen='editor'; state.editorTab='workflow'; state.selectedStepId=null;
+      state.editorReturnTo='home';
       break;
     case 'open-hystore-preview': state.hystoreTemplateOpen = +t.dataset.idx; break;
     case 'close-hystore-preview': case 'close-hystore-preview-overlay': state.hystoreTemplateOpen = null; break;
@@ -4203,6 +4232,7 @@ document.addEventListener('click', function(e){
     case 'toggle-pv-menu': { var pvm = t.dataset.menu; state.pvToolbarMenu = state.pvToolbarMenu===pvm ? null : pvm; break; }
     case 'toggle-pv-col-menu': { var pvk = t.dataset.key; state.pvColMenuFor = state.pvColMenuFor===pvk ? null : pvk; break; }
     case 'pv-col-edit-etapa': {
+      state.editorReturnTo = state.screen==='app' ? 'app' : 'home';
       state.screen = 'editor'; state.editorTab = 'workflow';
       state.selectedStepId = t.dataset.stepid;
       state.stepModalOpen = t.dataset.stepid;
@@ -4405,7 +4435,7 @@ document.addEventListener('click', function(e){
       resetPvSessionState(currentData());
       break;
     }
-    case 'back-to-editor': state.screen='editor'; break;
+    case 'back-to-editor': state.screen='editor'; state.editorReturnTo='home'; break;
 
     /* intranet (visão do colaborador) — Aplicativo de cada processo */
     case 'set-app-tab': {
@@ -4416,7 +4446,7 @@ document.addEventListener('click', function(e){
       state.pvToolbarMenu=null; state.pvColMenuFor=null;
       break;
     }
-    case 'open-app-configurar': state.screen='editor'; state.editorTab='workflow'; break;
+    case 'open-app-configurar': state.screen='editor'; state.editorTab='workflow'; state.editorReturnTo='app'; break;
     case 'open-request-from-list': {
       state.currentProcessId = t.dataset.pid;
       state.processViewRole = 'colaborador';

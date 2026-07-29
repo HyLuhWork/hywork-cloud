@@ -3016,10 +3016,9 @@ var APP_TABS = [
   ['minhas','Minhas Solicitações',false],
   ['pendencias','Minhas Pendências',false],
   ['historico','Meu Histórico',false],
-  ['dashboard','Dashboard',true],
-  ['kanban','Kanban',true],
   ['todas','Todas as Solicitações',true],
 ];
+var APP_TODAS_VIEWS = [['kanban','Kanban','grid'],['todas','List','doc'],['dashboard','Dashboard','chart']];
 function appHTML(){
   var p = currentProcess();
   if (!p){ state.screen = 'intranet-landing'; return intranetLandingHTML(); }
@@ -3027,15 +3026,27 @@ function appHTML(){
   ensureViewConfig(d);
   var pid = p.id;
   var pend = filaAprovacaoFor(pid);
+  var isAdminNav = state.appMode==='admin';
+  var todasKeys = ['kanban','todas','dashboard'];
+  var inTodasGroup = todasKeys.indexOf(state.appTab)!==-1;
 
-  var tabsHTML = APP_TABS.map(function(t, i){
+  // No menu do Administrador, o Aplicativo mostra só a gestão do processo
+  // (Todas as Solicitações, com Kanban/List/Dashboard por dentro, + Configurar)
+  // — as páginas pessoais (Minhas Solicitações/Pendências/Histórico) são
+  // específicas da Intranet.
+  var visibleTabs = isAdminNav ? APP_TABS.filter(function(t){return t[2];}) : APP_TABS;
+  if (isAdminNav && !inTodasGroup){ state.appTab = 'kanban'; inTodasGroup = true; }
+  if (inTodasGroup){ state.processViewRole = 'admin'; }
+
+  var tabsHTML = visibleTabs.map(function(t, i){
     var badge = t[0]==='pendencias' && pend.length ? '<span class="intranet-tab-badge">'+pend.length+'</span>' : '';
-    var adminTag = t[2] ? '<span class="app-tab-admin-tag">Administrador</span>' : '';
-    var sep = (i===3) ? '<span class="app-tab-sep"></span>' : '';
-    return sep+'<button class="intranet-tab'+(state.appTab===t[0]?' active':'')+'" data-action="set-app-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+adminTag+'</button>';
+    var adminTag = (t[2] && !isAdminNav) ? '<span class="app-tab-admin-tag">Administrador</span>' : '';
+    var sep = (!isAdminNav && i===3) ? '<span class="app-tab-sep"></span>' : '';
+    var active = t[0]==='todas' ? inTodasGroup : state.appTab===t[0];
+    return sep+'<button class="intranet-tab'+(active?' active':'')+'" data-action="set-app-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+adminTag+'</button>';
   }).join('')+
     '<span class="app-tab-sep"></span>'+
-    '<button class="intranet-tab" data-action="open-app-configurar">'+ic('gear',13)+'Configurar Processo<span class="app-tab-admin-tag">Administrador</span></button>';
+    '<button class="intranet-tab" data-action="open-app-configurar">'+ic('gear',13)+'Configurar Processo'+(isAdminNav?'':'<span class="app-tab-admin-tag">Administrador</span>')+'</button>';
 
   var body;
   if (state.appTab==='pendencias') body = intranetPendenciasDashboardHTML(pid)+
@@ -3043,17 +3054,32 @@ function appHTML(){
     intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.', true);
   else if (state.appTab==='historico') body = '<div class="req-form-title" style="margin-bottom:12px">Meu Histórico</div>'+
     intranetTableHTML(historicoFinalizadasFor(pid), 'Você ainda não tem solicitações finalizadas neste processo.', true);
-  else if (state.appTab==='dashboard') body = '<div class="pv-body" id="pv-body-area">'+processViewDashboardHTML()+'</div>';
-  else if (state.appTab==='kanban') body = processViewToolbarHTML()+'<div class="pv-body" id="pv-body-area">'+processViewKanbanHTML()+'</div>';
-  else if (state.appTab==='todas') body = processViewToolbarHTML()+'<div class="pv-body" id="pv-body-area">'+processViewListHTML()+'</div>';
+  else if (inTodasGroup){
+    state.processViewTab = state.appTab==='todas' ? 'list' : state.appTab;
+    var todasViewsHTML = APP_TODAS_VIEWS.map(function(v){
+      return '<button class="mtab'+(state.appTab===v[0]?' active':'')+'" data-action="set-app-tab" data-tab="'+v[0]+'">'+ic(v[2],14)+esc(v[1])+'</button>';
+    }).join('');
+    var todasBody;
+    if (state.appTab==='dashboard') todasBody = processViewDashboardHTML();
+    else if (state.appTab==='todas') todasBody = processViewListHTML();
+    else todasBody = processViewKanbanHTML();
+    var showToolbar = state.appTab==='kanban' || state.appTab==='todas';
+    body = '<div class="mtabs" style="margin-bottom:14px">'+todasViewsHTML+'</div>'+
+      (showToolbar ? processViewToolbarHTML() : '')+
+      '<div class="pv-body" id="pv-body-area">'+todasBody+'</div>';
+  }
   else body = '<div class="req-form-title" style="margin-bottom:12px">Minhas Solicitações</div>'+
     intranetTableHTML(minhasSolicitacoesFor(pid), 'Você ainda não enviou nenhuma solicitação neste processo.', true);
+
+  var actionsRight = isAdminNav
+    ? '<button class="btn btn-outline btn-sm" style="margin-left:auto;flex:none" data-action="open-app-configurar">'+ic('edit',14)+'Editar processo</button>'
+    : '<button class="btn btn-primary btn-sm" style="margin-left:auto;flex:none" data-action="open-nova-solicitacao" data-id="'+p.id+'">'+ic('plus',14)+'Iniciar Solicitação</button>';
 
   return '<div class="screen-inner" style="padding-bottom:0">'+
     '<div class="pv-hero">'+
       '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,20)+'</div>'+
       '<div class="pv-hero-info"><div class="pv-hero-name">'+esc(d.formConfig.nome||p.name)+'</div><div class="pv-hero-desc">'+esc(d.formConfig.descricao||p.description)+'</div></div>'+
-      '<button class="btn btn-primary btn-sm" style="margin-left:auto;flex:none" data-action="open-nova-solicitacao" data-id="'+p.id+'">'+ic('plus',14)+'Iniciar Solicitação</button>'+
+      actionsRight+
     '</div>'+
     '<div class="intranet-tabs" style="margin-top:22px">'+tabsHTML+'</div>'+
     '<div style="margin-top:18px">'+body+'</div>'+
@@ -3973,7 +3999,8 @@ document.addEventListener('click', function(e){
     case 'open-app': {
       state.currentProcessId = t.dataset.id;
       state.screen = 'app';
-      state.appTab = 'minhas';
+      state.appTab = state.appMode==='admin' ? 'kanban' : 'minhas';
+      if (state.appTab==='kanban'){ state.processViewRole='admin'; state.processViewTab='kanban'; }
       state.appNavOpen = false;
       resetPvSessionState(state.processData[t.dataset.id]);
       break;

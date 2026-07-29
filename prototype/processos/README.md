@@ -392,10 +392,10 @@ processo publicado, e o menu foi reorganizado em grupos por tipo.
 - **Cada processo publicado agora também aparece no menu do Administrador**
   — dentro de um novo grupo **"Processos"**, logo abaixo de "Central de
   Processos" (que continua sendo a lista de gerenciamento/criação). Clicar
-  num processo abre exatamente o mesmo **Aplicativo** (`appHTML()`, com as
-  mesmas 7 abas) usado pelo Colaborador — a tela é agnóstica de shell, então
-  funciona idêntica dentro da sidebar do Administrador ou do topbar da
-  Intranet, sem nenhum código novo de renderização.
+  num processo abre exatamente o mesmo **Aplicativo** (`appHTML()`) usado
+  pelo Colaborador — a tela é agnóstica de shell, então funciona idêntica
+  dentro da sidebar do Administrador ou do topbar da Intranet, sem nenhum
+  código novo de renderização.
 - **O menu lateral foi reorganizado em grupos "por tipo"**: Geral (Home,
   Analytics), Processos (Central de Processos + cada Aplicativo),
   Comunicação (Conteúdos, TV Corporativa, Fórum, Assinatura de Email),
@@ -410,6 +410,29 @@ processo publicado, e o menu foi reorganizado em grupos por tipo.
   "Configurar Processo" a partir de um Aplicativo e depois em "Voltar"
   retorna para aquele mesmo Aplicativo, em vez de cair na Central de
   Processos.
+
+**v37** — dois ajustes pedidos direto sobre como o Aplicativo se comporta
+dentro do menu do Administrador:
+
+- **O Aplicativo aberto a partir do menu do Administrador não mostra mais
+  as páginas pessoais** (Minhas Solicitações, Minhas Pendências, Meu
+  Histórico) — essas continuam existindo só na Intranet, onde fazem
+  sentido (são sobre "as minhas solicitações", e o Administrador está ali
+  para gerenciar o processo, não para usá-lo como solicitante). Pelo menu
+  do Administrador, o Aplicativo mostra só **Todas as Solicitações** e
+  **Configurar Processo**, e já abre direto na visão de gestão (antes caía
+  em "Minhas Solicitações", que nem aparecia mais pra ele). O cabeçalho
+  também troca o botão "Iniciar Solicitação" por "Editar processo" nesse
+  contexto.
+- **Dashboard, Kanban e Todas as Solicitações deixaram de ser 3 abas
+  separadas** e viraram **uma abinha só** ("Todas as Solicitações"), com um
+  seletor interno de Kanban/List/Dashboard dentro dela — reaproveitando a
+  mesma barra de sub-abas que a visão de processo do Administrador já usava
+  antes de existir o conceito de Aplicativo. Isso vale tanto para o
+  Aplicativo aberto pelo menu do Administrador (2 abas: Todas as
+  Solicitações + Configurar Processo) quanto para o mesmo Aplicativo aberto
+  pela Intranet do Colaborador (5 abas: as 3 pessoais + Todas as
+  Solicitações "Administrador" + Configurar Processo "Administrador").
 
 ## Como abrir
 

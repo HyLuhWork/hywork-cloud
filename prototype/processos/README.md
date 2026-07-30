@@ -531,6 +531,47 @@ ganharam um parâmetro `titleText` — o título deixou de ser uma `div`
 solta antes da chamada e passou a ser renderizado por dentro da
 própria barra de ferramentas da tabela.)
 
+**v46** — reformulada a modal de detalhes da solicitação
+(`requestModalHTML`), que estava muito apertada, com tudo empilhado e
+sem hierarquia visual clara. Novo layout inspirado numa referência de
+ticket estilo Jira, adaptado aos dados que já existem no protótipo
+(sem inventar campos como Resolution/Votes/Watchers, que não existem
+no nosso modelo):
+
+- **Cabeçalho**: breadcrumb pequeno ("{Processo} › {código do
+  chamado}", ex. `SD-017`, gerado só para exibição a partir da posição
+  da solicitação na lista — não é um ID novo, o `sol.id` interno
+  continua o mesmo) + título grande ("Solicitação de {solicitante}") +
+  linha de metadados (data de criação + selo colorido da etapa atual,
+  no lugar do texto pequeno que existia antes).
+- **Corpo em duas colunas**, cada uma rolando de forma independente:
+  - Esquerda — "Descrição e Anexos": os campos do formulário
+    (`solFormRowsHTML`) agora renderizam numa grade de 2 colunas
+    (rótulo em cima, valor embaixo, ao estilo "Details" da referência)
+    em vez da lista de linhas rótulo–valor lado a lado que deixava tudo
+    espremido numa única coluna estreita. Os anexos reais da
+    solicitação (`sol.anexos`) ganharam um visual de cartão de arquivo
+    (ícone + nome + tamanho) em vez do chip de texto corrido. Campos
+    específicos da etapa atual (quando existem) aparecem logo abaixo,
+    na mesma coluna.
+  - Direita — "Pessoas" (solicitante + responsável pela etapa, com
+    avatar), depois "Ações disponíveis"/"Status" (os mesmos cartões de
+    ação de sempre — Aprovar/Reprovar/Mover Etapa/etc — só que agora
+    numa seção própria com mais espaço), e por fim as abas
+    Histórico/Comentários — que antes ficavam num rodapé de altura fixa
+    (260px) por baixo das duas colunas, e agora vivem dentro da própria
+    barra lateral, cada seção separada por uma linha divisória.
+- Removido o rodapé fixo (`.request-modal-footer`) — a modal inteira
+  agora é só cabeçalho + tracker + as duas colunas roláveis.
+- Corrigido de passagem: o campo de formulário do tipo anexo (ex.
+  "Anexos" no Service Desk) não aparecia mais como uma linha vazia
+  duplicada — `solFormRowsHTML` agora pula campos `type:'attachment'`,
+  já que o anexo de verdade tem sua própria seção dedicada.
+- Nenhuma regra de fluxo, permissão ou ação mudou — é só reorganização
+  visual dos mesmos dados e das mesmas ações (`.req-action-card`,
+  `.req-tracker`, `.req-col-info` continuam com a mesma função,
+  cobertos pelos mesmos testes de regressão).
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

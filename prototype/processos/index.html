@@ -516,37 +516,43 @@
 
   /* ---------- modal de detalhes da solicitação ---------- */
   .request-modal{max-width:1400px;max-height:92vh}
-  .req-modal-head-left{display:flex;align-items:center;gap:14px}
-  .req-tracker-wrap{padding:14px 24px;border-bottom:1px solid var(--border);flex:none}
+  .req-modal-head{padding:20px 26px 16px;border-bottom:1px solid var(--border);flex:none}
+  .req-breadcrumb{font-size:11.5px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.03em}
+  .req-breadcrumb-sep{margin:0 4px;color:var(--ink-faint)}
+  .req-modal-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-top:8px}
+  .req-modal-title{font-size:20px;font-weight:800;color:var(--ink);margin:0}
+  .req-modal-meta{display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap}
+  .req-modal-meta-date{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-faint);font-weight:600}
+  .req-tracker-wrap{padding:18px 26px;border-bottom:1px solid var(--border);flex:none}
   .request-modal-2col{display:flex;flex:1;min-height:0;overflow:hidden}
-  .req-col{overflow-y:auto;padding:20px 24px}
-  .req-col-form{flex:1;min-width:0}
-  .req-col-info{flex:1.15;min-width:0;border-left:1px solid var(--border)}
-  .req-info-section+.req-info-section{margin-top:22px;padding-top:20px;border-top:1px solid var(--border)}
-  .req-fase-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-  .req-form-title{font-size:16px;font-weight:800;color:var(--ink)}
-  .req-form-subtitle{font-size:12px;color:var(--ink-faint);margin-top:3px;margin-bottom:16px}
-  .req-resp-row{display:flex;align-items:center;gap:10px;margin:12px 0 18px}
+  .req-col{overflow-y:auto;padding:24px 26px}
+  .req-col-form{flex:1.5;min-width:0}
+  .req-col-info{flex:1;min-width:0;border-left:1px solid var(--border)}
+  .req-info-section+.req-info-section{margin-top:24px;padding-top:22px;border-top:1px solid var(--border)}
+  .req-form-title{font-size:15.5px;font-weight:800;color:var(--ink);margin-bottom:16px}
+  .req-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;margin-bottom:6px}
+  .req-resp-row{display:flex;align-items:center;gap:10px;margin:14px 0 4px}
   .req-resp-avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:none}
   .req-resp-name{font-size:12.5px;font-weight:700;color:var(--ink)}
   .req-resp-role{font-size:11px;color:var(--ink-faint);margin-top:1px}
-  .request-modal-footer{border-top:1px solid var(--border);padding:16px 24px 18px;overflow-y:auto;max-height:260px;flex:none}
   .req-detail-tabs{display:flex;gap:20px;border-bottom:1px solid var(--border);margin-bottom:14px}
   .req-detail-tab{padding:0 1px 10px;font-size:12.5px;font-weight:700;color:var(--ink-faint);border-bottom:2.5px solid transparent;margin-bottom:-1px}
   .req-detail-tab:hover{color:var(--ink)}
   .req-detail-tab.active{color:var(--ink);border-bottom-color:var(--primary)}
-  .req-field-row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px}
-  .req-field-row:last-of-type{border-bottom:none;margin-bottom:14px}
-  .req-field-label{color:var(--ink-faint);font-weight:600}
-  .req-field-value{font-weight:400;color:var(--ink);text-align:right}
+  .req-field-row{display:flex;flex-direction:column;gap:4px}
+  .req-field-label{font-size:10.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .req-field-value{font-size:13px;font-weight:600;color:var(--ink);text-align:left}
   .req-hist-list{display:flex;flex-direction:column;gap:12px;margin-bottom:6px}
   .req-hist-item{display:flex;gap:10px;align-items:flex-start}
   .req-hist-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);margin-top:5px;flex:none}
   .req-hist-text{font-size:12.5px;color:var(--ink)}
   .req-hist-date{font-size:11px;color:var(--ink-faint);margin-top:2px}
-  .req-anexos-row{display:flex;flex-wrap:wrap;gap:8px}
-  .req-anexo-chip{display:inline-flex;align-items:center;gap:6px;background:var(--muted);border-radius:var(--radius-sm);padding:6px 10px;font-size:11.5px;font-weight:600}
-  .req-anexo-size{color:var(--ink-faint);font-weight:500}
+  .req-anexos-row{display:flex;flex-wrap:wrap;gap:10px}
+  .req-anexo-chip{display:flex;align-items:center;gap:9px;background:var(--muted);border-radius:var(--radius-md);padding:8px 12px 8px 8px;min-width:170px}
+  .req-anexo-icon{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:var(--radius-sm);background:var(--surface);color:var(--ink-muted);flex:none}
+  .req-anexo-info{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .req-anexo-name{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+  .req-anexo-size{font-size:10.5px;color:var(--ink-faint);font-weight:500}
   .req-step-badge{display:inline-flex;align-items:center;background:var(--primary-50);color:var(--primary-dark);border-radius:var(--radius-sm);padding:6px 10px;font-size:12.5px;font-weight:700}
   .req-comment-list{display:flex;flex-direction:column;gap:14px;margin-bottom:12px}
   .req-comment-item{display:flex;gap:10px;align-items:flex-start}
@@ -3266,7 +3272,7 @@ function novaSolicitacaoFieldHTML(f, draft){
   return '<div class="field-row"><label class="field-label">'+esc(f.label)+req+'</label>'+input+'</div>';
 }
 function solFormRowsHTML(d, sol){
-  return d.formFields.map(function(f){
+  return d.formFields.filter(function(f){ return f.type!=='attachment'; }).map(function(f){
     if (f.type==='section') return '<div class="rule-mini-label" style="margin-top:14px">'+esc(f.titulo||'Seção')+'</div>'+(f.descricao?'<div class="field-hint" style="margin:-4px 0 8px">'+esc(f.descricao)+'</div>':'');
     var val = f.auto ? (f.type==='date' ? sol.criadoEm : sol.solicitante) : sol.valores[f.id];
     return '<div class="req-field-row"><div class="req-field-label">'+esc(f.label)+'</div><div class="req-field-value">'+(val?esc(val):'<em>—</em>')+'</div></div>';
@@ -3305,6 +3311,14 @@ function trackerModalHTML(){
 }
 
 /* ---- Modal de detalhes da solicitação ---- */
+function ticketCodeFor(p, sol){
+  var d = state.processData[p.id];
+  var list = (d && d.solicitacoes) || [];
+  var idx = list.findIndex(function(s){return s.id===sol.id;});
+  var prefix = (p.name||'PR').split(' ').map(function(w){return w[0];}).filter(Boolean).join('').toUpperCase().slice(0,3);
+  var num = (idx>=0?idx:0)+1;
+  return prefix+'-'+(num<10?'00'+num:(num<100?'0'+num:num));
+}
 function requestModalHTML(){
   var sol = findSolicitacao(state.requestModalOpen);
   if (!sol) return '';
@@ -3315,7 +3329,10 @@ function requestModalHTML(){
   var formRows = solFormRowsHTML(d, sol);
 
   var anexosHTML = (sol.anexos&&sol.anexos.length) ? '<div class="req-anexos-row">'+sol.anexos.map(function(a){
-    return '<div class="req-anexo-chip">'+ic('doc',13)+'<span>'+esc(a.nome)+'</span><span class="req-anexo-size">'+esc(a.tamanho||'')+'</span></div>';
+    return '<div class="req-anexo-chip">'+
+      '<div class="req-anexo-icon">'+ic('doc',15)+'</div>'+
+      '<div class="req-anexo-info"><div class="req-anexo-name">'+esc(a.nome)+'</div><div class="req-anexo-size">'+esc(a.tamanho||'')+'</div></div>'+
+    '</div>';
   }).join('')+'</div>' : '<div class="field-hint">Nenhum anexo.</div>';
 
   var historicoHTML = solHistoricoHTML(sol);
@@ -3327,42 +3344,47 @@ function requestModalHTML(){
   var commentCount = (sol.comentarios||[]).length;
   var footerBody = state.reqDetailTab==='comentarios' ? requestCommentsHTML(sol) : historicoHTML;
 
+  var badgeStyle = step.cor ? ' style="background:'+step.cor+'22;color:'+step.cor+'"' : '';
+  var statusPill = '<span class="req-step-badge"'+badgeStyle+'>'+esc(step.name||'—')+'</span>';
+
   return '<div class="overlay" data-action="close-requestmodal-overlay"><div class="modal request-modal">'+
-    '<div class="modal-head">'+
-      '<div class="req-modal-head-left">'+
-        '<div class="editor-icon" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,20)+'</div>'+
-        '<div><h3>'+esc(p?p.name:'')+'</h3><p>'+esc(p?p.description:'')+'</p></div>'+
+    '<div class="req-modal-head">'+
+      '<div class="req-breadcrumb">'+esc(p?p.name:'')+'<span class="req-breadcrumb-sep">›</span>'+esc(ticketCodeFor(p, sol))+'</div>'+
+      '<div class="req-modal-title-row">'+
+        '<h3 class="req-modal-title">Solicitação de '+esc(sol.solicitante)+'</h3>'+
+        '<button class="icon-btn" data-action="close-requestmodal">'+ic('x',16)+'</button>'+
       '</div>'+
-      '<button class="icon-btn" data-action="close-requestmodal">'+ic('x',16)+'</button>'+
+      '<div class="req-modal-meta">'+
+        '<span class="req-modal-meta-date">'+ic('calendar',13)+'Criado em '+esc(sol.criadoEm)+'</span>'+
+        statusPill+
+      '</div>'+
     '</div>'+
     '<div class="req-tracker-wrap">'+stepTrackerHTML(sol)+'</div>'+
     '<div class="request-modal-2col">'+
       '<div class="req-col req-col-form">'+
-        '<div class="req-form-title">Formulário Inicial</div>'+
-        '<div class="req-form-subtitle">Solicitação de <b>'+esc(sol.solicitante)+'</b> · Enviada em '+esc(sol.criadoEm)+'</div>'+
-        formRows+
-        '<div class="rule-mini-label">Anexos</div>'+anexosHTML+
+        '<div class="req-form-title">Descrição e Anexos</div>'+
+        '<div class="req-details-grid">'+formRows+'</div>'+
+        (extraFieldsHTML ? '<div class="rule-mini-label" style="margin-top:18px">Campos desta etapa</div>'+extraFieldsHTML : '')+
+        '<div class="rule-mini-label" style="margin-top:18px">Anexos</div>'+anexosHTML+
       '</div>'+
       '<div class="req-col req-col-info">'+
-        '<div class="req-info-section">'+requestFaseColumnHTML(step, extraFieldsHTML)+'</div>'+
+        '<div class="req-info-section">'+requestPessoasHTML(sol, step)+'</div>'+
         '<div class="req-info-section">'+requestAcoesColumnHTML(sol, step)+'</div>'+
+        '<div class="req-info-section">'+
+          '<div class="req-detail-tabs">'+
+            '<button class="req-detail-tab'+(state.reqDetailTab==='historico'?' active':'')+'" data-action="set-reqdetail-tab" data-tab="historico">Histórico</button>'+
+            '<button class="req-detail-tab'+(state.reqDetailTab==='comentarios'?' active':'')+'" data-action="set-reqdetail-tab" data-tab="comentarios">Comentários'+(commentCount?' ('+commentCount+')':'')+'</button>'+
+          '</div>'+
+          footerBody+
+        '</div>'+
       '</div>'+
-    '</div>'+
-    '<div class="request-modal-footer">'+
-      '<div class="req-detail-tabs">'+
-        '<button class="req-detail-tab'+(state.reqDetailTab==='historico'?' active':'')+'" data-action="set-reqdetail-tab" data-tab="historico">Histórico de atividades</button>'+
-        '<button class="req-detail-tab'+(state.reqDetailTab==='comentarios'?' active':'')+'" data-action="set-reqdetail-tab" data-tab="comentarios">Comentários'+(commentCount?' ('+commentCount+')':'')+'</button>'+
-      '</div>'+
-      footerBody+
     '</div>'+
   '</div></div>';
 }
-function requestFaseColumnHTML(step, extraFieldsHTML){
-  var badgeStyle = step.cor ? ' style="background:'+step.cor+'22;color:'+step.cor+'"' : '';
-  var head = '<div class="req-fase-head"><span class="rule-mini-label" style="margin:0">Etapa atual</span><span class="req-step-badge"'+badgeStyle+'>'+esc(step.name||'—')+'</span></div>';
-  var respHTML = requestResponsavelHTML(step);
-  var fieldsBlock = extraFieldsHTML ? '<div class="rule-mini-label" style="margin-top:14px">Campos desta etapa</div>'+extraFieldsHTML : '<div class="field-hint" style="margin-top:'+(respHTML?'0':'6px')+'">Nenhum campo adicional configurado para esta etapa.</div>';
-  return head+respHTML+fieldsBlock;
+function requestPessoasHTML(sol, step){
+  var solicitanteRow = '<div class="req-resp-row" style="margin-top:0"><div class="req-resp-avatar">'+esc(initials(sol.solicitante))+'</div>'+
+    '<div><div class="req-resp-name">'+esc(sol.solicitante)+'</div><div class="req-resp-role">Solicitante</div></div></div>';
+  return '<div class="req-form-title">Pessoas</div>'+solicitanteRow+requestResponsavelHTML(step);
 }
 function requestResponsavelHTML(step){
   if (!step.responsavel || !step.responsavel.valor) return '';
@@ -3388,17 +3410,17 @@ function requestCommentsHTML(sol){
 function requestAcoesColumnHTML(sol, step){
   var isColab = state.processViewRole==='colaborador';
   if (isColab){
-    return '<div class="rule-mini-label" style="margin-top:0">Status</div>'+
+    return '<div class="req-form-title">Status</div>'+
       '<div class="field-hint">'+(step.final?'Sua solicitação foi finalizada.':'Aguardando ação do responsável por esta etapa.')+'</div>';
   }
   if (step.system){
-    return '<div class="rule-mini-label" style="margin-top:0">Ações disponíveis</div>'+
+    return '<div class="req-form-title">Ações disponíveis</div>'+
       '<div class="field-hint">'+(step.final?'Esta solicitação já foi finalizada.':'Aguardando o fluxo seguir automaticamente.')+'</div>';
   }
   var tipos = {}; (step.regras||[]).forEach(function(r){ tipos[r.tipo]=true; });
   var order = ['aprovar','reprovar','mover_etapa','devolver_solicitante','personalizada'];
   var cards = order.filter(function(t){return tipos[t];}).map(function(tipo){ return requestActionCardHTML(sol, step, tipo); }).join('');
-  return '<div class="rule-mini-label" style="margin-top:0">Ações disponíveis</div>'+
+  return '<div class="req-form-title">Ações disponíveis</div>'+
     (cards || '<div class="field-hint">Nenhuma ação configurada para esta etapa.</div>');
 }
 function stepTrackerHTML(sol){

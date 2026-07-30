@@ -519,6 +519,18 @@ Solicitações/Minhas Pendências/Meu Histórico) também perderam a borda,
 mantendo só fundo branco e sombra leve — consistente com o cabeçalho e
 a barra de abas ajustados na v43.
 
+**v45** — corrigido o espaçamento entre o título ("Minhas Solicitações",
+"Minhas Pendências", "Meu Histórico") e a tabela logo abaixo, que tinha
+um vão grande e injustificado no meio (título → toolbar de
+ordenar/filtrar → tabela, cada um com sua própria margem, todas
+somadas). O título agora fica dentro da própria barra de
+ordenar/filtrar — mesma linha, alinhado à esquerda enquanto "Ordenar:
+Recentes" fica à direita — direto acima do cartão da tabela, sem o
+vão solto no meio. (`intranetTableHTML`/`intranetTableToolbarHTML`
+ganharam um parâmetro `titleText` — o título deixou de ser uma `div`
+solta antes da chamada e passou a ser renderizado por dentro da
+própria barra de ferramentas da tabela.)
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

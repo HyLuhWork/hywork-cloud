@@ -3046,10 +3046,9 @@ function appHTML(){
 
   var body;
   if (state.appTab==='pendencias') body = intranetPendenciasDashboardHTML(pid)+
-    '<div class="req-form-title" style="margin-bottom:12px">Solicitações aguardando ação</div>'+
-    intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.', true);
-  else if (state.appTab==='historico') body = '<div class="req-form-title" style="margin-bottom:12px">Meu Histórico</div>'+
-    intranetTableHTML(historicoFinalizadasFor(pid), 'Você ainda não tem solicitações finalizadas neste processo.', true);
+    intranetTableHTML(pend, 'Nenhuma solicitação aguardando decisão no momento.', true, 'Solicitações aguardando ação');
+  else if (state.appTab==='historico') body =
+    intranetTableHTML(historicoFinalizadasFor(pid), 'Você ainda não tem solicitações finalizadas neste processo.', true, 'Meu Histórico');
   else if (inTodasGroup){
     state.processViewTab = state.appTab==='todas' ? 'list' : state.appTab;
     var todasViewsHTML = APP_TODAS_VIEWS.map(function(v){
@@ -3066,8 +3065,8 @@ function appHTML(){
       '<div class="pv-body" id="pv-body-area">'+todasBody+'</div>'+
     '</div>';
   }
-  else body = '<div class="req-form-title" style="margin-bottom:12px">Minhas Solicitações</div>'+
-    intranetTableHTML(minhasSolicitacoesFor(pid), 'Você ainda não enviou nenhuma solicitação neste processo.', true);
+  else body =
+    intranetTableHTML(minhasSolicitacoesFor(pid), 'Você ainda não enviou nenhuma solicitação neste processo.', true, 'Minhas Solicitações');
 
   var actionsRight = isAdminNav
     ? '<button class="btn btn-outline btn-sm" style="margin-left:auto;flex:none" data-action="open-app-configurar">'+ic('edit',14)+'Editar processo</button>'
@@ -3093,7 +3092,7 @@ function intranetFilterSortList(list){
   else out.sort(function(a,b){ return parseDataBR(b.sol.criadoEm)-parseDataBR(a.sol.criadoEm); });
   return out;
 }
-function intranetTableToolbarHTML(rawList, hideProcFilter){
+function intranetTableToolbarHTML(rawList, hideProcFilter, titleText){
   var procsInList = [];
   rawList.forEach(function(x){ if (procsInList.indexOf(x.processo)===-1) procsInList.push(x.processo); });
   var filterActive = state.intranetFilterProcs && state.intranetFilterProcs.length ? ' active' : '';
@@ -3111,16 +3110,17 @@ function intranetTableToolbarHTML(rawList, hideProcFilter){
       '<button class="pv-toolbar-dropdown-item'+(state.intranetSort==='solicitante'?' selected':'')+'" data-action="intranet-set-sort" data-sort="solicitante">Solicitante (A-Z)</button>'+
     '</div>' : '';
   return '<div class="pv-toolbar" style="padding:0 0 12px;border-bottom:none">'+
-    '<div></div>'+
+    '<div class="req-form-title" style="font-size:15px">'+esc(titleText||'')+'</div>'+
     '<div class="pv-toolbar-right">'+
       (hideProcFilter ? '' : '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn'+filterActive+'" data-action="toggle-intranet-menu" data-menu="filter">'+ic('filter',13)+'Filtrar'+ic('chevronDown',12)+'</button>'+filterDropdown+'</div>')+
       '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn" data-action="toggle-intranet-menu" data-menu="sort">'+ic('sort',13)+'Ordenar: '+sortLabel+ic('chevronDown',12)+'</button>'+sortDropdown+'</div>'+
     '</div>'+
   '</div>';
 }
-function intranetTableHTML(rawList, emptyMsg, hideProcCol){
-  if (!rawList.length) return '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nada por aqui</div><div class="es-sub">'+esc(emptyMsg)+'</div></div>';
-  var toolbar = intranetTableToolbarHTML(rawList, hideProcCol);
+function intranetTableHTML(rawList, emptyMsg, hideProcCol, titleText){
+  var titleHTML = titleText ? '<div class="req-form-title" style="margin-bottom:14px">'+esc(titleText)+'</div>' : '';
+  if (!rawList.length) return titleHTML+'<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nada por aqui</div><div class="es-sub">'+esc(emptyMsg)+'</div></div>';
+  var toolbar = intranetTableToolbarHTML(rawList, hideProcCol, titleText);
   var list = intranetFilterSortList(rawList);
   var gridStyle = hideProcCol ? 'grid-template-columns:minmax(160px,1.6fr) 150px 150px 130px' : 'grid-template-columns:minmax(180px,1.6fr) minmax(140px,1fr) 150px 150px 130px';
   var colHead = '<div class="pv-list-colhead" style="'+gridStyle+'">'+(hideProcCol?'':'<span>Processo</span>')+'<span>Solicitante</span><span>Etapa atual</span><span>Prioridade</span><span>Criado em</span></div>';

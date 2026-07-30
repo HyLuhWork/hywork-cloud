@@ -498,6 +498,14 @@ sentavam sobre uma página branca, então não precisavam de destaque):
   reaproveitado por ele — não foi mexido em nenhuma regra/fluxo, só em
   CSS e num wrapper (`.pv-todas-card`) ao redor de HTML já existente.
 
+**v42** — revertido o fundo clarinho da v40: as páginas da visão
+Colaborador voltaram a ser 100% brancas (removida a regra
+`.itn-topnav + .screen-root{background:var(--canvas-bg)}`). O menu
+superior branco da v40 e os destaques em cartão branco da v41
+(`.pv-hero`, `.intranet-tabs`, `.pv-list`, `.pv-todas-card`) continuam
+como estavam — eles já tinham fundo/borda próprios, então funcionam
+igual sobre a página branca.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

@@ -812,9 +812,6 @@
   .intranet-tab:hover{color:var(--ink)}
   .intranet-tab.active{background:var(--muted);color:var(--ink)}
   .intranet-tab-badge{background:var(--error);color:#fff;font-size:10px;font-weight:800;border-radius:var(--radius-full);padding:1px 6px}
-  .app-tab-admin-tag{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink-faint);background:var(--muted-strong);border-radius:var(--radius-full);padding:2px 6px}
-  .intranet-tab.active .app-tab-admin-tag{color:var(--primary-dark);background:var(--primary-50)}
-  .app-tab-sep{width:1px;align-self:stretch;background:var(--border);margin:0 4px}
   .ns-fields{margin-top:18px}
 </style>
 
@@ -3013,10 +3010,10 @@ function intranetLandingHTML(){
    próprias páginas — não existe mais uma Central/Catálogo de Processos
    compartilhada entre todos os processos. */
 var APP_TABS = [
-  ['minhas','Minhas Solicitações',false],
-  ['pendencias','Minhas Pendências',false],
-  ['historico','Meu Histórico',false],
-  ['todas','Todas as Solicitações',true],
+  ['todas','Todas as Solicitações'],
+  ['minhas','Minhas Solicitações'],
+  ['pendencias','Minhas Pendências'],
+  ['historico','Meu Histórico'],
 ];
 var APP_TODAS_VIEWS = [['kanban','Kanban','grid'],['todas','List','doc'],['dashboard','Dashboard','chart']];
 function appHTML(){
@@ -3038,15 +3035,11 @@ function appHTML(){
   if (isAdminNav && !inTodasGroup){ state.appTab = 'kanban'; inTodasGroup = true; }
   if (inTodasGroup){ state.processViewRole = 'admin'; }
 
-  var tabsHTML = isAdminNav ? '' : APP_TABS.map(function(t, i){
+  var tabsHTML = isAdminNav ? '' : APP_TABS.map(function(t){
     var badge = t[0]==='pendencias' && pend.length ? '<span class="intranet-tab-badge">'+pend.length+'</span>' : '';
-    var adminTag = t[2] ? '<span class="app-tab-admin-tag">Administrador</span>' : '';
-    var sep = (i===3) ? '<span class="app-tab-sep"></span>' : '';
     var active = t[0]==='todas' ? inTodasGroup : state.appTab===t[0];
-    return sep+'<button class="intranet-tab'+(active?' active':'')+'" data-action="set-app-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+adminTag+'</button>';
-  }).join('')+
-    '<span class="app-tab-sep"></span>'+
-    '<button class="intranet-tab" data-action="open-app-configurar">'+ic('gear',13)+'Configurar Processo<span class="app-tab-admin-tag">Administrador</span></button>';
+    return '<button class="intranet-tab'+(active?' active':'')+'" data-action="set-app-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+'</button>';
+  }).join('');
 
   var body;
   if (state.appTab==='pendencias') body = intranetPendenciasDashboardHTML(pid)+

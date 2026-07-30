@@ -441,10 +441,22 @@ mesmo, então só sobrava uma aba de conteúdo (mais "Configurar Processo",
 que já tem o próprio botão "Editar processo" no cabeçalho). Agora, quando
 o Aplicativo é aberto pelo menu do Administrador, ele pula direto para o
 seletor Kanban/List/Dashboard, sem essa barra de abas por cima — a mesma
-tela aberta pela Intranet do Colaborador continua com as 5 abas normais
+tela aberta pela Intranet do Colaborador continuava com as 5 abas normais
 (3 pessoais + Todas as Solicitações/Configurar Processo marcadas
-"Administrador"), já que ali elas continuam fazendo sentido ao lado das
-páginas pessoais.
+"Administrador") — ver a v39 logo abaixo para o ajuste feito nessa parte.
+
+**v39** — três ajustes pedidos direto sobre as abas do Aplicativo na visão
+do Colaborador:
+
+- **"Todas as Solicitações" foi para a frente de "Minhas Solicitações"**
+  — a ordem das abas agora é Todas as Solicitações, Minhas Solicitações,
+  Minhas Pendências, Meu Histórico.
+- **A etiqueta "Administrador" saiu** das abas — "Todas as Solicitações"
+  aparece igual às outras, sem nenhuma marcação.
+- **A aba "Configurar Processo" saiu da visão do Colaborador** — ela
+  continua existindo, mas só como o botão "Editar processo" no cabeçalho
+  do Aplicativo quando aberto pelo menu do Administrador (`open-app-configurar`
+  não mudou, só parou de ser exposta como aba na Intranet).
 
 ## Como abrir
 

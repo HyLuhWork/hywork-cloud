@@ -512,6 +512,13 @@ ficava redundante com o fundo branco do próprio cartão. Mantido o
 fundo (`var(--surface)`) e a sombra leve (`var(--shadow-sm)`), que já
 bastam para separar visualmente esses elementos da página.
 
+**v44** — mesmo ajuste da v43, agora nos dois cartões restantes: o
+cartão do Kanban/List/Dashboard de "Todas as Solicitações"
+(`.pv-todas-card`) e as tabelas (`.pv-list`, usadas em Minhas
+Solicitações/Minhas Pendências/Meu Histórico) também perderam a borda,
+mantendo só fundo branco e sombra leve — consistente com o cabeçalho e
+a barra de abas ajustados na v43.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

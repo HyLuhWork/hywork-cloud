@@ -458,6 +458,21 @@ do Colaborador:
   do Aplicativo quando aberto pelo menu do Administrador (`open-app-configurar`
   não mudou, só parou de ser exposta como aba na Intranet).
 
+**v40** — dois ajustes visuais pedidos direto, só na Intranet (visão
+Colaborador):
+
+- **O menu superior da Intranet (`.itn-topnav`) ficou branco** em vez do
+  cinza (`--shell-bg`) que também é usado pela sidebar/topbar do
+  Administrador — antes os dois compartilhavam a mesma cor; agora só o
+  menu da Intranet usa `var(--surface)` (branco), sem alterar o
+  Administrador.
+- **As páginas da visão Colaborador ganharam um fundo bem clarinho**
+  (`var(--canvas-bg)`, o mesmo azul-acinzentado já usado no canvas do
+  construtor de workflow) atrás dos cards/widgets — antes o fundo era
+  branco puro, igual aos próprios cards, sem nenhum contraste. O seletor
+  usado (`.itn-topnav + .screen-root`) garante que só as telas dentro do
+  shell da Intranet mudam — o Administrador continua com fundo branco.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

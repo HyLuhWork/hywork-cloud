@@ -3030,23 +3030,23 @@ function appHTML(){
   var todasKeys = ['kanban','todas','dashboard'];
   var inTodasGroup = todasKeys.indexOf(state.appTab)!==-1;
 
-  // No menu do Administrador, o Aplicativo mostra só a gestão do processo
-  // (Todas as Solicitações, com Kanban/List/Dashboard por dentro, + Configurar)
-  // — as páginas pessoais (Minhas Solicitações/Pendências/Histórico) são
-  // específicas da Intranet.
-  var visibleTabs = isAdminNav ? APP_TABS.filter(function(t){return t[2];}) : APP_TABS;
+  // No menu do Administrador, o Aplicativo mostra só a gestão do processo:
+  // vai direto para o seletor Kanban/List/Dashboard, sem a barra de abas
+  // "Todas as Solicitações / Configurar Processo" (redundante — a edição já
+  // fica no botão "Editar processo" do cabeçalho). As páginas pessoais
+  // (Minhas Solicitações/Pendências/Histórico) são específicas da Intranet.
   if (isAdminNav && !inTodasGroup){ state.appTab = 'kanban'; inTodasGroup = true; }
   if (inTodasGroup){ state.processViewRole = 'admin'; }
 
-  var tabsHTML = visibleTabs.map(function(t, i){
+  var tabsHTML = isAdminNav ? '' : APP_TABS.map(function(t, i){
     var badge = t[0]==='pendencias' && pend.length ? '<span class="intranet-tab-badge">'+pend.length+'</span>' : '';
-    var adminTag = (t[2] && !isAdminNav) ? '<span class="app-tab-admin-tag">Administrador</span>' : '';
-    var sep = (!isAdminNav && i===3) ? '<span class="app-tab-sep"></span>' : '';
+    var adminTag = t[2] ? '<span class="app-tab-admin-tag">Administrador</span>' : '';
+    var sep = (i===3) ? '<span class="app-tab-sep"></span>' : '';
     var active = t[0]==='todas' ? inTodasGroup : state.appTab===t[0];
     return sep+'<button class="intranet-tab'+(active?' active':'')+'" data-action="set-app-tab" data-tab="'+t[0]+'">'+esc(t[1])+badge+adminTag+'</button>';
   }).join('')+
     '<span class="app-tab-sep"></span>'+
-    '<button class="intranet-tab" data-action="open-app-configurar">'+ic('gear',13)+'Configurar Processo'+(isAdminNav?'':'<span class="app-tab-admin-tag">Administrador</span>')+'</button>';
+    '<button class="intranet-tab" data-action="open-app-configurar">'+ic('gear',13)+'Configurar Processo<span class="app-tab-admin-tag">Administrador</span></button>';
 
   var body;
   if (state.appTab==='pendencias') body = intranetPendenciasDashboardHTML(pid)+
@@ -3081,8 +3081,8 @@ function appHTML(){
       '<div class="pv-hero-info"><div class="pv-hero-name">'+esc(d.formConfig.nome||p.name)+'</div><div class="pv-hero-desc">'+esc(d.formConfig.descricao||p.description)+'</div></div>'+
       actionsRight+
     '</div>'+
-    '<div class="intranet-tabs" style="margin-top:22px">'+tabsHTML+'</div>'+
-    '<div style="margin-top:18px">'+body+'</div>'+
+    (isAdminNav ? '' : '<div class="intranet-tabs" style="margin-top:22px">'+tabsHTML+'</div>')+
+    '<div style="margin-top:'+(isAdminNav?'26':'18')+'px">'+body+'</div>'+
   '</div>';
 }
 function intranetFilterSortList(list){

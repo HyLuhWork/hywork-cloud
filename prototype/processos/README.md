@@ -419,11 +419,11 @@ dentro do menu do Administrador:
   Histórico) — essas continuam existindo só na Intranet, onde fazem
   sentido (são sobre "as minhas solicitações", e o Administrador está ali
   para gerenciar o processo, não para usá-lo como solicitante). Pelo menu
-  do Administrador, o Aplicativo mostra só **Todas as Solicitações** e
-  **Configurar Processo**, e já abre direto na visão de gestão (antes caía
-  em "Minhas Solicitações", que nem aparecia mais pra ele). O cabeçalho
-  também troca o botão "Iniciar Solicitação" por "Editar processo" nesse
-  contexto.
+  do Administrador, o Aplicativo já abre direto na visão de gestão (antes
+  caía em "Minhas Solicitações", que nem aparecia mais pra ele). O
+  cabeçalho também troca o botão "Iniciar Solicitação" por "Editar
+  processo" nesse contexto. (Na v38 essa visão de gestão ficou ainda mais
+  direta — ver abaixo.)
 - **Dashboard, Kanban e Todas as Solicitações deixaram de ser 3 abas
   separadas** e viraram **uma abinha só** ("Todas as Solicitações"), com um
   seletor interno de Kanban/List/Dashboard dentro dela — reaproveitando a
@@ -433,6 +433,18 @@ dentro do menu do Administrador:
   Solicitações + Configurar Processo) quanto para o mesmo Aplicativo aberto
   pela Intranet do Colaborador (5 abas: as 3 pessoais + Todas as
   Solicitações "Administrador" + Configurar Processo "Administrador").
+
+**v38** — ajuste pedido direto: na visão administrativa, a barra de abas
+"Todas as Solicitações / Configurar Processo" da v37 era redundante — o
+Aplicativo aberto pelo menu do Administrador não tem mais páginas pessoais
+mesmo, então só sobrava uma aba de conteúdo (mais "Configurar Processo",
+que já tem o próprio botão "Editar processo" no cabeçalho). Agora, quando
+o Aplicativo é aberto pelo menu do Administrador, ele pula direto para o
+seletor Kanban/List/Dashboard, sem essa barra de abas por cima — a mesma
+tela aberta pela Intranet do Colaborador continua com as 5 abas normais
+(3 pessoais + Todas as Solicitações/Configurar Processo marcadas
+"Administrador"), já que ali elas continuam fazendo sentido ao lado das
+páginas pessoais.
 
 ## Como abrir
 

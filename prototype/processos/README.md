@@ -473,6 +473,31 @@ Colaborador):
   usado (`.itn-topnav + .screen-root`) garante que só as telas dentro do
   shell da Intranet mudam — o Administrador continua com fundo branco.
 
+**v41** — depois do fundo clarinho da v40, alguns elementos dentro dos
+Aplicativos ficaram "apagados" por não terem fundo próprio (antes eles
+sentavam sobre uma página branca, então não precisavam de destaque):
+
+- **`.pv-hero`** (cabeçalho do Aplicativo, com ícone/nome/descrição do
+  processo) ganhou fundo branco (`var(--surface)`), borda e sombra leve —
+  agora se destaca como um cartão em vez de flutuar sobre o canvas.
+- **`.intranet-tabs`** (a barra de abas Todas as Solicitações/Minhas
+  Solicitações/Minhas Pendências/Meu Histórico) ganhou o mesmo tratamento
+  de cartão branco.
+- **As tabelas (`.pv-list`)** — usadas em Minhas Solicitações, Minhas
+  Pendências, Meu Histórico e na sub-view List de Todas as Solicitações —
+  ganharam fundo branco com borda, em vez de ficarem sem nenhum fundo
+  (só a linha em hover tinha `background:var(--muted)` antes).
+- **O grupo Kanban/List/Dashboard de "Todas as Solicitações"** (o seletor
+  de sub-abas + toolbar de busca/filtro/ordenar + o conteúdo) agora fica
+  dentro de um único cartão branco (`.pv-todas-card`), em vez de cada
+  parte flutuar solta sobre o canvas — isso também resolve o Kanban, cujas
+  colunas (`background:var(--muted)`, um cinza bem parecido com o novo
+  `--canvas-bg`) quase desapareciam por falta de contraste; dentro do
+  cartão branco elas voltam a se destacar como antes da v40.
+- Escopo: só o que é renderizado dentro do Aplicativo (`appHTML()`) e
+  reaproveitado por ele — não foi mexido em nenhuma regra/fluxo, só em
+  CSS e num wrapper (`.pv-todas-card`) ao redor de HTML já existente.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

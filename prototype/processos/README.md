@@ -506,6 +506,12 @@ superior branco da v40 e os destaques em cartão branco da v41
 como estavam — eles já tinham fundo/borda próprios, então funcionam
 igual sobre a página branca.
 
+**v43** — removida a borda de `.pv-hero` (cabeçalho do Aplicativo) e
+`.intranet-tabs` (barra de abas) — sobre a página já branca, a borda
+ficava redundante com o fundo branco do próprio cartão. Mantido o
+fundo (`var(--surface)`) e a sombra leve (`var(--shadow-sm)`), que já
+bastam para separar visualmente esses elementos da página.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

@@ -572,6 +572,42 @@ no nosso modelo):
   `.req-tracker`, `.req-col-info` continuam com a mesma função,
   cobertos pelos mesmos testes de regressão).
 
+**v47** — a v46 ainda não agradou; refeita a modal do zero para seguir
+à risca uma segunda referência (print de um design do Figma), dessa
+vez em **3 colunas** lado a lado (`.request-modal-3col`) em vez de
+2 colunas + rodapé:
+
+- **Cabeçalho simplificado**: só `#{código}` pequeno, título grande
+  (agora usa o valor de um campo do formulário cujo rótulo contenha
+  "Título" quando o processo tiver um — ex. "Mouse sem fio parou de
+  funcionar" no Service Desk — com `p.name` como reserva para
+  processos sem esse campo, como Férias), e duas linhas de metadados
+  ("Aberto em" e "Solicitante" com avatar), sem o selo de etapa (que
+  mudou de lugar, ver abaixo).
+- **Coluna 1 "Informações"** (`.req-panel-info`, cartão cinza-claro):
+  os campos do formulário inicial agora empilham numa única coluna
+  (rótulo em negrito preto, valor cinza logo abaixo — sem grade de
+  2 colunas nem caixa alta como na v46) e os comprovantes aparecem
+  como pill de arquivo (ícone de pasta + nome) no fim do mesmo cartão.
+- **Coluna 2 "Etapa atual"** (`.req-panel-etapa`, cartão branco): o
+  selo da etapa (agora em pill arredondado, caixa alta, cor da etapa)
+  saiu do cabeçalho e voltou para cá, seguido do responsável pela
+  etapa, os campos específicos dela (quando existem) e, depois de uma
+  linha divisória, a seção "Ações" com os mesmos cartões de sempre.
+- **Coluna 3 "Atividades"** (`.req-panel-ativ`, cartão branco): as
+  abas viraram "Histórico"/"Conversa" (era "Comentários"), cada uma
+  com ícone; a conversa agora é um balão de chat de verdade — avatar
+  + nome + data acima, texto numa bolha branca abaixo, dentro de um
+  fundo cinza-azulado com uma linha tracejada conectando um autor ao
+  próximo — e o campo de novo comentário virou uma barra arredondada
+  fixa no rodapé da coluna (ícone de clipe + input + botão de enviar
+  circular laranja), só visível na aba Conversa.
+- `.req-col-info` (classe da v46) virou `.req-panel-etapa` —
+  `check_v33.js` foi atualizado para checar a classe nova.
+- De novo, nenhuma regra mudou — mesmos dados, mesmas ações
+  (`.req-action-card`, `.req-tracker`), só reorganizados visualmente
+  para bater com a referência.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

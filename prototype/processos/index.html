@@ -716,7 +716,7 @@
   .pv-progress-text{font-size:11px;color:var(--ink-faint);font-weight:600;white-space:nowrap}
 
   /* ---------- List (grouped, borderless) ---------- */
-  .pv-list{display:flex;flex-direction:column;max-width:1180px;margin:0 auto;background:var(--surface);border-radius:var(--radius-lg);padding:8px;box-shadow:var(--shadow-sm)}
+  .pv-list{display:flex;flex-direction:column;max-width:1180px;margin:0 auto;background:var(--surface);border-radius:var(--radius-lg);padding:6px;box-shadow:var(--shadow-sm)}
   .pv-list-group{margin-bottom:6px}
   .pv-list-group-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--radius-md);cursor:pointer}
   .pv-list-group-icon{display:flex;flex:none}
@@ -820,7 +820,7 @@
   .intranet-hero-sub{color:rgba(255,255,255,.75);font-size:13px;max-width:560px;margin:8px auto 20px;line-height:1.5}
   .intranet-hero-search{max-width:420px;margin:0 auto;background:#fff}
   .intranet-hero-search input{color:var(--ink)}
-  .intranet-tabs{display:flex;gap:6px;align-items:center;background:var(--surface);border-radius:var(--radius-lg);padding:10px 14px;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
+  .intranet-tabs{display:flex;gap:6px;align-items:center;background:var(--surface);border-radius:var(--radius-lg);padding:10px 20px;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
   .intranet-tab{padding:8px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:700;color:var(--ink-faint);display:flex;align-items:center;gap:6px}
   .intranet-tab:hover{color:var(--ink)}
   .intranet-tab.active{background:var(--muted);color:var(--ink)}
@@ -3106,7 +3106,7 @@ function intranetTableToolbarHTML(rawList, hideProcFilter, titleText){
       '<button class="pv-toolbar-dropdown-item'+(state.intranetSort==='recent'?' selected':'')+'" data-action="intranet-set-sort" data-sort="recent">Mais recentes</button>'+
       '<button class="pv-toolbar-dropdown-item'+(state.intranetSort==='solicitante'?' selected':'')+'" data-action="intranet-set-sort" data-sort="solicitante">Solicitante (A-Z)</button>'+
     '</div>' : '';
-  return '<div class="pv-toolbar" style="padding:0 0 12px;border-bottom:none">'+
+  return '<div class="pv-toolbar" style="padding:0 20px 12px;border-bottom:none">'+
     '<div class="req-form-title" style="font-size:15px">'+esc(titleText||'')+'</div>'+
     '<div class="pv-toolbar-right">'+
       (hideProcFilter ? '' : '<div class="pv-toolbar-menu-wrap"><button class="pv-toolbar-btn'+filterActive+'" data-action="toggle-intranet-menu" data-menu="filter">'+ic('filter',13)+'Filtrar'+ic('chevronDown',12)+'</button>'+filterDropdown+'</div>')+

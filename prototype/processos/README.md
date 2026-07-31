@@ -698,6 +698,18 @@ vez em **3 colunas** lado a lado (`.request-modal-3col`) em vez de
   contagem de Apps no dropdown em `check_v35.js` passou de 5 para 4
   (published+active).
 
+**v51** — corrigido o desalinhamento à esquerda entre o cabeçalho do
+Aplicativo, a barra de abas, o título e a tabela — cada um tinha um
+recuo esquerdo diferente (`.pv-hero` 20px, `.intranet-tabs` 14px, o
+título da tabela 0px, e o texto das linhas 22px = 8px do `.pv-list` +
+14px da própria linha), então o conteúdo ficava "serrilhado" em vez de
+formar uma linha reta. Unificado tudo em 20px: `.intranet-tabs` foi de
+14px para 20px, a barra de ordenar/filtrar (`intranetTableToolbarHTML`)
+ganhou `padding: 0 20px 12px` (antes não tinha nenhum), e `.pv-list`
+foi de 8px para 6px de padding (6+14=20, igual ao resto). O cartão de
+Kanban/List/Dashboard (`.pv-todas-card`) não foi afetado — já tinha seu
+próprio padding interno consistente.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

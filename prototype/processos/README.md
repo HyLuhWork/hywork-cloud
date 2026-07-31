@@ -723,6 +723,10 @@ HyStore". Novo estado `state.appsCategory`/`state.appsSearch`, catálogo
 Administrador — some do menu ao trocar para Colaborador, como o restante do
 grupo "Administração").
 
+**v53** — reposicionado o item **Aplicativos** na barra lateral: em vez de
+ficar no grupo "Administração" (fim do menu), agora fica logo abaixo de
+"Home", no topo do grupo "Geral", como pedido.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

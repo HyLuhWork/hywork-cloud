@@ -1896,6 +1896,7 @@ function adminShellHTML(){
       '<div class="workspace-switcher"><div class="ws-icon">H</div><div class="ws-text"><div class="ws-title">Hywork</div><div class="ws-sub">Espaço atual</div></div>'+ic('chevronDown',14)+'</div>'+
       '<div class="nav-group-label" style="padding-top:2px">Geral</div>'+
       navItem('home','Home',false)+
+      '<a href="#" class="nav-item'+(state.screen==='apps-admin'?' active':'')+'" data-action="open-apps-admin">'+ic('box',17)+'<span>Aplicativos</span></a>'+
       navItem('chart','Analytics',false)+
       '<div class="nav-group-label">Processos</div>'+
       '<div id="admin-nav-apps">'+adminNavAppsHTML()+'</div>'+
@@ -1914,7 +1915,6 @@ function adminShellHTML(){
       navItem('db','Dados',false)+
       '<div id="admin-nav-group">'+
         '<div class="nav-group-label">Administração</div>'+
-        '<a href="#" class="nav-item'+(state.screen==='apps-admin'?' active':'')+'" data-action="open-apps-admin">'+ic('box',17)+'<span>Aplicativos</span></a>'+
         navItem('users','Usuários',false)+
       '</div>'+
       '<div class="sidebar-foot"></div>'+

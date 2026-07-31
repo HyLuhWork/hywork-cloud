@@ -727,6 +727,39 @@ grupo "Administração").
 ficar no grupo "Administração" (fim do menu), agora fica logo abaixo de
 "Home", no topo do grupo "Geral", como pedido.
 
+**v54** — reestruturação grande do menu lateral do Administrador, reduzido
+para exatamente o pedido: **Geral** (Home, Aplicativos, Analytics, Modelos),
+**Comunicação** (Conteúdos), **Pessoas & Cultura** (Reconhecimentos) e
+**Administração** (Usuários, Dados, Configurações — novo item, decorativo
+como os demais). Saíram do menu o grupo "Processos" (com "Central de
+Processos" e a lista dinâmica de Aplicativos publicados), TV Corporativa,
+Fórum, Assinatura de Email, Academy, Integração RH/HCM e Integrações de
+Documentos — todos continuam existindo como cartões na página
+**Aplicativos**, só que sem atalho próprio na barra lateral. Como
+consequência, "Home" virou o único link da barra lateral para a
+Central de Processos (agora renomeada **Process Builder** — pedido
+separado — junto com o cartão equivalente na aba Tecnologia de
+Aplicativos, ambos com `data-action="go-home"`), então esse nav-item
+deixou de ser decorativo (era sempre `noop`) e passou a navegar de
+verdade, com `id="nav-home-link"`/`id="nav-apps-link"` e uma nova
+`updateAdminNavActive()` chamada a cada `render()` para manter o
+destaque correto — a versão anterior computava o `active` só na primeira
+montagem da barra lateral (que só é reconstruída ao trocar de
+Administrador/Colaborador), então clicar em Aplicativos deixava "Home"
+preso como destacado.
+
+Dentro de **Aplicativos**, a categoria Tecnologia ganhou o cartão
+**Process Builder** (clicável, abre a Central de Processos/construtor).
+Os aplicativos publicados no construtor (`enabledProcesses()`) agora
+também aparecem como cartões clicáveis na grade — cada um abre o
+Aplicativo correspondente (`data-action="open-app"`), reaproveitando a
+categoria do processo (`TI` vira `Tecnologia`). Como os processos
+publicados por padrão (Solicitações para TI / Solicitação de Férias /
+Reembolso de Despesas) já representavam três entradas estáticas do
+catálogo da v52, essas três (`ti`, `reembolso`, `ferias`) foram
+removidas do `APPS_CATALOG` para não duplicar o mesmo aplicativo em
+duas versões (uma decorativa, outra funcional) lado a lado.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

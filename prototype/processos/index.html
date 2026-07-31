@@ -78,10 +78,6 @@
   .nav-item:hover{background:var(--muted);color:var(--ink)}
   .nav-item.active{color:var(--primary);border-left-color:var(--primary)}
   .nav-item.active svg{opacity:1;color:var(--primary)}
-  .nav-subitem{display:flex;align-items:center;gap:9px;padding:6px 10px 6px 24px;border-radius:var(--radius-sm);color:var(--ink-muted);font-size:12.5px;font-weight:600;text-decoration:none;border-left:2.5px solid transparent}
-  .nav-subitem:hover{background:var(--muted);color:var(--ink)}
-  .nav-subitem.active{color:var(--primary);border-left-color:var(--primary);background:var(--primary-50)}
-  .nav-app-ic{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex:none}
   .sidebar-foot{margin-top:auto;padding-top:10px}
 
   .app-main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
@@ -298,7 +294,9 @@
   .apps-banner .btn:hover{background:#f0f0f0}
   .apps-filter-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
   .apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-  .app-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:17px;display:flex;flex-direction:column;gap:10px}
+  .app-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:17px;display:flex;flex-direction:column;gap:10px;text-align:left}
+  .app-card-clickable{cursor:pointer;transition:box-shadow .15s,border-color .15s,transform .15s}
+  .app-card-clickable:hover{box-shadow:var(--shadow-md);border-color:var(--border-strong);transform:translateY(-1px)}
   .app-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
   .app-card-ic{width:38px;height:38px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex:none}
   .app-card-name{font-size:14.5px;font-weight:700}
@@ -1844,11 +1842,11 @@ function renderShell(){
   updateThemeToggle();
   updateModeToggle();
   updateIntranetNavActive();
-  updateAdminNavApps();
+  updateAdminNavActive();
 }
-function updateAdminNavApps(){
-  var el = qs('#admin-nav-apps'); if (!el) return;
-  el.innerHTML = adminNavAppsHTML();
+function updateAdminNavActive(){
+  var home = qs('#nav-home-link'); if (home) home.classList.toggle('active', state.screen==='home');
+  var apps = qs('#nav-apps-link'); if (apps) apps.classList.toggle('active', state.screen==='apps-admin');
 }
 function updateIntranetNavActive(){
   var nav = qs('.itn-nav'); if (!nav) return;
@@ -1878,44 +1876,24 @@ function themeToggleHTML(){
       '<button data-theme-choice="dark" title="Tema escuro">'+ic('moon',14)+'</button>'+
     '</div>';
 }
-function adminNavAppsHTML(){
-  var apps = enabledProcesses();
-  var homeActive = state.screen==='home';
-  var homeItem = '<a href="#" class="nav-subitem'+(homeActive?' active':'')+'" data-action="go-home">'+ic('flow',15)+'Central de Processos</a>';
-  var appItems = apps.map(function(p){
-    var active = p.id===state.currentProcessId && (state.screen==='app' || state.screen==='editor' || state.screen==='processview');
-    return '<a href="#" class="nav-subitem'+(active?' active':'')+'" data-action="open-app" data-id="'+p.id+'">'+
-      '<span class="nav-app-ic" style="background:'+p.color+'1c;color:'+p.color+'">'+ic(p.icon,12)+'</span>'+esc(p.name)+
-    '</a>';
-  }).join('');
-  return homeItem+appItems;
-}
 function adminShellHTML(){
   return '<aside class="sidebar">'+
       '<div class="brand">'+hyworkLogoMarkHTML(26)+hyworkWordmarkHTML()+'</div>'+
       '<div class="workspace-switcher"><div class="ws-icon">H</div><div class="ws-text"><div class="ws-title">Hywork</div><div class="ws-sub">Espaço atual</div></div>'+ic('chevronDown',14)+'</div>'+
       '<div class="nav-group-label" style="padding-top:2px">Geral</div>'+
-      navItem('home','Home',false)+
-      '<a href="#" class="nav-item'+(state.screen==='apps-admin'?' active':'')+'" data-action="open-apps-admin">'+ic('box',17)+'<span>Aplicativos</span></a>'+
+      '<a href="#" class="nav-item'+(state.screen==='home'?' active':'')+'" id="nav-home-link" data-action="go-home">'+ic('home',17)+'<span>Home</span></a>'+
+      '<a href="#" class="nav-item'+(state.screen==='apps-admin'?' active':'')+'" id="nav-apps-link" data-action="open-apps-admin">'+ic('box',17)+'<span>Aplicativos</span></a>'+
       navItem('chart','Analytics',false)+
-      '<div class="nav-group-label">Processos</div>'+
-      '<div id="admin-nav-apps">'+adminNavAppsHTML()+'</div>'+
+      navItem('grid','Modelos',false)+
       '<div class="nav-group-label">Comunicação</div>'+
       navItem('doc','Conteúdos',false)+
-      navItem('tv','TV Corporativa',false)+
-      navItem('forum','Fórum',false)+
-      navItem('mail','Assinatura de Email',false)+
       '<div class="nav-group-label">Pessoas &amp; Cultura</div>'+
       navItem('award','Reconhecimentos',false)+
-      navItem('gradcap','Academy',false)+
-      navItem('hcm','Integração RH / HCM',false)+
-      '<div class="nav-group-label">Ferramentas</div>'+
-      navItem('grid','Modelos',false)+
-      navItem('link','Integrações de Documentos',false)+
-      navItem('db','Dados',false)+
       '<div id="admin-nav-group">'+
         '<div class="nav-group-label">Administração</div>'+
         navItem('users','Usuários',false)+
+        navItem('db','Dados',false)+
+        navItem('gear','Configurações',false)+
       '</div>'+
       '<div class="sidebar-foot"></div>'+
     '</aside>'+
@@ -2003,17 +1981,24 @@ var APPS_CATALOG = [
   {id:'academy', name:'Academy', icon:'gradcap', color:'#1E72A1', category:'Recursos Humanos', desc:'Trilhas de aprendizagem e cursos internos para o time.'},
   {id:'forum', name:'Fórum', icon:'forum', color:'#B8860B', category:'Comunicação', desc:'Espaço de discussão e troca de conhecimento entre colaboradores.'},
   {id:'hcm', name:'Integrações RH', icon:'hcm', color:'#1E9E5A', category:'Recursos Humanos', desc:'Sincronize dados de colaboradores com seu sistema de RH/HCM.'},
-  {id:'ti', name:'Solicitações de T.I', icon:'headset', color:'#104A74', category:'Tecnologia', desc:'Abra chamados e acompanhe solicitações para o time de TI.'},
-  {id:'reembolso', name:'Solicitações de Reembolso', icon:'money', color:'#D74326', category:'Financeiro', desc:'Solicite reembolso de despesas com anexo de notas fiscais.'},
-  {id:'ferias', name:'Solicitações de Férias', icon:'sun', color:'#8EA1C7', category:'Recursos Humanos', desc:'Peça e acompanhe períodos de férias com aprovação do gestor.'},
   {id:'tv', name:'TV Corporativa', icon:'tv', color:'#7A3B12', category:'Comunicação', desc:'Canal de comunicação audiovisual para toda a empresa.'},
   {id:'assinatura', name:'Assinatura de Email', icon:'mail', color:'#0B2233', category:'Comunicação', desc:'Padronize a assinatura de email de todo o time.'},
   {id:'docs', name:'Integrações de Documentos', icon:'link', color:'#1E72A1', category:'Produtividade', desc:'Conecte e gerencie documentos entre suas ferramentas.'},
   {id:'reconhecimentos', name:'Reconhecimentos', icon:'award', color:'#D74326', category:'Recursos Humanos', desc:'Celebre conquistas e reconheça colegas publicamente.'},
   {id:'dados', name:'Dados', icon:'db', color:'#104A74', category:'Produtividade', desc:'Centralize e explore dados e relatórios da empresa.'},
 ];
+var BUILDER_APP = {id:'builder', name:'Process Builder', icon:'wrench', color:'#104A74', category:'Tecnologia',
+  desc:'Crie e edite processos internos: formulários, etapas, automações e permissões.', clickable:true, action:'go-home'};
+function processAppCategory(cat){ return cat==='TI' ? 'Tecnologia' : cat; }
+function appEntries(){
+  var procApps = enabledProcesses().map(function(p){
+    return {id:'proc-'+p.id, name:p.name, icon:p.icon, color:p.color, category:processAppCategory(p.category),
+      desc:p.description, clickable:true, action:'open-app', dataId:p.id};
+  });
+  return APPS_CATALOG.concat([BUILDER_APP]).concat(procApps);
+}
 function filteredApps(){
-  return APPS_CATALOG.filter(function(a){
+  return appEntries().filter(function(a){
     if (state.appsCategory!=='all' && a.category!==state.appsCategory) return false;
     if (state.appsSearch && a.name.toLowerCase().indexOf(state.appsSearch.toLowerCase())===-1) return false;
     return true;
@@ -2030,14 +2015,16 @@ function appsGridAreaHTML(filtered){
   return '<div class="apps-grid">'+filtered.map(appCardHTML).join('')+'</div>';
 }
 function appCardHTML(a){
-  return '<div class="app-card">'+
+  var tag = a.clickable ? 'button' : 'div';
+  var attrs = a.clickable ? ' data-action="'+a.action+'"'+(a.dataId?' data-id="'+a.dataId+'"':'') : '';
+  return '<'+tag+' class="app-card'+(a.clickable?' app-card-clickable':'')+'"'+attrs+'>'+
     '<div class="app-card-top">'+
       '<div class="app-card-ic" style="background:'+a.color+'1c;color:'+a.color+'">'+ic(a.icon,18)+'</div>'+
       '<span class="badge badge-success">'+ic('check',10)+' Instalado</span>'+
     '</div>'+
     '<div><div class="app-card-name">'+esc(a.name)+'</div><div class="app-card-cat">'+esc(a.category)+'</div></div>'+
     '<div class="app-card-desc">'+esc(a.desc)+'</div>'+
-  '</div>';
+  '</'+tag+'>';
 }
 function refreshAppsGridArea(){
   var area = qs('#apps-grid-area'); if (!area) return;
@@ -2088,7 +2075,7 @@ function homeHTML(){
   var filtered = filteredProcesses();
   return '<div class="screen-inner">'+
     '<div class="page-head">'+
-      '<div><h1>Central de Processos</h1><p class="page-sub">Construa novos processos aqui</p></div>'+
+      '<div><h1>Process Builder</h1><p class="page-sub">Construa novos processos aqui</p></div>'+
       '<button class="btn btn-dark" data-action="open-wizard">Criar do 0</button>'+
     '</div>'+
     hyaBuilderHTML()+

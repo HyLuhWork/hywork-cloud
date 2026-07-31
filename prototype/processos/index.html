@@ -643,8 +643,6 @@
   .rule-sentence b{font-weight:800}
   .rule-card-foot{display:flex;justify-content:flex-end;margin-top:8px}
   .quick-rule-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-  .add-rule-btn{width:100%;border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);padding:10px;text-align:center;color:var(--ink-muted);font-weight:700;font-size:12.5px}
-  .add-rule-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-50)}
   .cond-group{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;margin-bottom:8px;background:var(--muted)}
   .cond-group-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
   .cond-connector{display:flex;justify-content:center;gap:4px;margin:6px 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-full);padding:3px;width:fit-content;margin-left:auto;margin-right:auto}
@@ -1214,7 +1212,10 @@ function serviceDeskProcessData(){
     responsavel:{tipo:'Vínculo do colaborador', valor:'Solicitante'},
     slaNone:true,
     campos:[],
-    regras:[]
+    regras:[
+      makeRegra({tipo:'aprovar', label:'Encaminhar para Triagem', destinoStepId:null, condicoes:[]}),
+      makeRegra({tipo:'reprovar', label:'Cancelar Chamado', destinoStepId:null, exigirJustificativa:true, condicoes:[]})
+    ]
   };
   var stTriagem = {
     id:uid(), name:'Triagem', kind:'tarefa',
@@ -1255,8 +1256,8 @@ function serviceDeskProcessData(){
     sla:{prazo:3, unidade:'dias', aoVencer:'Notificar e escalar para o gestor superior'},
     campos:[],
     regras:[
-      makeRegra({tipo:'personalizada', label:'Confirmar Solução', destinoStepId:null, condicoes:[]}),
-      makeRegra({tipo:'personalizada', label:'Reabrir Chamado', destinoStepId:null, condicoes:[]})
+      makeRegra({tipo:'aprovar', label:'Confirmar Solução', destinoStepId:null, condicoes:[]}),
+      makeRegra({tipo:'reprovar', label:'Reabrir Chamado', destinoStepId:null, exigirJustificativa:true, condicoes:[]})
     ]
   };
   var stFinalizado = {
@@ -1273,6 +1274,13 @@ function serviceDeskProcessData(){
   var regraSolicitarInfo = stAtendimento.regras[1];
   var regraConfirmar = stValidacao.regras[0];
   var regraReabrir = stValidacao.regras[1];
+
+  stAbertura.regras[0].destinoStepId = stTriagem.id;
+  stAbertura.regras[1].destinoStepId = stFinalizado.id;
+  regraEncaminhar.destinoStepId = stAtendimento.id;
+  regraResolver.destinoStepId = stValidacao.id;
+  regraConfirmar.destinoStepId = stFinalizado.id;
+  regraReabrir.destinoStepId = stAtendimento.id;
 
   function sdSol(o){
     var v = o.v || {};
@@ -1657,7 +1665,6 @@ var state = {
   editGeneralOpen:false,
   openAutomationAdder:null, // {stepId, regraId}
   openNewStepFor:null, // {stepId, regraId}
-  openCondAdderFor:null, // regraId
   openStepMenuFor:null, // stepId
   stepFieldAdderOpen:false,
   addStepOpen:false,
@@ -2490,24 +2497,6 @@ function ruleSentenceHTML(step, r){
   var actionTxt = [moveTxt, campoTxt].filter(Boolean).join(' e ') || (dest ? 'move a solicitação para '+destTxt : 'conclui a ação — o destino é definido por uma automação deste processo');
   return parts[0]+', '+actionTxt+'.';
 }
-function ruleCondEditorHTML(step, r){
-  var c = (r.condicoes && r.condicoes[0]) || {campo:'Valor total',operador:'maior ou igual a',valor:''};
-  return '<div class="rule-mini-label">Condição (opcional)</div><div class="cond-row">'+
-    '<select class="select" data-bind="rule.condCampo" data-stepid="'+step.id+'" data-regraid="'+r.id+'">'+
-      ['Valor total','Tipo de solicitação','Departamento'].map(function(f){return '<option'+(f===c.campo?' selected':'')+'>'+f+'</option>';}).join('')+
-    '</select>'+
-    '<select class="select" data-bind="rule.condOp" data-stepid="'+step.id+'" data-regraid="'+r.id+'">'+
-      CONDITION_OPERATORS.map(function(o){return '<option'+(o===c.operador?' selected':'')+'>'+o+'</option>';}).join('')+
-    '</select>'+
-    '<input class="input" placeholder="valor" data-bind="rule.condVal" data-stepid="'+step.id+'" data-regraid="'+r.id+'" value="'+esc(c.valor||'')+'"/>'+
-    '<button class="icon-btn" data-action="remove-rule-cond" data-stepid="'+step.id+'" data-regraid="'+r.id+'" title="Remover condição">'+ic('trash',13)+'</button>'+
-  '</div>';
-}
-function optionalCondBlockHTML(step, r){
-  var hasCond = (r.condicoes && r.condicoes.length && r.condicoes[0].valor) || state.openCondAdderFor===r.id;
-  if (hasCond) return ruleCondEditorHTML(step, r);
-  return '<button class="link-btn" style="margin-top:2px" data-action="toggle-cond-adder" data-stepid="'+step.id+'" data-regraid="'+r.id+'">'+ic('plus',12)+'Adicionar condição (opcional)</button>';
-}
 function newStepInlineHTML(step, r){
   return '<div class="new-step-inline"><input class="input" id="new-step-inline-input" placeholder="Nome da nova etapa"/><button class="btn btn-primary btn-xs" data-action="confirm-new-step-inline" data-stepid="'+step.id+'" data-regraid="'+r.id+'">Criar</button></div>';
 }
@@ -2518,8 +2507,7 @@ function rulesListHTML(step){
       return '<button class="chip" data-action="quick-add-rule" data-stepid="'+step.id+'" data-tipo="'+t.tipo+'">'+ic('plus',12)+t.label+'</button>';
     }).join('')+'</div>' : '';
   var cards = rules.map(function(r){ return ruleCardHTML(step, r); }).join('');
-  var addLabel = needsHuman(step.kind) ? 'Adicionar ação personalizada' : 'Adicionar regra';
-  return quickRow + cards + '<button class="add-rule-btn" data-action="add-rule" data-stepid="'+step.id+'">'+ic('plus',14)+' '+addLabel+'</button>';
+  return quickRow + cards;
 }
 function ruleCardHTML(step, r){
   var meta = acaoTipoMeta(r.tipo);
@@ -2541,8 +2529,7 @@ function ruleCardHTML(step, r){
         '<option value="">Escolher etapa…</option>'+destOptions+
       '</select>'+
       '<button class="link-btn" data-action="toggle-new-step" data-stepid="'+step.id+'" data-regraid="'+r.id+'">'+ic('plus',12)+'Nova</button></div>'+
-      (addingStep ? newStepInlineHTML(step, r) : '')+
-      (r.isDefault ? '' : optionalCondBlockHTML(step, r));
+      (addingStep ? newStepInlineHTML(step, r) : '');
   } else if (r.tipo==='reprovar'){
     var finals = dests.filter(function(s){return s.final;});
     var pool = finals.length ? finals : dests;
@@ -2552,8 +2539,7 @@ function ruleCardHTML(step, r){
       '<div class="rule-mini-label">Mudar automaticamente para a etapa final</div>'+
       '<div class="rule-dest-row"><select class="select" data-bind="rule.destino" data-stepid="'+step.id+'" data-regraid="'+r.id+'">'+
         '<option value="">Escolher etapa final…</option>'+destOptions2+
-      '</select></div>'+
-      (r.isDefault ? '' : optionalCondBlockHTML(step, r));
+      '</select></div>';
   } else if (r.tipo==='mover_etapa'){
     body = '<div class="field-hint" style="margin:0">O responsável desta etapa escolhe, no momento de agir, para qual etapa do processo mover a solicitação — não é preciso configurar um destino aqui.</div>';
   } else if (r.tipo==='devolver_solicitante'){
@@ -2563,7 +2549,6 @@ function ruleCardHTML(step, r){
       '<label class="switch"><input type="checkbox" data-bind="rule.exigirJustificativa" data-stepid="'+step.id+'" data-regraid="'+r.id+'" '+(r.exigirJustificativa?'checked':'')+'/><span class="track"><span class="thumb"></span></span></label></div>';
   } else {
     var labelField = '<div class="field-row" style="margin-bottom:10px"><input class="input" placeholder="Nome da ação" data-bind="rule.label" data-stepid="'+step.id+'" data-regraid="'+r.id+'" value="'+esc(r.label||'')+'"/></div>';
-    var condBlock = r.isDefault ? '' : optionalCondBlockHTML(step, r);
     var camposDisp = allProcessFields();
     var camposSel = r.camposPreenchimentoIds || [];
     var campoChecklist = camposDisp.map(function(f){
@@ -2582,7 +2567,7 @@ function ruleCardHTML(step, r){
       '</select>'+
       '<button class="link-btn" data-action="toggle-new-step" data-stepid="'+step.id+'" data-regraid="'+r.id+'">'+ic('plus',12)+'Nova</button></div>'+
       (addingStep ? newStepInlineHTML(step, r) : '');
-    body = labelField + condBlock + exigirCampoBlock + destBlock;
+    body = labelField + exigirCampoBlock + destBlock;
   }
 
   var sentence = '<div class="rule-sentence">'+ruleSentenceHTML(step,r)+'</div>';
@@ -4122,7 +4107,7 @@ document.addEventListener('click', function(e){
       state.selectedStepId = t.dataset.id;
       state.stepModalOpen = t.dataset.id;
       state.stepModalTab = 'geral';
-      state.openNewStepFor=null; state.openAutomationAdder=null; state.stepFieldAdderOpen=false; state.openCondAdderFor=null;
+      state.openNewStepFor=null; state.openAutomationAdder=null; state.stepFieldAdderOpen=false;
       state.openStepMenuFor=null;
       break;
     }
@@ -4132,7 +4117,7 @@ document.addEventListener('click', function(e){
     }
     case 'close-stepmodal': case 'close-stepmodal-overlay': {
       state.stepModalOpen=null; state.selectedStepId=null;
-      state.openNewStepFor=null; state.openAutomationAdder=null; state.stepFieldAdderOpen=false; state.openCondAdderFor=null;
+      state.openNewStepFor=null; state.openAutomationAdder=null; state.stepFieldAdderOpen=false;
       break;
     }
     case 'set-stepmodaltab': state.stepModalTab = t.dataset.tab; state.stepFieldAdderOpen=false; break;
@@ -4199,23 +4184,6 @@ document.addEventListener('click', function(e){
       var defIdx = st5.regras.findIndex(function(r){return r.isDefault;});
       var nr = makeAcaoFromTipo(t.dataset.tipo, st5);
       if (defIdx>=0) st5.regras.splice(defIdx,0,nr); else st5.regras.push(nr);
-      break;
-    }
-    case 'add-rule': {
-      var st6=findStep(t.dataset.stepid); st6.regras=st6.regras||[];
-      var defIdx2 = st6.regras.findIndex(function(r){return r.isDefault;});
-      var nr2 = makeRegra({label:'Nova condição'});
-      if (defIdx2>=0) st6.regras.splice(defIdx2,0,nr2); else st6.regras.push(nr2);
-      break;
-    }
-    case 'toggle-cond-adder': {
-      state.openCondAdderFor = (state.openCondAdderFor===t.dataset.regraid) ? null : t.dataset.regraid;
-      break;
-    }
-    case 'remove-rule-cond': {
-      var r6=findRegra(t.dataset.stepid, t.dataset.regraid);
-      r6.condicoes=[{campo:'Valor total', operador:'maior ou igual a', valor:''}];
-      state.openCondAdderFor = null;
       break;
     }
     case 'delete-rule': {

@@ -622,6 +622,59 @@ vez em **3 colunas** lado a lado (`.request-modal-3col`) em vez de
   o painel "Informações" (cinza-claro) e os painéis com borda
   continuam se destacando normalmente contra o branco.
 
+**v49** — dois pedidos sobre o **fluxo do Service Desk** e sobre o
+**editor de Ações** (ambos vindos de testar a modal nova):
+
+- **A etapa "Abertura" (o backlog inicial) ganhou ações manuais** —
+  antes era o único passo do fluxo sem nenhuma ação configurada
+  (`regras:[]`), então a modal mostrava a seção "Ações" vazia. Agora
+  tem **Aprovar** ("Encaminhar para Triagem", avança manualmente para
+  Triagem — hoje isso já acontece sozinho quando o chamado entra na
+  etapa, via automação; esta é uma opção manual complementar) e
+  **Reprovar** ("Cancelar Chamado", com justificativa obrigatória,
+  move para Finalizado — útil para chamado duplicado ou aberto por
+  engano).
+- **As ações que já existiam mas não tinham destino real corrigidas**:
+  "Encaminhar Atendimento" (Triagem), "Resolver Chamado" (Em
+  Atendimento), "Confirmar Solução" e "Reabrir Chamado" (Validação)
+  tinham `destinoStepId:null` — a automação correspondente (ex.
+  "Resolver Chamado avança para Validação") existia só como
+  configuração/documentação no motor de automações, que neste protótipo
+  não é o que executa de fato quando o botão é clicado (isso já era
+  assim antes, é uma limitação conhecida e documentada do protótipo).
+  Como resultado, clicar nesses botões não movia o chamado de etapa de
+  verdade. Agora o `destinoStepId` de cada um foi setado diretamente
+  (Triagem→Em Atendimento, Em Atendimento→Validação, Validação→
+  Finalizado/Em Atendimento), então clicar neles move o chamado de
+  verdade, com o texto de histórico correto.
+- **"Confirmar Solução" virou tipo `aprovar`** (antes era
+  `personalizada` sem nenhum campo obrigatório, então a troca de tipo
+  não perde nada) e **"Reabrir Chamado" virou tipo `reprovar`** (com
+  justificativa obrigatória) — ambas ganham a cor/ícone padrão de
+  aprovar/reprovar em vez do genérico "Ação personalizada".
+  "Encaminhar Atendimento" e "Resolver Chamado" continuam
+  `personalizada`, pois dependem do "Exigir preenchimento de campo"
+  que só esse tipo suporta.
+- **No editor, dentro de "Ações" de uma etapa: removida a possibilidade
+  de adicionar novas ações personalizadas** — o botão "Adicionar ação
+  personalizada" foi removido; só os 4 tipos presetados (Aprovar,
+  Reprovar, Mover Etapa, Devolver para o Solicitante) continuam
+  adicionáveis pelos chips do topo. Ações personalizadas já existentes
+  (como as do Service Desk citadas acima) continuam funcionando e
+  editáveis normalmente — só não dá mais para criar uma nova.
+- **Removidas as condicionais de cada ação** — o link "Adicionar
+  condição (opcional)" que aparecia em cada cartão de ação (Aprovar,
+  Reprovar, ação personalizada) foi removido, junto com o editor de
+  condição (campo/operador/valor) que ele abria. Ações continuam
+  podendo ter um destino, campos obrigatórios etc. — só não é mais
+  possível condicionar quando a ação se aplica.
+- `check_v11c.js` foi reescrito: a parte que criava uma ação
+  personalizada pelo editor foi trocada por um teste ao vivo usando a
+  ação "Resolver Chamado" já existente no Service Desk, e passou a
+  confirmar que o botão de adicionar personalizada e o link de condição
+  não aparecem mais. `check_v27.js` foi atualizado (Abertura agora tem
+  2 ações configuradas, não mais 0).
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

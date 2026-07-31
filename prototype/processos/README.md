@@ -760,6 +760,38 @@ catálogo da v52, essas três (`ti`, `reembolso`, `ferias`) foram
 removidas do `APPS_CATALOG` para não duplicar o mesmo aplicativo em
 duas versões (uma decorativa, outra funcional) lado a lado.
 
+**v55** — nova funcionalidade na configuração de etapa: aba **Campos** ganhou
+a seção "Fonte de dados vinculada", com botão **Vincular fonte de dados**.
+Abre uma modal (`dsLinkModalHTML`) que primeiro pede a fonte
+(`<select data-bind="dslink.fonte">`, catálogo `DATA_SOURCES` — por ora
+"Cadastro de Equipamento" e "Cadastro de Fornecedor", cada um com seus
+próprios campos) e, ao escolher, lista os campos daquela fonte como
+checkboxes (todos marcados por padrão) em "Campos que o responsável deverá
+preencher". Confirmando ("Vincular formulário"), a etapa passa a guardar
+`step.dataSourceLink = {fonteId, camposIds}`; o cartão já vinculado mostra
+nome da fonte + campos escolhidos, com "Editar vínculo" (reabre a mesma
+modal pré-preenchida) e um ícone de lixeira para remover.
+
+Na execução do processo, a modal da solicitação (`requestModalHTML`) passou
+a renderizar, só para quem está atuando na etapa (não para o solicitante:
+`state.processViewRole==='colaborador'` esconde a seção inteira), um bloco
+**Formulário complementar** logo depois dos campos extras da etapa — nome
+da fonte vinculada + os campos escolhidos como inputs de verdade
+(`data-bind="sol.dscampo"`, valores em `sol.dsValores`, um objeto novo e
+independente de `sol.valores` porque esses campos não pertencem ao
+formulário do processo) e um botão "Salvar informações" que valida os
+campos obrigatórios da fonte antes de confirmar — é importante frisar que
+isso não cria uma nova solicitação: é só uma atividade complementar da
+etapa atual, preenchendo dados de uma estrutura que existe fora do
+processo.
+
+Como cenário de exemplo pedido, a etapa **Em Atendimento** do processo
+Solicitações para TI já nasce com o vínculo à fonte "Cadastro de
+Equipamento" (todos os 5 campos selecionados) — ao abrir qualquer chamado
+que esteja nessa etapa (ex: "Instalação do pacote Office", #SPT-008), o
+técnico vê o formulário complementar pedindo para cadastrar o equipamento
+envolvido no atendimento.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

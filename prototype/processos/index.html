@@ -667,6 +667,12 @@
   .field-mini-row:last-child{border-bottom:none}
   .field-mini-row .fmr-name{font-size:12.5px;font-weight:600}
   .field-mini-row .fmr-type{font-size:10.5px;color:var(--ink-faint)}
+  .ds-link-card{border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 13px;background:var(--muted)}
+  .ds-link-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .ds-link-card-name{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--ink)}
+  .ds-link-fields-list{margin:6px 0 10px;padding-left:18px;font-size:12px;color:var(--ink-muted)}
+  .ds-link-fields-list li{margin-bottom:3px}
+  .ds-form-source-name{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:12px}
   .seg{display:flex;border:1px solid var(--border-strong);border-radius:var(--radius-sm);overflow:hidden}
   .seg button{flex:1;border:none;background:var(--surface);padding:5px 8px;font-size:11px;font-weight:700;color:var(--ink-faint);border-left:1px solid var(--border-strong)}
   .seg button:first-child{border-left:none}
@@ -991,6 +997,24 @@ var RESPONSAVEL_TYPES = [
 ];
 function respTypeMeta(tipo){ return RESPONSAVEL_TYPES.find(function(t){return t.tipo===tipo;}) || RESPONSAVEL_TYPES[0]; }
 
+/* ---- Fontes de dados (estruturas externas que podem ser vinculadas a uma etapa) ---- */
+var DATA_SOURCES = [
+  {id:'equipamento', name:'Cadastro de Equipamento', icon:'box', fields:[
+    {id:'eq_nome', label:'Equipamento', type:'short_text', required:true},
+    {id:'eq_patrimonio', label:'Número de patrimônio', type:'short_text', required:false},
+    {id:'eq_motivo', label:'Motivo da solicitação', type:'long_text', required:true},
+    {id:'eq_obs', label:'Observações', type:'long_text', required:false},
+    {id:'eq_anexo', label:'Anexo', type:'attachment', required:false},
+  ]},
+  {id:'fornecedor', name:'Cadastro de Fornecedor', icon:'folder', fields:[
+    {id:'fn_nome', label:'Nome do fornecedor', type:'short_text', required:true},
+    {id:'fn_cnpj', label:'CNPJ', type:'short_text', required:true},
+    {id:'fn_categoria', label:'Categoria', type:'short_text', required:false},
+    {id:'fn_contato', label:'Contato', type:'short_text', required:false},
+  ]},
+];
+function dataSourceById(id){ return DATA_SOURCES.find(function(f){return f.id===id;}); }
+
 var AUTOMATION_TYPES = [
   {type:'email', label:'Notificar e-mail', icon:'mail'},
   {type:'push', label:'Notificar push', icon:'bell'},
@@ -1257,6 +1281,7 @@ function serviceDeskProcessData(){
       {fieldId:fAnexos.id, visibility:'editable'}
     ],
     camposExtras:[fDiagnostico, fSolucao, fTempoGasto],
+    dataSourceLink:{fonteId:'equipamento', camposIds:['eq_nome','eq_patrimonio','eq_motivo','eq_obs','eq_anexo']},
     regras:[
       makeRegra({tipo:'personalizada', label:'Resolver Chamado', destinoStepId:null, exigirPreenchimento:true, camposPreenchimentoIds:[fSolucao.id], condicoes:[]}),
       makeRegra({tipo:'personalizada', label:'Solicitar Informações', destinoStepId:null, condicoes:[]}),
@@ -1722,6 +1747,8 @@ var state = {
   trackerModalTab:'status', // 'status' | 'formulario' — tabs do modal pós-envio da solicitação
   appsCategory:'all', // filtro de categoria na página Aplicativos
   appsSearch:'',
+  dsLinkModalStepId:null, // id da etapa cuja modal "Vincular fonte de dados" está aberta
+  dsLinkDraft:null, // {fonteId, camposIds} — rascunho em edição na modal
 };
 var CURRENT_USER_NAME = 'Luiza Vieira';
 
@@ -2519,7 +2546,52 @@ function stepCamposHTML(step){
     '<div class="rule-mini-label" style="margin-top:18px">Campos adicionais desta etapa</div>'+
     '<div class="field-hint" style="margin-bottom:10px">Só existem aqui — não fazem parte do formulário inicial nem de outras etapas. Ficam visíveis e editáveis só para quem atua nesta etapa.</div>'+
     extraRows+
-    '<div style="margin-top:6px">'+adderToggle+adderForm+'</div>';
+    '<div style="margin-top:6px">'+adderToggle+adderForm+'</div>'+
+    stepDataSourceHTML(step);
+}
+function stepDataSourceHTML(step){
+  var link = step.dataSourceLink;
+  var fonte = link ? dataSourceById(link.fonteId) : null;
+  var intro = '<div class="rule-mini-label" style="margin-top:18px">Fonte de dados vinculada</div>'+
+    '<div class="field-hint" style="margin-bottom:10px">Vincule um formulário de outra estrutura de dados como atividade complementar desta etapa. Quem estiver atuando aqui vai precisar preenchê-lo.</div>';
+  if (!link || !fonte){
+    return intro+'<button class="link-btn" data-action="open-dslink-modal" data-stepid="'+step.id+'">'+ic('link',12)+'Vincular fonte de dados</button>';
+  }
+  var campos = fonte.fields.filter(function(f){ return link.camposIds.indexOf(f.id)!==-1; });
+  return intro+'<div class="ds-link-card">'+
+    '<div class="ds-link-card-top"><div class="ds-link-card-name">'+ic('link',13)+esc(fonte.name)+'</div>'+
+      '<button class="icon-btn" data-action="remove-dslink" data-stepid="'+step.id+'" title="Remover vínculo">'+ic('trash',13)+'</button>'+
+    '</div>'+
+    '<div class="field-hint">Campos que o responsável deverá preencher:</div>'+
+    '<ul class="ds-link-fields-list">'+campos.map(function(f){return '<li>'+esc(f.label)+(f.required?' *':'')+'</li>';}).join('')+'</ul>'+
+    '<button class="link-btn" data-action="open-dslink-modal" data-stepid="'+step.id+'">'+ic('edit',12)+'Editar vínculo</button>'+
+  '</div>';
+}
+function dsLinkModalHTML(){
+  var step = findStep(state.dsLinkModalStepId);
+  if (!step) return '';
+  var draft = state.dsLinkDraft;
+  var fonte = draft.fonteId ? dataSourceById(draft.fonteId) : null;
+  var fonteOptions = '<option value="">Selecionar fonte de dados</option>'+DATA_SOURCES.map(function(f){
+    return '<option value="'+f.id+'"'+(f.id===draft.fonteId?' selected':'')+'>'+esc(f.name)+'</option>';
+  }).join('');
+  var fieldsBlock = fonte ? '<div class="field-row" style="margin-top:16px;margin-bottom:0"><label class="field-label">Formulário: '+esc(fonte.name)+'</label>'+
+    '<div class="field-hint" style="margin-bottom:8px">Campos que o responsável deverá preencher:</div>'+
+    fonte.fields.map(function(f){
+      var checked = draft.camposIds.indexOf(f.id)!==-1;
+      return '<label class="pv-filter-check"><input type="checkbox" data-action="toggle-dslink-campo" data-fieldid="'+f.id+'" '+(checked?'checked':'')+'/>'+esc(f.label)+(f.required?' *':'')+'</label>';
+    }).join('')+
+  '</div>' : '';
+  return '<div class="overlay" data-action="close-dslink-modal-overlay"><div class="modal modal-sm">'+
+    '<div class="modal-head"><div><h3>Vincular fonte de dados</h3><p>Selecione uma fonte de dados para adicionar seu formulário a esta etapa.</p></div><button class="icon-btn" data-action="close-dslink-modal">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Fonte de dados</label><select class="select" data-bind="dslink.fonte">'+fonteOptions+'</select></div>'+
+      fieldsBlock+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn btn-ghost" data-action="close-dslink-modal">Cancelar</button>'+
+      '<button class="btn btn-primary" data-action="confirm-dslink" '+((!fonte || !draft.camposIds.length)?'disabled':'')+'>Vincular formulário</button>'+
+    '</div>'+
+  '</div></div>';
 }
 function stepModalHTML(){
   var step = findStep(state.stepModalOpen);
@@ -3447,6 +3519,7 @@ function requestModalHTML(){
         '<span class="req-step-badge"'+badgeStyle+'>'+esc(step.name||'—')+'</span>'+
         requestResponsavelHTML(step)+
         (extraFieldsHTML ? extraFieldsHTML : '')+
+        requestDataSourceFormHTML(sol, step)+
         '<div class="req-panel-divider"></div>'+
         requestAcoesColumnHTML(sol, step)+
       '</div>'+
@@ -3542,6 +3615,27 @@ function inlineRequiredFieldHTML(f, sol){
     return '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+esc(f.label)+'</label><select class="select" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'"><option value="">Escolher…</option>'+opts+'</select></div>';
   }
   return '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+esc(f.label)+'</label><input class="input" data-bind="sol.campo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'" value="'+esc(val||'')+'"/></div>';
+}
+function inlineDsFieldHTML(f, sol){
+  var val = (sol.dsValores||{})[f.id];
+  var label = esc(f.label)+(f.required?' <span style="color:var(--error)">*</span>':'');
+  if (f.type==='long_text'){
+    return '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+label+'</label><textarea class="textarea" data-bind="sol.dscampo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'">'+esc(val||'')+'</textarea></div>';
+  }
+  var placeholder = f.type==='attachment' ? ' placeholder="Anexar arquivo…"' : '';
+  return '<div class="field-row" style="margin-bottom:8px"><label class="field-label">'+label+'</label><input class="input" data-bind="sol.dscampo" data-solid="'+sol.id+'" data-fieldid="'+f.id+'" value="'+esc(val||'')+'"'+placeholder+'/></div>';
+}
+function requestDataSourceFormHTML(sol, step){
+  if (state.processViewRole==='colaborador') return '';
+  var link = step.dataSourceLink;
+  var fonte = link && dataSourceById(link.fonteId);
+  if (!fonte) return '';
+  var campos = fonte.fields.filter(function(f){ return link.camposIds.indexOf(f.id)!==-1; });
+  return '<div class="req-panel-divider"></div>'+
+    '<div class="req-panel-title" style="margin-bottom:6px">Formulário complementar</div>'+
+    '<div class="ds-form-source-name">'+ic('link',13)+esc(fonte.name)+'</div>'+
+    campos.map(function(f){ return inlineDsFieldHTML(f, sol); }).join('')+
+    '<button class="btn btn-primary btn-sm" data-action="save-ds-form" data-solid="'+sol.id+'">'+ic('check',13)+'Salvar informações</button>';
 }
 function requestActionCardHTML(sol, step, tipo){
   var meta = acaoTipoMeta(tipo);
@@ -3851,6 +3945,7 @@ function renderModal(){
   if (state.addStepOpen){ root.innerHTML = addStepModalHTML(); return; }
   if (state.addWidgetOpen){ root.innerHTML = addWidgetModalHTML(); return; }
   if (state.editGeneralOpen){ root.innerHTML = editGeneralModalHTML(); return; }
+  if (state.dsLinkModalStepId){ root.innerHTML = dsLinkModalHTML(); return; }
   if (state.stepModalOpen){ root.innerHTML = stepModalHTML(); return; }
   if (state.fieldModalOpen){ root.innerHTML = fieldModalHTML(); return; }
   if (state.formSettingsOpen){ root.innerHTML = formSettingsModalHTML(); return; }
@@ -4220,6 +4315,46 @@ document.addEventListener('click', function(e){
     case 'remove-stepfield': {
       var rmStep = findStep(t.dataset.stepid);
       rmStep.camposExtras = (rmStep.camposExtras||[]).filter(function(f){return f.id!==t.dataset.fieldid;});
+      break;
+    }
+    case 'open-dslink-modal': {
+      var dsStep = findStep(t.dataset.stepid);
+      var dsExisting = dsStep.dataSourceLink;
+      state.dsLinkDraft = dsExisting ? {fonteId:dsExisting.fonteId, camposIds:dsExisting.camposIds.slice()} : {fonteId:null, camposIds:[]};
+      state.dsLinkModalStepId = t.dataset.stepid;
+      break;
+    }
+    case 'close-dslink-modal': case 'close-dslink-modal-overlay': state.dsLinkModalStepId = null; break;
+    case 'toggle-dslink-campo': {
+      var dsFid = t.dataset.fieldid;
+      var dsIdx = state.dsLinkDraft.camposIds.indexOf(dsFid);
+      if (dsIdx===-1) state.dsLinkDraft.camposIds.push(dsFid); else state.dsLinkDraft.camposIds.splice(dsIdx,1);
+      break;
+    }
+    case 'confirm-dslink': {
+      if (!state.dsLinkDraft.fonteId || !state.dsLinkDraft.camposIds.length) break;
+      var dsStep2 = findStep(state.dsLinkModalStepId);
+      dsStep2.dataSourceLink = {fonteId:state.dsLinkDraft.fonteId, camposIds:state.dsLinkDraft.camposIds.slice()};
+      state.dsLinkModalStepId = null;
+      showToast('Fonte de dados vinculada a esta etapa.');
+      break;
+    }
+    case 'remove-dslink': {
+      var dsStep3 = findStep(t.dataset.stepid);
+      dsStep3.dataSourceLink = null;
+      break;
+    }
+    case 'save-ds-form': {
+      var dsSol = findSolicitacao(t.dataset.solid);
+      var dsStepSol = findStep(dsSol.stepId);
+      var dsLink = dsStepSol && dsStepSol.dataSourceLink;
+      var dsFonte = dsLink && dataSourceById(dsLink.fonteId);
+      if (dsFonte){
+        var dsCampos = dsFonte.fields.filter(function(f){return dsLink.camposIds.indexOf(f.id)!==-1;});
+        var dsMissing = dsCampos.find(function(f){ return f.required && !String((dsSol.dsValores||{})[f.id]||'').trim(); });
+        if (dsMissing){ showToast('Preencha o campo obrigatório "'+dsMissing.label+'".'); break; }
+      }
+      showToast('Informações salvas com sucesso!');
       break;
     }
     case 'set-initial': {
@@ -4657,6 +4792,11 @@ document.addEventListener('change', function(e){
   else if (bind==='reqdraft.destino') { state.reqActionDrafts[el.dataset.tipo] = state.reqActionDrafts[el.dataset.tipo]||{}; state.reqActionDrafts[el.dataset.tipo].destino=val; }
   else if (bind==='novasol.campo') { state.novaSolicitacaoDraft.valores[el.dataset.fieldid]=val; }
   else if (bind==='sol.campo') { var sol9=findSolicitacao(el.dataset.solid); sol9.valores[el.dataset.fieldid]=val; }
+  else if (bind==='dslink.fonte') {
+    state.dsLinkDraft.fonteId = val || null;
+    var dsFonteSel = val ? dataSourceById(val) : null;
+    state.dsLinkDraft.camposIds = dsFonteSel ? dsFonteSel.fields.map(function(f){return f.id;}) : [];
+  }
   else matched = false;
   if (matched) render();
 });
@@ -4694,6 +4834,7 @@ document.addEventListener('input', function(e){
     else if (bind==='formcfg.nome'){ currentData().formConfig.nome=val; }
     else if (bind==='formcfg.descricao'){ currentData().formConfig.descricao=val; }
     else if (bind==='sol.campo'){ var sol7=findSolicitacao(el.dataset.solid); sol7.valores[el.dataset.fieldid]=val; }
+    else if (bind==='sol.dscampo'){ var sol7b=findSolicitacao(el.dataset.solid); sol7b.dsValores = sol7b.dsValores||{}; sol7b.dsValores[el.dataset.fieldid]=val; }
     else if (bind==='reqdraft.justificativa'){ state.reqActionDrafts[el.dataset.tipo] = state.reqActionDrafts[el.dataset.tipo]||{}; state.reqActionDrafts[el.dataset.tipo].justificativa=val; }
     else if (bind==='novasol.campo'){ state.novaSolicitacaoDraft.valores[el.dataset.fieldid]=val; }
     return;

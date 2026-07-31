@@ -675,6 +675,29 @@ vez em **3 colunas** lado a lado (`.request-modal-3col`) em vez de
   não aparecem mais. `check_v27.js` foi atualizado (Abertura agora tem
   2 ações configuradas, não mais 0).
 
+**v50** — dois ajustes nos Aplicativos disponíveis:
+
+- **"Service Desk" foi renomeado para "Solicitações para TI"** — o
+  nome do processo (`p_sd`) mudou em toda a plataforma: Central de
+  Processos, sidebar do Administrador, dropdown "Processos" da
+  Intranet, cabeçalho do Aplicativo etc. O nome do formulário
+  (`formConfig.nome`, antes "Abertura de Chamado — Service Desk") e a
+  imagem de capa embutida (que tinha "Service Desk" desenhado dentro
+  do próprio SVG) também foram atualizados/removidos para não ficarem
+  com o nome antigo em nenhum lugar. Nenhum ID interno mudou (o
+  processo continua sendo `p_sd`), só o nome de exibição.
+- **O app "Chamados de TI" foi removido** — era um processo à parte
+  (`p3`, com dados genéricos de exemplo, sem o fluxo detalhado do
+  Service Desk/Solicitações para TI) que aparecia como um 4º item nos
+  Aplicativos. Removido inteiramente da lista de processos seedados —
+  deixou de aparecer na Central de Processos, na sidebar do
+  Administrador e no dropdown de Apps da Intranet.
+- Testes atualizados: todas as ocorrências de "Service Desk" em
+  `check_v11c.js`, `check_v24.js`, `check_v27.js`, `check_v31.js`,
+  `check_v33.js` e `check_v35.js` viraram "Solicitações para TI"; a
+  contagem de Apps no dropdown em `check_v35.js` passou de 5 para 4
+  (published+active).
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

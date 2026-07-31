@@ -525,8 +525,7 @@
   .req-modal-meta-row b{color:var(--ink);font-weight:700}
   .req-modal-solicitante-avatar{width:20px;height:20px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:800;flex:none}
   .req-form-title{font-size:15.5px;font-weight:800;color:var(--ink)}
-  .req-tracker-wrap{padding:18px 28px;border-bottom:1px solid var(--border);flex:none}
-  .request-modal-3col{display:flex;flex:1;min-height:0;overflow:hidden;gap:16px;padding:16px;background:var(--canvas-bg)}
+  .request-modal-3col{display:flex;flex:1;min-height:0;overflow:hidden;gap:16px;padding:16px;background:var(--surface)}
   .req-panel{border-radius:var(--radius-lg);overflow-y:auto;min-width:0;display:flex;flex-direction:column}
   .req-panel-info{flex:1;background:var(--muted);padding:20px 22px}
   .req-panel-etapa{flex:1.05;background:var(--surface);border:1px solid var(--border);padding:20px 22px}
@@ -3370,7 +3369,6 @@ function requestModalHTML(){
         '<div class="req-modal-meta-row">Solicitante: <span class="req-modal-solicitante-avatar">'+esc(initials(sol.solicitante))+'</span> <b>'+esc(sol.solicitante)+'</b></div>'+
       '</div>'+
     '</div>'+
-    '<div class="req-tracker-wrap">'+stepTrackerHTML(sol)+'</div>'+
     '<div class="request-modal-3col">'+
       '<div class="req-panel req-panel-info">'+
         '<div class="req-panel-head"><div class="req-panel-head-icon">'+ic('grid',14)+'</div><div class="req-panel-title" style="margin:0">Informações</div></div>'+

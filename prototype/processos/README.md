@@ -608,6 +608,20 @@ vez em **3 colunas** lado a lado (`.request-modal-3col`) em vez de
   (`.req-action-card`, `.req-tracker`), só reorganizados visualmente
   para bater com a referência.
 
+**v48** — dois ajustes finos pedidos direto sobre a v47:
+
+- **Removida a barra de etapas** (o tracker horizontal
+  "Formulário enviado → Abertura → ... → Finalizado") que ficava entre
+  o cabeçalho e as 3 colunas — a etapa atual já aparece no selo colorido
+  dentro do painel "Etapa atual", então a barra ficava redundante.
+  `check_v12.js` foi atualizado: agora confirma que `.req-tracker` NÃO
+  aparece mais dentro da modal de detalhes (o tracker continua existindo
+  normalmente na modal de confirmação pós-envio, que é outra tela).
+- **O fundo das 3 colunas (`.request-modal-3col`) virou branco**
+  (`var(--surface)`) em vez do cinza-azulado (`var(--canvas-bg)`) —
+  o painel "Informações" (cinza-claro) e os painéis com borda
+  continuam se destacando normalmente contra o branco.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

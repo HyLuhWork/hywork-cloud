@@ -710,6 +710,19 @@ foi de 8px para 6px de padding (6+14=20, igual ao resto). O cartão de
 Kanban/List/Dashboard (`.pv-todas-card`) não foi afetado — já tinha seu
 próprio padding interno consistente.
 
+**v52** — nova página **Aplicativos**, dentro do grupo "Administração" da barra
+lateral (junto de "Usuários"). Lista os aplicativos instalados no workspace via
+HyStore — Academy, Fórum, Integrações RH, Solicitações de T.I, Solicitações de
+Reembolso, Solicitações de Férias, TV Corporativa, Assinatura de Email,
+Integrações de Documentos, Reconhecimentos e Dados — cada um com ícone, categoria
+e badge "Instalado". A página tem um filtro por categoria (Todas / Recursos
+Humanos / Tecnologia / Financeiro / Comunicação / Produtividade) via chips, um
+campo de busca por nome, e um banner de destaque no topo com CTA "Explorar a
+HyStore". Novo estado `state.appsCategory`/`state.appsSearch`, catálogo
+`APPS_CATALOG`/`APP_CATEGORIES`, e tela `apps-admin` (só visível no modo
+Administrador — some do menu ao trocar para Colaborador, como o restante do
+grupo "Administração").
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

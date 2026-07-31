@@ -289,6 +289,22 @@
   .hystore-media{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:36px 16px;border:1.5px dashed var(--border);border-radius:var(--radius-lg);background:var(--muted);color:var(--ink-muted);font-size:12.5px}
   .hystore-media-play{width:44px;height:44px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);color:var(--ink)}
 
+  .apps-banner{background:linear-gradient(120deg,#104A74,#1E72A1 55%,#D74326);border-radius:var(--radius-lg);padding:26px 30px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:24px;color:#fff;box-shadow:var(--shadow-md)}
+  .apps-banner-left{display:flex;align-items:center;gap:16px}
+  .apps-banner-icon{width:50px;height:50px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none;color:#fff}
+  .apps-banner-text h2{font-size:18px;font-weight:800}
+  .apps-banner-text p{font-size:13px;opacity:.92;max-width:480px;margin-top:4px}
+  .apps-banner .btn{background:#fff;color:var(--navy-900);flex:none}
+  .apps-banner .btn:hover{background:#f0f0f0}
+  .apps-filter-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+  .apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  .app-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:17px;display:flex;flex-direction:column;gap:10px}
+  .app-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .app-card-ic{width:38px;height:38px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex:none}
+  .app-card-name{font-size:14.5px;font-weight:700}
+  .app-card-cat{font-size:11px;color:var(--ink-faint);font-weight:600;margin-top:2px}
+  .app-card-desc{font-size:12.5px;color:var(--ink-muted);line-height:1.5;min-height:34px}
+
   .process-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
   .process-row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer}
   .process-row:last-child{border-bottom:none}
@@ -1706,6 +1722,8 @@ var state = {
   intranetSort:'recent', // 'recent' | 'solicitante'
   intranetToolbarMenu:null, // 'filter' | 'sort' | null
   trackerModalTab:'status', // 'status' | 'formulario' — tabs do modal pós-envio da solicitação
+  appsCategory:'all', // filtro de categoria na página Aplicativos
+  appsSearch:'',
 };
 var CURRENT_USER_NAME = 'Luiza Vieira';
 
@@ -1896,6 +1914,7 @@ function adminShellHTML(){
       navItem('db','Dados',false)+
       '<div id="admin-nav-group">'+
         '<div class="nav-group-label">Administração</div>'+
+        '<a href="#" class="nav-item'+(state.screen==='apps-admin'?' active':'')+'" data-action="open-apps-admin">'+ic('box',17)+'<span>Aplicativos</span></a>'+
         navItem('users','Usuários',false)+
       '</div>'+
       '<div class="sidebar-foot"></div>'+
@@ -1975,7 +1994,83 @@ function renderScreen(){
   else if (state.screen==='processview') root.innerHTML = processViewHTML();
   else if (state.screen==='intranet-landing') root.innerHTML = intranetLandingHTML();
   else if (state.screen==='app') root.innerHTML = appHTML();
+  else if (state.screen==='apps-admin') root.innerHTML = appsAdminHTML();
   else root.innerHTML = editorHTML();
+}
+
+var APP_CATEGORIES = ['Recursos Humanos','Tecnologia','Financeiro','Comunicação','Produtividade'];
+var APPS_CATALOG = [
+  {id:'academy', name:'Academy', icon:'gradcap', color:'#1E72A1', category:'Recursos Humanos', desc:'Trilhas de aprendizagem e cursos internos para o time.'},
+  {id:'forum', name:'Fórum', icon:'forum', color:'#B8860B', category:'Comunicação', desc:'Espaço de discussão e troca de conhecimento entre colaboradores.'},
+  {id:'hcm', name:'Integrações RH', icon:'hcm', color:'#1E9E5A', category:'Recursos Humanos', desc:'Sincronize dados de colaboradores com seu sistema de RH/HCM.'},
+  {id:'ti', name:'Solicitações de T.I', icon:'headset', color:'#104A74', category:'Tecnologia', desc:'Abra chamados e acompanhe solicitações para o time de TI.'},
+  {id:'reembolso', name:'Solicitações de Reembolso', icon:'money', color:'#D74326', category:'Financeiro', desc:'Solicite reembolso de despesas com anexo de notas fiscais.'},
+  {id:'ferias', name:'Solicitações de Férias', icon:'sun', color:'#8EA1C7', category:'Recursos Humanos', desc:'Peça e acompanhe períodos de férias com aprovação do gestor.'},
+  {id:'tv', name:'TV Corporativa', icon:'tv', color:'#7A3B12', category:'Comunicação', desc:'Canal de comunicação audiovisual para toda a empresa.'},
+  {id:'assinatura', name:'Assinatura de Email', icon:'mail', color:'#0B2233', category:'Comunicação', desc:'Padronize a assinatura de email de todo o time.'},
+  {id:'docs', name:'Integrações de Documentos', icon:'link', color:'#1E72A1', category:'Produtividade', desc:'Conecte e gerencie documentos entre suas ferramentas.'},
+  {id:'reconhecimentos', name:'Reconhecimentos', icon:'award', color:'#D74326', category:'Recursos Humanos', desc:'Celebre conquistas e reconheça colegas publicamente.'},
+  {id:'dados', name:'Dados', icon:'db', color:'#104A74', category:'Produtividade', desc:'Centralize e explore dados e relatórios da empresa.'},
+];
+function filteredApps(){
+  return APPS_CATALOG.filter(function(a){
+    if (state.appsCategory!=='all' && a.category!==state.appsCategory) return false;
+    if (state.appsSearch && a.name.toLowerCase().indexOf(state.appsSearch.toLowerCase())===-1) return false;
+    return true;
+  });
+}
+function appsGridAreaHTML(filtered){
+  if (!filtered.length){
+    return '<div class="empty-state">'+
+        '<div class="es-ic">'+ic('search',22)+'</div>'+
+        '<div class="es-title">Nenhum aplicativo encontrado</div>'+
+        '<div class="es-sub">Ajuste os filtros ou busque por outro termo.</div>'+
+      '</div>';
+  }
+  return '<div class="apps-grid">'+filtered.map(appCardHTML).join('')+'</div>';
+}
+function appCardHTML(a){
+  return '<div class="app-card">'+
+    '<div class="app-card-top">'+
+      '<div class="app-card-ic" style="background:'+a.color+'1c;color:'+a.color+'">'+ic(a.icon,18)+'</div>'+
+      '<span class="badge badge-success">'+ic('check',10)+' Instalado</span>'+
+    '</div>'+
+    '<div><div class="app-card-name">'+esc(a.name)+'</div><div class="app-card-cat">'+esc(a.category)+'</div></div>'+
+    '<div class="app-card-desc">'+esc(a.desc)+'</div>'+
+  '</div>';
+}
+function refreshAppsGridArea(){
+  var area = qs('#apps-grid-area'); if (!area) return;
+  area.innerHTML = appsGridAreaHTML(filteredApps());
+}
+function appsBannerHTML(){
+  return '<div class="apps-banner">'+
+    '<div class="apps-banner-left">'+
+      '<div class="apps-banner-icon">'+ic('cart',24)+'</div>'+
+      '<div class="apps-banner-text"><h2>Precisa de mais funcionalidades?</h2>'+
+        '<p>Explore a HyStore e adicione novos aplicativos ao seu workspace em poucos cliques.</p>'+
+      '</div>'+
+    '</div>'+
+    '<button class="btn" data-action="noop">'+ic('cart',14)+'Explorar a HyStore</button>'+
+  '</div>';
+}
+function appsAdminHTML(){
+  var filtered = filteredApps();
+  var cats = ['all'].concat(APP_CATEGORIES);
+  return '<div class="screen-inner">'+
+    '<div class="page-head">'+
+      '<div><h1>Aplicativos</h1><p class="page-sub">Gerencie os aplicativos instalados no seu workspace pela HyStore.</p></div>'+
+    '</div>'+
+    appsBannerHTML()+
+    '<div class="apps-filter-row">'+
+      '<div class="chip-row">'+cats.map(function(c){
+        var active = state.appsCategory===c;
+        return '<button class="chip'+(active?' active':'')+'" data-action="apps-set-category" data-cat="'+esc(c)+'">'+esc(c==='all'?'Todas':c)+'</button>';
+      }).join('')+'</div>'+
+      '<div class="topbar-search" style="max-width:240px">'+ic('search',14)+'<input id="apps-search" type="text" placeholder="Buscar aplicativo..." value="'+esc(state.appsSearch)+'"/></div>'+
+    '</div>'+
+    '<div id="apps-grid-area">'+appsGridAreaHTML(filtered)+'</div>'+
+  '</div>';
 }
 
 var PROCESS_TEMPLATES = [
@@ -4023,6 +4118,8 @@ document.addEventListener('click', function(e){
       break;
     }
     case 'nav-intranet-landing': state.screen = 'intranet-landing'; break;
+    case 'open-apps-admin': state.screen = 'apps-admin'; break;
+    case 'apps-set-category': state.appsCategory = t.dataset.cat; break;
     case 'open-wizard':
       state.wizardOpen = true;
       state.wizardDraft = {name:'',description:'',category:CATEGORIES[0],icon:ICON_OPTIONS[0],color:COLOR_OPTIONS[0].v};
@@ -4615,6 +4712,7 @@ document.addEventListener('input', function(e){
     return;
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }
+  if (e.target.id==='apps-search'){ state.appsSearch = e.target.value; refreshAppsGridArea(); }
   if (e.target.id==='pv-search-input'){ state.pvSearch = e.target.value; refreshProcessViewBodyArea(); }
   if (e.target.id==='req-comment-input'){ state.reqCommentDraft = e.target.value; }
 });

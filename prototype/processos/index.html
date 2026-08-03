@@ -728,6 +728,24 @@
   .perm-avatar{width:26px;height:26px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex:none}
   .perm-note{display:flex;gap:10px;background:var(--info-50);border-radius:var(--radius-md);padding:12px 14px;margin-top:16px;font-size:12px;color:var(--navy-800)}
   .table-wrap{overflow-x:auto;border-radius:var(--radius-lg)}
+  .dados-table th{text-align:left;padding-left:14px}
+  .dados-table td{text-align:left;padding-left:14px}
+  .dados-row{cursor:pointer}
+  .dados-row:hover{background:var(--muted)}
+  .dados-name-cell{display:flex;align-items:center;gap:10px}
+  .dados-name-ic{width:30px;height:30px;border-radius:8px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;flex:none}
+  .dados-name-title{font-weight:700;font-size:13.5px;color:var(--ink)}
+  .dados-name-slug{font-size:11px;color:var(--ink-faint)}
+  .dados-muted{color:var(--ink-faint);font-weight:600;font-size:11.5px}
+  .dados-unset{color:var(--ink-faint)}
+  .dados-record-actions{width:1%;white-space:nowrap}
+  .dados-stats-row{display:flex;gap:24px;margin-bottom:16px;font-size:12.5px;color:var(--ink-muted)}
+  .dados-stats-row b{color:var(--ink);font-size:15px;margin-right:4px}
+  .ds-automate-banner{display:flex;align-items:center;gap:20px;background:linear-gradient(120deg,var(--muted),var(--surface));border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 26px;margin-top:26px}
+  .ds-automate-illustration{width:52px;height:52px;border-radius:14px;background:var(--primary-50);color:var(--primary-dark);display:flex;align-items:center;justify-content:center;flex:none}
+  .ds-automate-text{flex:1}
+  .ds-automate-text h3{font-size:15px;margin-bottom:4px}
+  .ds-automate-text p{font-size:12.5px;color:var(--ink-muted)}
   .pv-table-resp{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink)}
   .pv-table-resp-avatar{width:22px;height:22px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;flex:none}
   .pv-progress-cell{display:flex;align-items:center;gap:8px}
@@ -997,23 +1015,96 @@ var RESPONSAVEL_TYPES = [
 ];
 function respTypeMeta(tipo){ return RESPONSAVEL_TYPES.find(function(t){return t.tipo===tipo;}) || RESPONSAVEL_TYPES[0]; }
 
-/* ---- Fontes de dados (estruturas externas que podem ser vinculadas a uma etapa) ---- */
-var DATA_SOURCES = [
-  {id:'equipamento', name:'Cadastro de Equipamento', icon:'box', fields:[
-    {id:'eq_nome', label:'Equipamento', type:'short_text', required:true},
-    {id:'eq_patrimonio', label:'Número de patrimônio', type:'short_text', required:false},
-    {id:'eq_motivo', label:'Motivo da solicitação', type:'long_text', required:true},
-    {id:'eq_obs', label:'Observações', type:'long_text', required:false},
-    {id:'eq_anexo', label:'Anexo', type:'attachment', required:false},
-  ]},
-  {id:'fornecedor', name:'Cadastro de Fornecedor', icon:'folder', fields:[
-    {id:'fn_nome', label:'Nome do fornecedor', type:'short_text', required:true},
-    {id:'fn_cnpj', label:'CNPJ', type:'short_text', required:true},
-    {id:'fn_categoria', label:'Categoria', type:'short_text', required:false},
-    {id:'fn_contato', label:'Contato', type:'short_text', required:false},
-  ]},
-];
-function dataSourceById(id){ return DATA_SOURCES.find(function(f){return f.id===id;}); }
+/* ---- Fontes de dados (bases de dados da intranet — página Dados, vínculo em etapas, automações) ---- */
+function mkRecord(valores, criadoEm){ return {id:uid(), valores:valores, criadoEm:criadoEm}; }
+function seedDataSources(){
+  return [
+    {id:'equipamento', name:'Cadastro de Equipamento', icon:'box', createdAt:'15/07/2026',
+      fields:[
+        {id:'eq_nome', label:'Equipamento', type:'short_text', required:true},
+        {id:'eq_patrimonio', label:'Número de patrimônio', type:'short_text', required:false},
+        {id:'eq_motivo', label:'Motivo da solicitação', type:'long_text', required:true},
+        {id:'eq_obs', label:'Observações', type:'long_text', required:false},
+        {id:'eq_anexo', label:'Anexo', type:'attachment', required:false},
+      ],
+      records:[]},
+    {id:'fornecedor', name:'Cadastro de Fornecedor', icon:'folder', createdAt:'10/07/2026',
+      fields:[
+        {id:'fn_nome', label:'Nome do fornecedor', type:'short_text', required:true},
+        {id:'fn_cnpj', label:'CNPJ', type:'short_text', required:true},
+        {id:'fn_categoria', label:'Categoria', type:'short_text', required:false},
+        {id:'fn_contato', label:'Contato', type:'short_text', required:false},
+      ],
+      records:[]},
+    {id:'sugestoes', name:'Sugestões de Ideias', icon:'bulb', createdAt:'09/04/2026',
+      fields:[
+        {id:'titulo', label:'Título', type:'short_text', required:true},
+        {id:'descricao', label:'Descrição', type:'long_text', required:false},
+        {id:'responsavel', label:'Responsável', type:'short_text', required:false},
+        {id:'data', label:'Data', type:'date', required:false},
+        {id:'categoria', label:'Categoria', type:'single_select', required:false, options:['Desenvolvimento','Comunicação','Performance','Operacional','Conhecimento']},
+        {id:'status', label:'Status', type:'single_select', required:false, options:['Aprovado','Reprovado','Em andamento','Pendente']},
+      ],
+      records:[
+        mkRecord({titulo:'Treinamentos e Atualizações Jurídicas', descricao:'Acesse conteúdos, treinamentos e atualizações sobre legislação para o time jurídico.', responsavel:'Hywork Sup', data:'08/04/2026', categoria:'Desenvolvimento', status:'Em andamento'}, '08/04/2026'),
+        mkRecord({titulo:'Comunicados Internos', descricao:'Espaço dedicado à divulgação de comunicados oficiais da empresa.', responsavel:'Daniel Mazzeo', data:'07/04/2026', categoria:'Comunicação', status:'Aprovado'}, '07/04/2026'),
+        mkRecord({titulo:'Indicadores de Produtividade', descricao:'Acompanhe os principais indicadores de produtividade das equipes.', responsavel:'Andreia', data:'12/04/2026', categoria:'Performance', status:'Pendente'}, '12/04/2026'),
+        mkRecord({titulo:'Prazos Processuais Importantes', descricao:'Visualize os principais prazos processuais em andamento.', responsavel:'Suporte Hywork', data:'31/03/2026', categoria:'Operacional', status:'Aprovado'}, '31/03/2026'),
+        mkRecord({titulo:'Jurisprudências em Destaque', descricao:'Acompanhe as principais jurisprudências relevantes para a área.', responsavel:'Luiza', data:'09/04/2026', categoria:'Conhecimento', status:'Reprovado'}, '09/04/2026'),
+      ],
+    },
+    {id:'chamados_ds', name:'Abertura de Chamado', icon:'headset', createdAt:'17/03/2026',
+      fields:[
+        {id:'ch_titulo', label:'Título', type:'short_text', required:true},
+        {id:'ch_categoria', label:'Categoria', type:'single_select', required:false, options:['Hardware','Software','Rede','Acesso a Sistemas','Outros']},
+        {id:'ch_prioridade', label:'Prioridade', type:'single_select', required:false, options:['Baixa','Média','Alta','Crítica']},
+        {id:'ch_status', label:'Status', type:'single_select', required:false, options:['Aberto','Em atendimento','Resolvido']},
+        {id:'ch_solicitante', label:'Solicitante', type:'short_text', required:false},
+        {id:'ch_area', label:'Área', type:'short_text', required:false},
+        {id:'ch_data', label:'Data de abertura', type:'date', required:false},
+        {id:'ch_obs', label:'Observações', type:'long_text', required:false},
+      ],
+      records:[
+        mkRecord({ch_titulo:'Notebook não liga', ch_categoria:'Hardware', ch_prioridade:'Alta', ch_status:'Em atendimento', ch_solicitante:'Rafael Costa', ch_area:'Comercial', ch_data:'31/07/2026'}, '31/07/2026'),
+        mkRecord({ch_titulo:'Acesso ao sistema financeiro bloqueado', ch_categoria:'Acesso a Sistemas', ch_prioridade:'Média', ch_status:'Aberto', ch_solicitante:'Juliana Alves', ch_area:'Financeiro', ch_data:'31/07/2026'}, '31/07/2026'),
+        mkRecord({ch_titulo:'Impressora da sala 4 sem toner', ch_categoria:'Hardware', ch_prioridade:'Baixa', ch_status:'Resolvido', ch_solicitante:'Marcos Vidal', ch_area:'Operações', ch_data:'30/07/2026'}, '30/07/2026'),
+        mkRecord({ch_titulo:'VPN caindo com frequência', ch_categoria:'Rede', ch_prioridade:'Média', ch_status:'Em atendimento', ch_solicitante:'Camila Duarte', ch_area:'Tecnologia', ch_data:'30/07/2026'}, '30/07/2026'),
+      ],
+    },
+    {id:'eventos_ds', name:'Eventos', icon:'calendar', createdAt:'04/02/2026',
+      fields:[
+        {id:'ev_nome', label:'Nome do evento', type:'short_text', required:true},
+        {id:'ev_data', label:'Data do evento', type:'date', required:true},
+        {id:'ev_categoria', label:'Categoria', type:'single_select', required:false, options:['Institucional','Treinamento','Confraternização','Externo']},
+        {id:'ev_local', label:'Local', type:'short_text', required:false},
+        {id:'ev_responsavel', label:'Responsável', type:'short_text', required:false},
+        {id:'ev_vagas', label:'Vagas', type:'short_text', required:false},
+        {id:'ev_status', label:'Status', type:'single_select', required:false, options:['Planejado','Confirmado','Encerrado']},
+      ],
+      records:[
+        mkRecord({ev_nome:'Confraternização de fim de ano', ev_data:'12/12/2026', ev_categoria:'Confraternização', ev_local:'Matriz - São Paulo', ev_responsavel:'Recursos Humanos', ev_vagas:'120', ev_status:'Planejado'}, '04/02/2026'),
+        mkRecord({ev_nome:'Treinamento de liderança', ev_data:'20/09/2026', ev_categoria:'Treinamento', ev_local:'Online', ev_responsavel:'Academy', ev_vagas:'40', ev_status:'Confirmado'}, '10/02/2026'),
+        mkRecord({ev_nome:'Kickoff do 2º semestre', ev_data:'01/07/2026', ev_categoria:'Institucional', ev_local:'Matriz - São Paulo', ev_responsavel:'Diretoria', ev_vagas:'200', ev_status:'Encerrado'}, '15/02/2026'),
+        mkRecord({ev_nome:'Hywork Talks: Inovação', ev_data:'18/08/2026', ev_categoria:'Externo', ev_local:'Filial - Rio de Janeiro', ev_responsavel:'Marketing', ev_vagas:'80', ev_status:'Planejado'}, '20/02/2026'),
+      ],
+    },
+    {id:'faq_ds', name:'FAQ', icon:'info', createdAt:'28/01/2026',
+      fields:[
+        {id:'faq_pergunta', label:'Pergunta', type:'short_text', required:true},
+        {id:'faq_resposta', label:'Resposta', type:'long_text', required:true},
+        {id:'faq_categoria', label:'Categoria', type:'single_select', required:false, options:['RH','TI','Financeiro','Geral']},
+      ],
+      records:[
+        mkRecord({faq_pergunta:'Como solicito férias?', faq_resposta:'Acesse Aplicativos > Solicitações de Férias e preencha o formulário.', faq_categoria:'RH'}, '28/01/2026'),
+        mkRecord({faq_pergunta:'Como abro um chamado de TI?', faq_resposta:'Acesse Aplicativos > Solicitações de T.I.', faq_categoria:'TI'}, '28/01/2026'),
+        mkRecord({faq_pergunta:'Como solicito reembolso?', faq_resposta:'Acesse Aplicativos > Solicitações de Reembolso e anexe as notas fiscais.', faq_categoria:'Financeiro'}, '28/01/2026'),
+        mkRecord({faq_pergunta:'Onde vejo meu holerite?', faq_resposta:'Disponível na Integração RH/HCM, seção Documentos.', faq_categoria:'RH'}, '02/02/2026'),
+        mkRecord({faq_pergunta:'Como falo com o suporte da Hywork?', faq_resposta:'Envie um email para suporte@hywork.cloud ou abra um chamado interno.', faq_categoria:'Geral'}, '05/02/2026'),
+      ],
+    },
+  ];
+}
+function dataSourceById(id){ return state.dataSources.find(function(f){return f.id===id;}); }
 
 var AUTOMATION_TYPES = [
   {type:'email', label:'Notificar e-mail', icon:'mail'},
@@ -1690,6 +1781,20 @@ var state = {
   search:'',
   processes: seed.list,
   processData: seed.data,
+  dataSources: seedDataSources(),
+  dadosOpenFonteId:null, // id da fonte de dados aberta na página Dados | null = lista
+  dadosSearch:'',
+  dadosRecordSearch:'',
+  novaFonteOpen:false,
+  novaFonteDraft:null, // {nome, campos:[{label,type}]}
+  fonteFieldsOpen:null, // fonteId
+  fonteFieldAdderOpen:false,
+  fonteRecordOpen:null, // fonteId (modal "+ Adicionar" aberta para esta fonte) | {fonteId, recordId} ao editar
+  fonteRecordDraft:null, // {valores:{}}
+  dsAutomacoes: [], // automações de fontes de dados (lista global, cada uma com fonteId)
+  dsAutomacaoEditorId:null, // id da automação de fonte de dados em edição | null
+  dsAutomacaoSelectedBlockId:null,
+  dsAutomacaoAddChoiceOpen:false,
   wizardOpen:false,
   wizardDraft:null,
   hystoreTemplateOpen:null, // template index | null
@@ -1874,6 +1979,8 @@ function renderShell(){
 function updateAdminNavActive(){
   var home = qs('#nav-home-link'); if (home) home.classList.toggle('active', state.screen==='home');
   var apps = qs('#nav-apps-link'); if (apps) apps.classList.toggle('active', state.screen==='apps-admin');
+  var dados = qs('#nav-dados-link'); if (dados) dados.classList.toggle('active', state.screen==='dados');
+  var automacoes = qs('#nav-automacoes-link'); if (automacoes) automacoes.classList.toggle('active', state.screen==='automacoes-admin');
 }
 function updateIntranetNavActive(){
   var nav = qs('.itn-nav'); if (!nav) return;
@@ -1919,7 +2026,8 @@ function adminShellHTML(){
       '<div id="admin-nav-group">'+
         '<div class="nav-group-label">Administração</div>'+
         navItem('users','Usuários',false)+
-        navItem('db','Dados',false)+
+        '<a href="#" class="nav-item'+(state.screen==='dados'?' active':'')+'" id="nav-dados-link" data-action="open-dados">'+ic('db',17)+'<span>Dados</span></a>'+
+        '<a href="#" class="nav-item'+(state.screen==='automacoes-admin'?' active':'')+'" id="nav-automacoes-link" data-action="open-automacoes-admin">'+ic('bolt',17)+'<span>Automações</span></a>'+
         navItem('gear','Configurações',false)+
       '</div>'+
       '<div class="sidebar-foot"></div>'+
@@ -2000,6 +2108,8 @@ function renderScreen(){
   else if (state.screen==='intranet-landing') root.innerHTML = intranetLandingHTML();
   else if (state.screen==='app') root.innerHTML = appHTML();
   else if (state.screen==='apps-admin') root.innerHTML = appsAdminHTML();
+  else if (state.screen==='dados') root.innerHTML = dadosHTML();
+  else if (state.screen==='automacoes-admin') root.innerHTML = automacoesAdminHTML();
   else root.innerHTML = editorHTML();
 }
 
@@ -2085,6 +2195,402 @@ function appsAdminHTML(){
     '</div>'+
     '<div id="apps-grid-area">'+appsGridAreaHTML(filtered)+'</div>'+
   '</div>';
+}
+
+/* ============ DADOS (fontes de dados da intranet) ============ */
+function filteredDataSources(){
+  return state.dataSources.filter(function(f){
+    if (state.dadosSearch && f.name.toLowerCase().indexOf(state.dadosSearch.toLowerCase())===-1) return false;
+    return true;
+  });
+}
+function slugify(s){
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+}
+function dadosListAreaHTML(filtered){
+  var rows = filtered.map(function(f){
+    return '<tr class="dados-row" data-action="open-fonte-detail" data-id="'+f.id+'">'+
+      '<td><div class="dados-name-cell"><div class="dados-name-ic">'+ic(f.icon||'db',15)+'</div><div><div class="dados-name-title">'+esc(f.name)+'</div><div class="dados-name-slug">'+esc(slugify(f.name))+'</div></div></div></td>'+
+      '<td>'+f.records.length+' <span class="dados-muted">registros</span></td>'+
+      '<td>'+f.fields.length+' <span class="dados-muted">campos</span></td>'+
+      '<td>'+esc(f.createdAt||'')+'</td>'+
+    '</tr>';
+  }).join('');
+  return filtered.length ?
+    '<div class="table-wrap"><table class="perm-table dados-table"><thead><tr><th>Nome</th><th>Registros</th><th>Campos</th><th>Criado em</th></tr></thead><tbody>'+rows+'</tbody></table></div>' :
+    '<div class="empty-state"><div class="es-ic">'+ic('db',22)+'</div><div class="es-title">Nenhuma fonte de dados encontrada</div><div class="es-sub">Ajuste a busca, ou crie uma nova fonte de dados.</div><button class="btn btn-dark" style="margin-top:6px" data-action="open-nova-fonte">'+ic('plus',14)+'Nova Fonte de Dados</button></div>';
+}
+function dadosHTML(){
+  var openFonte = state.dadosOpenFonteId ? dataSourceById(state.dadosOpenFonteId) : null;
+  if (state.dadosOpenFonteId) return fonteDetailHTML(openFonte);
+  var filtered = filteredDataSources();
+  return '<div class="screen-inner">'+
+    '<div class="page-head">'+
+      '<div><h1>Fonte de dados</h1><p class="page-sub">Adicione e gerencie sua tabela de dados</p></div>'+
+      '<button class="btn btn-dark" data-action="open-nova-fonte">'+ic('plus',14)+'Nova Fonte de Dados</button>'+
+    '</div>'+
+    '<div class="topbar-search" style="max-width:340px;margin-bottom:20px">'+ic('search',14)+'<input id="dados-search" type="text" placeholder="Pesquise por aqui..." value="'+esc(state.dadosSearch)+'"/></div>'+
+    '<div id="dados-list-area">'+dadosListAreaHTML(filtered)+'</div>'+
+  '</div>';
+}
+function refreshDadosArea(){
+  var area = qs('#dados-list-area'); if (!area) return;
+  area.innerHTML = dadosListAreaHTML(filteredDataSources());
+}
+function filteredFonteRecords(fonte){
+  return fonte.records.filter(function(r){
+    if (!state.dadosRecordSearch) return true;
+    var q = state.dadosRecordSearch.toLowerCase();
+    return fonte.fields.some(function(f){
+      var v = r.valores[f.id];
+      return v!=null && String(v).toLowerCase().indexOf(q)!==-1;
+    });
+  });
+}
+function fonteRecordsAreaHTML(fonte, records){
+  var cols = fonte.fields;
+  var headCells = cols.map(function(f){return '<th>'+esc(f.label)+'</th>';}).join('')+'<th></th>';
+  var rows = records.map(function(r){
+    var cells = cols.map(function(f){
+      var v = r.valores[f.id];
+      var txt = (v!=null && v!=='') ? String(v) : '';
+      return '<td>'+(txt ? esc(txt.length>60?txt.slice(0,57)+'…':txt) : '<span class="dados-unset">—</span>')+'</td>';
+    }).join('');
+    return '<tr>'+cells+'<td class="dados-record-actions"><button class="icon-btn" data-action="delete-fonte-record" data-fonteid="'+fonte.id+'" data-recid="'+r.id+'" title="Excluir registro">'+ic('trash',13)+'</button></td></tr>';
+  }).join('');
+  return records.length ?
+    '<div class="table-wrap"><table class="perm-table dados-table"><thead><tr>'+headCells+'</tr></thead><tbody>'+rows+'</tbody></table></div>' :
+    '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nenhum registro ainda</div><div class="es-sub">Clique em "Adicionar" para criar o primeiro registro desta fonte de dados.</div></div>';
+}
+function fonteDetailHTML(fonte){
+  if (!fonte){ state.dadosOpenFonteId = null; return dadosHTML(); }
+  if (state.dsAutomacaoEditorId){
+    var editingAuto = findDsAuto(state.dsAutomacaoEditorId);
+    if (editingAuto) return dsAutomacaoEditorHTML(editingAuto);
+    state.dsAutomacaoEditorId = null;
+  }
+  var records = filteredFonteRecords(fonte);
+
+  return '<div class="screen-inner">'+
+    '<a href="#" class="back-link" data-action="close-fonte-detail">'+ic('arrowLeft',14)+'Bases de Dados</a>'+
+    '<div class="page-head" style="margin-top:6px">'+
+      '<div><h1>'+esc(fonte.name)+'</h1><p class="page-sub">Coleção de dados '+esc(fonte.name)+'</p></div>'+
+      '<div style="display:flex;gap:8px;flex:none">'+
+        '<button class="btn btn-outline" data-action="open-fonte-fields" data-id="'+fonte.id+'">'+ic('gear',14)+'Campos</button>'+
+        '<button class="btn btn-dark" data-action="open-fonte-record" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Adicionar</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="dados-stats-row"><div><b>'+fonte.records.length+'</b> Registros</div><div><b>'+fonte.fields.length+'</b> Campos</div></div>'+
+    '<div class="topbar-search" style="max-width:320px;margin-bottom:16px">'+ic('search',14)+'<input id="dados-record-search" type="text" placeholder="Buscar registros..." value="'+esc(state.dadosRecordSearch)+'"/></div>'+
+    '<div id="fonte-records-area">'+fonteRecordsAreaHTML(fonte, records)+'</div>'+
+    fonteAutomacaoSectionHTML(fonte)+
+  '</div>';
+}
+function refreshFonteRecordsArea(){
+  var fonte = state.dadosOpenFonteId ? dataSourceById(state.dadosOpenFonteId) : null;
+  if (!fonte) return;
+  var area = qs('#fonte-records-area'); if (!area) return;
+  area.innerHTML = fonteRecordsAreaHTML(fonte, filteredFonteRecords(fonte));
+}
+function novaFonteModalHTML(){
+  var d = state.novaFonteDraft;
+  var rows = d.campos.map(function(c,i){
+    return '<div class="field-mini-row"><div style="flex:1"><div class="fmr-name">'+esc(c.label)+'</div><div class="fmr-type">'+fieldTypeMeta(c.type).label+'</div></div>'+
+      '<button class="icon-btn" data-action="remove-novafonte-campo" data-idx="'+i+'" title="Remover">'+ic('trash',13)+'</button></div>';
+  }).join('');
+  return '<div class="overlay" data-action="close-nova-fonte-overlay"><div class="modal modal-md">'+
+    '<div class="modal-head"><div><h3>Nova Fonte de Dados</h3><p>Nome e campos da nova base de dados</p></div><button class="icon-btn" data-action="close-nova-fonte">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+
+      '<div class="field-row"><label class="field-label">Nome da fonte de dados</label><input class="input" id="novafonte-nome-input" placeholder="Ex: Sugestões de Ideias" value="'+esc(d.nome)+'" data-bind="novafonte.nome"/></div>'+
+      '<div class="rule-mini-label" style="margin-top:8px">Campos</div>'+
+      (rows || '<div class="field-hint" style="margin-bottom:8px">Nenhum campo ainda — adicione pelo menos um.</div>')+
+      '<div style="margin-top:8px"><div class="automation-mini-form">'+
+        '<input class="input" id="novafonte-field-name-input" placeholder="Nome do campo"/>'+
+        '<select class="select" id="novafonte-field-type-select">'+FIELD_TYPES_FLAT.map(function(t){return '<option value="'+t.type+'">'+t.label+'</option>';}).join('')+'</select>'+
+        '<button class="btn btn-primary btn-xs" data-action="add-novafonte-campo">'+ic('plus',13)+' Adicionar campo</button>'+
+      '</div></div>'+
+    '</div>'+
+    '<div class="modal-foot"><button class="btn btn-ghost" data-action="close-nova-fonte">Cancelar</button><button class="btn btn-primary" data-action="confirm-nova-fonte" '+((!d.nome.trim() || !d.campos.length)?'disabled':'')+'>Criar fonte de dados</button></div>'+
+  '</div></div>';
+}
+function fonteFieldsModalHTML(){
+  var fonte = dataSourceById(state.fonteFieldsOpen);
+  if (!fonte) return '';
+  var rows = fonte.fields.map(function(f){
+    var meta = fieldTypeMeta(f.type);
+    return '<div class="field-mini-row"><div class="fc-ic" style="margin-right:9px;flex:none">'+ic(meta.icon,13)+'</div><div style="flex:1"><div class="fmr-name">'+esc(f.label)+(f.required?' <span style="color:var(--error)">*</span>':'')+'</div><div class="fmr-type">'+meta.label+'</div></div>'+
+      '<button class="icon-btn" data-action="remove-fonte-field" data-fonteid="'+fonte.id+'" data-fieldid="'+f.id+'" title="Excluir campo">'+ic('trash',13)+'</button></div>';
+  }).join('');
+  var adding = !!state.fonteFieldAdderOpen;
+  var adderToggle = '<button class="link-btn" data-action="toggle-fontefield-adder">'+ic('plus',12)+'Adicionar campo</button>';
+  var adderForm = adding ? '<div class="automation-mini-form" style="margin-top:8px">'+
+      '<input class="input" id="fontefield-name-input" placeholder="Nome do campo"/>'+
+      '<select class="select" id="fontefield-type-select">'+FIELD_TYPES_FLAT.map(function(t){return '<option value="'+t.type+'">'+t.label+'</option>';}).join('')+'</select>'+
+      '<button class="btn btn-primary btn-xs" data-action="confirm-add-fontefield" data-fonteid="'+fonte.id+'">'+ic('check',13)+' Adicionar</button>'+
+    '</div>' : '';
+  return '<div class="overlay" data-action="close-fonte-fields-overlay"><div class="modal modal-md">'+
+    '<div class="modal-head"><div><h3>Campos</h3><p>Estrutura de campos de '+esc(fonte.name)+'</p></div><button class="icon-btn" data-action="close-fonte-fields">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+rows+'<div style="margin-top:10px">'+adderToggle+adderForm+'</div></div>'+
+    '<div class="modal-foot"><button class="btn btn-primary" data-action="close-fonte-fields">'+ic('check',14)+'Concluído</button></div>'+
+  '</div></div>';
+}
+function fonteRecordModalHTML(){
+  var fonte = dataSourceById(state.fonteRecordOpen);
+  if (!fonte) return '';
+  var draft = state.fonteRecordDraft;
+  var fieldsHTML = fonte.fields.map(function(f){ return inlineFonteRecordFieldHTML(f, draft); }).join('');
+  return '<div class="overlay" data-action="close-fonte-record-overlay"><div class="modal modal-md">'+
+    '<div class="modal-head"><div><h3>Novo registro</h3><p>'+esc(fonte.name)+'</p></div><button class="icon-btn" data-action="close-fonte-record">'+ic('x',16)+'</button></div>'+
+    '<div class="modal-body">'+fieldsHTML+'</div>'+
+    '<div class="modal-foot"><button class="btn btn-ghost" data-action="close-fonte-record">Cancelar</button><button class="btn btn-primary" data-action="confirm-fonte-record" data-fonteid="'+fonte.id+'">'+ic('check',14)+'Adicionar</button></div>'+
+  '</div></div>';
+}
+function inlineFonteRecordFieldHTML(f, draft){
+  var val = draft.valores[f.id];
+  var label = esc(f.label)+(f.required?' <span style="color:var(--error)">*</span>':'');
+  if (f.type==='long_text'){
+    return '<div class="field-row"><label class="field-label">'+label+'</label><textarea class="textarea" data-bind="fonterecord.campo" data-fieldid="'+f.id+'">'+esc(val||'')+'</textarea></div>';
+  }
+  if (f.type==='single_select' && f.options){
+    var opts = f.options.map(function(o){return '<option value="'+esc(o)+'"'+(o===val?' selected':'')+'>'+esc(o)+'</option>';}).join('');
+    return '<div class="field-row"><label class="field-label">'+label+'</label><select class="select" data-bind="fonterecord.campo" data-fieldid="'+f.id+'"><option value="">Escolher…</option>'+opts+'</select></div>';
+  }
+  var placeholder = f.type==='attachment' ? ' placeholder="Anexar arquivo…"' : (f.type==='date' ? ' placeholder="dd/mm/aaaa"' : '');
+  return '<div class="field-row"><label class="field-label">'+label+'</label><input class="input" data-bind="fonterecord.campo" data-fieldid="'+f.id+'" value="'+esc(val||'')+'"'+placeholder+'/></div>';
+}
+
+/* ---- Automações de fontes de dados ---- */
+var DS_EVENTO_TYPES = [
+  {tipo:'item_criado', label:'Item criado', icon:'plus', desc:'Quando um novo registro é criado nesta fonte de dados.'},
+  {tipo:'campo_alterado', label:'Campo Alterado', icon:'edit', desc:'Quando um campo do registro é alterado.'},
+  {tipo:'item_excluido', label:'Item Excluído', icon:'trash', desc:'Quando um registro desta fonte é excluído.'},
+  {tipo:'usuario_atribuido', label:'Usuário Atribuído', icon:'users', desc:'Quando alguém é definido como responsável pelo registro.'},
+  {tipo:'data_alcancada', label:'Data Alcançada', icon:'calendar', desc:'Quando uma data definida no registro é alcançada.'},
+];
+function dsEventoMeta(tipo){ return DS_EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) || DS_EVENTO_TYPES[0]; }
+var DS_ACOES = [
+  {tipo:'notificacao', label:'Enviar notificação', icon:'bell'},
+  {tipo:'atualizar_campo', label:'Atualizar campo', icon:'edit'},
+  {tipo:'webhook', label:'Webhook', icon:'webhook'},
+  {tipo:'api', label:'Chamar API', icon:'api'},
+  {tipo:'ia_agente', label:'Executar agente de IA', icon:'ai'},
+];
+function dsAcaoMeta(tipo){ return DS_ACOES.find(function(a){return a.tipo===tipo;}) || DS_ACOES[0]; }
+function makeDsAutomacao(o){ return Object.assign({id:uid(), nome:'Nova automação', ativo:true, evento:{tipo:'item_criado'}, blocos:[]}, o); }
+function makeDsBloco(kind){
+  if (kind==='condicao') return {id:uid(), kind:'condicao', grupos:[{id:uid(), condicoes:[{campo:'', operador:'igual a', valor:''}]}]};
+  return {id:uid(), kind:'acao', tipo:'notificacao', alvo:'', extra:''};
+}
+function findDsAuto(id){ return state.dsAutomacoes.find(function(a){return a.id===id;}); }
+function currentDsAuto(){ return findDsAuto(state.dsAutomacaoEditorId); }
+function findDsBlocoIn(auto, blockId){ return auto && auto.blocos.find(function(b){return b.id===blockId;}); }
+function automacoesForFonte(fonteId){ return state.dsAutomacoes.filter(function(a){return a.fonteId===fonteId;}); }
+function dsAutomacaoEventoText(a){
+  var meta = dsEventoMeta(a.evento.tipo);
+  var fonte = dataSourceById(a.fonteId);
+  if (a.evento.tipo==='campo_alterado' && a.evento.campoId && fonte){
+    var f = fonte.fields.find(function(x){return x.id===a.evento.campoId;});
+    if (f) return meta.label+': '+f.label;
+  }
+  return meta.label;
+}
+function dsAutomacaoSummary(a){
+  var meta = dsEventoMeta(a.evento.tipo);
+  var acoes = a.blocos.filter(function(b){return b.kind==='acao';});
+  if (!acoes.length) return 'Quando '+meta.label.toLowerCase()+'.';
+  return 'Quando '+meta.label.toLowerCase()+', '+acoes.map(function(b){return dsAcaoMeta(b.tipo).label.toLowerCase();}).join(' e ')+'.';
+}
+function dsAutomacaoCardHTML(a){
+  var fonte = dataSourceById(a.fonteId);
+  return '<div class="automacao-card" data-action="open-ds-automacao-editor" data-id="'+a.id+'">'+
+    '<div class="ac-top2"><div class="ac-name2">'+ic('bolt',15)+esc(a.nome)+'</div>'+
+      '<label class="switch" data-action="toggle-ds-automacao-ativo" data-id="'+a.id+'"><input type="checkbox" '+(a.ativo?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>'+
+    '</div>'+
+    '<div class="ac-summary2">'+(fonte?'<b>'+esc(fonte.name)+'</b> · ':'')+esc(dsAutomacaoSummary(a))+'</div>'+
+    '<button class="icon-btn ac-delete2" data-action="delete-ds-automacao" data-id="'+a.id+'" title="Excluir">'+ic('trash',13)+'</button>'+
+  '</div>';
+}
+function fonteAutomacaoSectionHTML(fonte){
+  var autos = automacoesForFonte(fonte.id);
+  if (!autos.length){
+    return '<div class="ds-automate-banner">'+
+      '<div class="ds-automate-illustration">'+ic('bolt',26)+'</div>'+
+      '<div class="ds-automate-text"><h3>Automatize sua fonte de dados</h3><p>Crie sistemas inteligentes com notificações em tempo real e ganhe agilidade na gestão de tarefas, projetos e muito mais.</p></div>'+
+      '<button class="btn btn-dark" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Criar nova automação</button>'+
+    '</div>';
+  }
+  return '<div class="section-divider"></div>'+
+    '<div class="section-head"><h3>Automações desta fonte</h3><button class="btn btn-outline btn-sm" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Nova Automação</button></div>'+
+    '<div class="automacao-list">'+autos.map(dsAutomacaoCardHTML).join('')+'</div>';
+}
+function automacoesAdminHTML(){
+  if (state.dsAutomacaoEditorId){
+    var editingAuto = findDsAuto(state.dsAutomacaoEditorId);
+    if (editingAuto) return dsAutomacaoEditorHTML(editingAuto);
+    state.dsAutomacaoEditorId = null;
+  }
+  var autos = state.dsAutomacoes;
+  return '<div class="screen-inner">'+
+    '<div class="page-head"><div><h1>Automações</h1><p class="page-sub">Regras do tipo evento → condição → ação para as fontes de dados da intranet.</p></div>'+
+      '<button class="btn btn-dark" data-action="new-ds-automacao">'+ic('plus',14)+'Nova Automação</button></div>'+
+    (autos.length ? '<div class="automacao-list">'+autos.map(dsAutomacaoCardHTML).join('')+'</div>' :
+      '<div class="empty-state"><div class="es-ic">'+ic('bolt',22)+'</div><div class="es-title">Nenhuma automação criada ainda</div><div class="es-sub">Crie regras como "quando um item for criado, envie uma notificação" para qualquer fonte de dados.</div><button class="btn btn-primary" style="margin-top:6px" data-action="new-ds-automacao">'+ic('plus',14)+'Nova Automação</button></div>')+
+  '</div>';
+}
+function dsAutomacaoEditorHTML(auto){
+  var selected = state.dsAutomacaoSelectedBlockId;
+  var triggerNode = '<div class="auto-node kind-trigger'+(selected==='trigger'?' selected':'')+'" data-action="select-ds-automacao-block" data-blockid="trigger">'+
+    '<div class="auto-node-top"><div class="an-ic">'+ic(dsEventoMeta(auto.evento.tipo).icon,16)+'</div>'+
+    '<div><div class="an-eyebrow">Quando</div><div class="an-title">'+esc(dsAutomacaoEventoText(auto))+'</div></div></div>'+
+  '</div>';
+  var blocosHTML = auto.blocos.map(function(b){
+    var isCondicao = b.kind==='condicao';
+    var eyebrow = isCondicao ? 'Se' : 'Então';
+    var title = isCondicao ? dsCondicaoSummaryText(b) : dsAcaoSummaryText(b);
+    var icon = isCondicao ? 'fork' : dsAcaoMeta(b.tipo).icon;
+    return '<div class="wf-connector"></div>'+
+      '<div class="auto-node kind-'+b.kind+(selected===b.id?' selected':'')+'" data-action="select-ds-automacao-block" data-blockid="'+b.id+'">'+
+      '<button class="icon-btn an-delete" data-action="delete-ds-automacao-bloco" data-blockid="'+b.id+'" title="Excluir">'+ic('x',13)+'</button>'+
+      '<div class="auto-node-top"><div class="an-ic">'+ic(icon,16)+'</div>'+
+      '<div><div class="an-eyebrow">'+eyebrow+'</div><div class="an-title">'+esc(title)+'</div></div></div>'+
+    '</div>';
+  }).join('');
+  var addBlock = state.dsAutomacaoAddChoiceOpen ?
+    '<div class="auto-add-choices">'+
+      '<button class="auto-add-choice" data-action="add-ds-automacao-bloco" data-kind="condicao">'+ic('fork',15)+'Condição</button>'+
+      '<button class="auto-add-choice" data-action="add-ds-automacao-bloco" data-kind="acao">'+ic('bolt',15)+'Ação</button>'+
+    '</div>' :
+    '<button class="auto-add-circle" data-action="toggle-ds-automacao-addchoice" title="Adicionar condição ou ação">'+ic('plus',16)+'</button>';
+  return '<div style="padding:16px 28px 0;display:flex;align-items:center;justify-content:space-between;gap:12px">'+
+      '<a href="#" class="back-link" data-action="close-ds-automacao-editor">'+ic('arrowLeft',14)+'Voltar para Automações</a>'+
+      '<button class="btn btn-primary btn-sm" data-action="save-ds-automacao">'+ic('check',14)+'Salvar automação</button>'+
+    '</div>'+
+    '<div class="wf-layout" style="height:calc(100vh - 170px)">'+
+      '<div class="wf-canvas-wrap"><div class="wf-flow">'+
+        triggerNode+'<div class="wf-connector"></div>'+blocosHTML+
+        '<div class="wf-gap"></div>'+addBlock+
+      '</div></div>'+
+      '<div class="wf-panel">'+dsAutomacaoPanelHTML(auto)+'</div>'+
+    '</div>';
+}
+function dsAutomacaoPanelHTML(auto){
+  var sel = state.dsAutomacaoSelectedBlockId;
+  if (!sel || sel==='trigger') return dsAutomacaoTriggerPanelHTML(auto);
+  var bloco = findDsBlocoIn(auto, sel);
+  if (!bloco) return dsAutomacaoTriggerPanelHTML(auto);
+  if (bloco.kind==='condicao') return dsAutomacaoCondicaoPanelHTML(auto, bloco);
+  return dsAutomacaoAcaoPanelHTML(auto, bloco);
+}
+function dsAutomacaoTriggerPanelHTML(auto){
+  var fonte = dataSourceById(auto.fonteId);
+  var ev = auto.evento;
+  var meta = dsEventoMeta(ev.tipo);
+  var fonteSelect = '<select class="select" data-bind="dsautomacao.fonte">'+state.dataSources.map(function(f){return '<option value="'+f.id+'"'+(f.id===auto.fonteId?' selected':'')+'>'+esc(f.name)+'</option>';}).join('')+'</select>';
+  var eventSelect = '<select class="select" data-bind="dsautomacao.evento_tipo">'+
+    DS_EVENTO_TYPES.map(function(e){return '<option value="'+e.tipo+'"'+(ev.tipo===e.tipo?' selected':'')+'>'+esc(e.label)+'</option>';}).join('')+
+  '</select><div class="field-hint" style="margin-top:6px">'+esc(meta.desc)+'</div>';
+
+  var extra = '';
+  if (ev.tipo==='campo_alterado' && fonte){
+    var camposSelect = '<option value="">Escolher campo…</option>'+fonte.fields.map(function(f){return '<option value="'+f.id+'"'+(f.id===ev.campoId?' selected':'')+'>'+esc(f.label)+'</option>';}).join('');
+    var campoAtual = fonte.fields.find(function(f){return f.id===ev.campoId;});
+    var valoresChips = '';
+    if (campoAtual && campoAtual.options){
+      var vals = ev.valores || [];
+      valoresChips = '<div class="wf-panel-section-label" style="margin-top:12px">Quando o valor mudar para:</div><div class="chip-row">'+
+        campoAtual.options.map(function(o){
+          var active = vals.indexOf(o)!==-1;
+          return '<button class="chip'+(active?' active':'')+'" data-action="toggle-ds-evento-valor" data-valor="'+esc(o)+'">'+esc(o)+'</button>';
+        }).join('')+'</div>';
+    }
+    extra = '<div class="wf-panel-section"><div class="wf-panel-section-label">Escolha o campo</div><select class="select" data-bind="dsautomacao.evento_campo">'+camposSelect+'</select>'+valoresChips+'</div>';
+  } else if (ev.tipo==='usuario_atribuido'){
+    extra = '<div class="wf-panel-section"><div class="field-hint">Dispara quando um usuário é definido como responsável por um registro desta fonte.</div></div>';
+  } else if (ev.tipo==='data_alcancada' && fonte){
+    var camposData = fonte.fields.filter(function(f){return f.type==='date';});
+    extra = '<div class="wf-panel-section"><div class="wf-panel-section-label">Campo de data</div>'+
+      (camposData.length ? '<select class="select" data-bind="dsautomacao.evento_campo">'+camposData.map(function(f){return '<option value="'+f.id+'"'+(f.id===ev.campoId?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Esta fonte não tem nenhum campo de data.</div>')+'</div>';
+  }
+
+  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Nome da automação</div>'+
+    '<input class="input" style="margin-top:8px" data-bind="dsautomacao.nome" value="'+esc(auto.nome)+'"/></div>'+
+    '<div class="wf-panel-body">'+
+      '<div class="wf-panel-section"><div class="wf-panel-section-label">Fonte de Dados</div>'+fonteSelect+'</div>'+
+      '<div class="wf-panel-section"><div class="wf-panel-section-label">Evento — quando dispara</div>'+eventSelect+'</div>'+
+      extra+
+    '</div>';
+}
+function dsAutomacaoCondicaoPanelHTML(auto, bloco){
+  var fonte = dataSourceById(auto.fonteId);
+  var campos = fonte ? fonte.fields : [];
+  var grupos = bloco.grupos;
+  var gruposHTML = grupos.map(function(g, gi){
+    var connectorHTML = gi>0 ? '<div class="cond-connector">'+
+      '<button class="conn-opt'+(g.conector!=='OU'?' active':'')+'" data-action="set-ds-grupo-conector" data-blockid="'+bloco.id+'" data-groupid="'+g.id+'" data-conector="E">E</button>'+
+      '<button class="conn-opt'+(g.conector==='OU'?' active':'')+'" data-action="set-ds-grupo-conector" data-blockid="'+bloco.id+'" data-groupid="'+g.id+'" data-conector="OU">OU</button>'+
+    '</div>' : '';
+    var rows = g.condicoes.map(function(c,i){
+      return '<div class="cond-row"><select class="select" data-bind="dsautomacao.condCampo" data-blockid="'+bloco.id+'" data-groupid="'+g.id+'" data-idx="'+i+'"><option value="">Campo…</option>'+
+        campos.map(function(f){return '<option'+(f.label===c.campo?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+
+        '</select><select class="select" data-bind="dsautomacao.condOp" data-blockid="'+bloco.id+'" data-groupid="'+g.id+'" data-idx="'+i+'">'+
+        CONDITION_OPERATORS.map(function(o){return '<option'+(o===c.operador?' selected':'')+'>'+o+'</option>';}).join('')+
+        '</select><input class="input" placeholder="valor" data-bind="dsautomacao.condVal" data-blockid="'+bloco.id+'" data-groupid="'+g.id+'" data-idx="'+i+'" value="'+esc(c.valor||'')+'"/>'+
+        (g.condicoes.length>1 ? '<button class="icon-btn" data-action="remove-ds-cond" data-blockid="'+bloco.id+'" data-groupid="'+g.id+'" data-idx="'+i+'">'+ic('x',13)+'</button>' : '')+
+      '</div>';
+    }).join('');
+    return connectorHTML+'<div class="cond-group">'+
+      (g.condicoes.length>1 ? '<div class="rule-mini-label" style="margin-top:0">Todas as condições abaixo (E)</div>' : '')+
+      rows+
+      '<div class="cond-group-foot">'+
+        '<button class="link-btn" data-action="add-ds-cond" data-blockid="'+bloco.id+'" data-groupid="'+g.id+'">'+ic('plus',12)+'Adicionar condição</button>'+
+        (grupos.length>1 ? '<button class="link-btn" style="color:var(--error)" data-action="remove-ds-grupo" data-blockid="'+bloco.id+'" data-groupid="'+g.id+'">'+ic('trash',12)+'Remover grupo</button>' : '')+
+      '</div>'+
+    '</div>';
+  }).join('');
+  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Se...</div><div class="wf-panel-sub">A automação só segue se isso for verdade.</div></div>'+
+    '<div class="wf-panel-body"><div class="wf-panel-section">'+gruposHTML+
+    '<button class="link-btn" style="margin-top:10px" data-action="add-ds-grupo" data-blockid="'+bloco.id+'">'+ic('plus',12)+'Adicionar grupo de condições</button>'+
+    '</div></div>';
+}
+function dsAutomacaoAcaoPanelHTML(auto, bloco){
+  var body = '<div class="wf-panel-section"><div class="wf-panel-section-label">Tipo de ação</div>'+
+    DS_ACOES.map(function(a){
+      return '<button class="action-tpl'+(bloco.tipo===a.tipo?' selected':'')+'" data-action="set-ds-acao-tipo" data-blockid="'+bloco.id+'" data-tipo="'+a.tipo+'"><div class="at-ic">'+ic(a.icon,14)+'</div><div class="at-title">'+a.label+'</div></button>';
+    }).join('')+
+  '</div>';
+  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Então...</div><div class="wf-panel-sub">O que a automação faz quando dispara</div></div>'+
+    '<div class="wf-panel-body">'+body+dsAcaoExtraFieldsHTML(auto, bloco)+'</div>';
+}
+function dsAcaoExtraFieldsHTML(auto, bloco){
+  var fonte = dataSourceById(auto.fonteId);
+  var campos = fonte ? fonte.fields : [];
+  if (bloco.tipo==='notificacao'){
+    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Destinatário</div>'+
+      '<select class="select" data-bind="dsautomacao.acaoAlvo" data-blockid="'+bloco.id+'">'+
+        ['Responsável do registro','Gestor da área','Equipe de Service Desk','Todos os usuários','Financeiro','Recursos Humanos'].map(function(o){return '<option'+(o===bloco.alvo?' selected':'')+'>'+o+'</option>';}).join('')+
+      '</select><div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acaoExtra" data-blockid="'+bloco.id+'">'+esc(bloco.extra||'')+'</textarea></div></div>';
+  }
+  if (bloco.tipo==='atualizar_campo'){
+    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Campo</div>'+
+      (campos.length ? '<select class="select" data-bind="dsautomacao.acaoAlvo" data-blockid="'+bloco.id+'"><option value="">Escolher…</option>'+campos.map(function(f){return '<option'+(f.label===bloco.alvo?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Nenhum campo nesta fonte ainda.</div>')+
+      '<div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Novo valor</label><input class="input" data-bind="dsautomacao.acaoExtra" data-blockid="'+bloco.id+'" value="'+esc(bloco.extra||'')+'"/></div></div>';
+  }
+  if (bloco.tipo==='ia_agente'){
+    return '<div class="wf-panel-section"><div class="field-row"><label class="field-label">Agente de IA</label><input class="input" placeholder="Ex: Agente de Triagem" data-bind="dsautomacao.acaoAlvo" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div>'+
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Instrução para o agente</label><textarea class="textarea" data-bind="dsautomacao.acaoExtra" data-blockid="'+bloco.id+'">'+esc(bloco.extra||'')+'</textarea></div></div>';
+  }
+  return '<div class="wf-panel-section"><div class="field-row" style="margin-bottom:0"><label class="field-label">URL</label><input class="input" placeholder="https://" data-bind="dsautomacao.acaoAlvo" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div></div>';
+}
+function dsCondicaoSummaryText(bloco){
+  var g = bloco.grupos[0];
+  if (!g || !g.condicoes.length || !g.condicoes[0].campo) return 'Condição';
+  var c = g.condicoes[0];
+  var more = (bloco.grupos.length>1 || g.condicoes.length>1);
+  return c.campo+' '+c.operador+' '+(c.valor||'…')+(more ? ' (+)' : '');
+}
+function dsAcaoSummaryText(bloco){
+  var meta = dsAcaoMeta(bloco.tipo);
+  return meta.label+(bloco.alvo?': '+bloco.alvo:'');
 }
 
 var PROCESS_TEMPLATES = [
@@ -3954,6 +4460,9 @@ function renderModal(){
   if (state.trackerModalOpen){ root.innerHTML = trackerModalHTML(); return; }
   if (state.pvCustomizeOpen){ root.innerHTML = pvCustomizeModalHTML(); return; }
   if (state.hystoreTemplateOpen!=null){ root.innerHTML = hystorePreviewModalHTML(); return; }
+  if (state.novaFonteOpen){ root.innerHTML = novaFonteModalHTML(); return; }
+  if (state.fonteFieldsOpen){ root.innerHTML = fonteFieldsModalHTML(); return; }
+  if (state.fonteRecordOpen){ root.innerHTML = fonteRecordModalHTML(); return; }
   root.innerHTML='';
 }
 function wizardModalHTML(){
@@ -4202,6 +4711,112 @@ document.addEventListener('click', function(e){
     case 'nav-intranet-landing': state.screen = 'intranet-landing'; break;
     case 'open-apps-admin': state.screen = 'apps-admin'; break;
     case 'apps-set-category': state.appsCategory = t.dataset.cat; break;
+    case 'open-dados': state.screen = 'dados'; state.dadosOpenFonteId = null; state.dsAutomacaoEditorId = null; break;
+    case 'open-automacoes-admin': state.screen = 'automacoes-admin'; state.dsAutomacaoEditorId = null; break;
+    case 'open-fonte-detail': state.dadosOpenFonteId = t.dataset.id; state.dadosRecordSearch = ''; break;
+    case 'close-fonte-detail': state.dadosOpenFonteId = null; break;
+    case 'open-nova-fonte': state.novaFonteOpen = true; state.novaFonteDraft = {nome:'', campos:[]}; break;
+    case 'close-nova-fonte': case 'close-nova-fonte-overlay': state.novaFonteOpen = false; break;
+    case 'add-novafonte-campo': {
+      var nfNameEl = qs('#novafonte-field-name-input'); var nfTypeEl = qs('#novafonte-field-type-select');
+      var nfLabel = nfNameEl ? nfNameEl.value.trim() : '';
+      if (!nfLabel) break;
+      state.novaFonteDraft.campos.push({id:uid(), label:nfLabel, type:nfTypeEl?nfTypeEl.value:'short_text', required:false});
+      break;
+    }
+    case 'remove-novafonte-campo': state.novaFonteDraft.campos.splice(+t.dataset.idx, 1); break;
+    case 'confirm-nova-fonte': {
+      var nfd = state.novaFonteDraft;
+      if (!nfd.nome.trim() || !nfd.campos.length) break;
+      var nfId = uid();
+      state.dataSources.unshift({id:nfId, name:nfd.nome.trim(), icon:'db', createdAt:'agora', fields:nfd.campos, records:[]});
+      state.novaFonteOpen = false;
+      state.dadosOpenFonteId = nfId;
+      showToast('Fonte de dados criada.');
+      break;
+    }
+    case 'open-fonte-fields': state.fonteFieldsOpen = t.dataset.id; state.fonteFieldAdderOpen = false; break;
+    case 'close-fonte-fields': case 'close-fonte-fields-overlay': state.fonteFieldsOpen = null; break;
+    case 'toggle-fontefield-adder': state.fonteFieldAdderOpen = !state.fonteFieldAdderOpen; break;
+    case 'confirm-add-fontefield': {
+      var ffNameEl = qs('#fontefield-name-input'); var ffTypeEl = qs('#fontefield-type-select');
+      var ffLabel = ffNameEl ? ffNameEl.value.trim() : '';
+      if (!ffLabel) break;
+      var ffFonte = dataSourceById(t.dataset.fonteid);
+      ffFonte.fields.push({id:uid(), label:ffLabel, type:ffTypeEl?ffTypeEl.value:'short_text', required:false});
+      state.fonteFieldAdderOpen = false;
+      break;
+    }
+    case 'remove-fonte-field': {
+      var rfFonte = dataSourceById(t.dataset.fonteid);
+      rfFonte.fields = rfFonte.fields.filter(function(f){return f.id!==t.dataset.fieldid;});
+      break;
+    }
+    case 'open-fonte-record': state.fonteRecordOpen = t.dataset.fonteid; state.fonteRecordDraft = {valores:{}}; break;
+    case 'close-fonte-record': case 'close-fonte-record-overlay': state.fonteRecordOpen = null; break;
+    case 'confirm-fonte-record': {
+      var frFonte = dataSourceById(t.dataset.fonteid);
+      var frDraft = state.fonteRecordDraft;
+      var frMissing = frFonte.fields.find(function(f){return f.required && !String(frDraft.valores[f.id]||'').trim();});
+      if (frMissing){ showToast('Preencha o campo obrigatório "'+frMissing.label+'".'); break; }
+      frFonte.records.unshift(mkRecord(Object.assign({}, frDraft.valores), 'agora'));
+      state.fonteRecordOpen = null;
+      showToast('Registro adicionado.');
+      break;
+    }
+    case 'delete-fonte-record': {
+      var drFonte = dataSourceById(t.dataset.fonteid);
+      drFonte.records = drFonte.records.filter(function(r){return r.id!==t.dataset.recid;});
+      break;
+    }
+    case 'new-ds-automacao': {
+      var naFonteId = t.dataset.fonteid || (state.dataSources[0] && state.dataSources[0].id);
+      var naAuto = makeDsAutomacao({fonteId:naFonteId});
+      state.dsAutomacoes.push(naAuto);
+      state.dsAutomacaoEditorId = naAuto.id;
+      state.dsAutomacaoSelectedBlockId = 'trigger';
+      state.dsAutomacaoAddChoiceOpen = false;
+      break;
+    }
+    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSelectedBlockId = 'trigger'; state.dsAutomacaoAddChoiceOpen = false; break;
+    case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; state.dsAutomacaoSelectedBlockId = null; state.dsAutomacaoAddChoiceOpen = false; break;
+    case 'save-ds-automacao': state.dsAutomacaoEditorId = null; state.dsAutomacaoSelectedBlockId = null; showToast('Automação salva.'); break;
+    case 'toggle-ds-automacao-ativo': { var taAuto = findDsAuto(t.dataset.id); taAuto.ativo = !taAuto.ativo; break; }
+    case 'delete-ds-automacao': {
+      state.dsAutomacoes = state.dsAutomacoes.filter(function(a){return a.id!==t.dataset.id;});
+      if (state.dsAutomacaoEditorId===t.dataset.id){ state.dsAutomacaoEditorId=null; state.dsAutomacaoSelectedBlockId=null; }
+      break;
+    }
+    case 'select-ds-automacao-block': state.dsAutomacaoSelectedBlockId = t.dataset.blockid; state.dsAutomacaoAddChoiceOpen = false; break;
+    case 'toggle-ds-automacao-addchoice': state.dsAutomacaoAddChoiceOpen = !state.dsAutomacaoAddChoiceOpen; break;
+    case 'add-ds-automacao-bloco': {
+      var abAuto = currentDsAuto(); var abBloco = makeDsBloco(t.dataset.kind);
+      abAuto.blocos.push(abBloco); state.dsAutomacaoSelectedBlockId = abBloco.id; state.dsAutomacaoAddChoiceOpen = false;
+      break;
+    }
+    case 'delete-ds-automacao-bloco': {
+      var dbAuto = currentDsAuto();
+      dbAuto.blocos = dbAuto.blocos.filter(function(b){return b.id!==t.dataset.blockid;});
+      if (state.dsAutomacaoSelectedBlockId===t.dataset.blockid) state.dsAutomacaoSelectedBlockId = 'trigger';
+      break;
+    }
+    case 'toggle-ds-evento-valor': {
+      var tvAuto = currentDsAuto();
+      tvAuto.evento.valores = tvAuto.evento.valores || [];
+      var tvIdx = tvAuto.evento.valores.indexOf(t.dataset.valor);
+      if (tvIdx===-1) tvAuto.evento.valores.push(t.dataset.valor); else tvAuto.evento.valores.splice(tvIdx,1);
+      break;
+    }
+    case 'set-ds-acao-tipo': {
+      var saBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid);
+      saBloco.tipo = t.dataset.tipo; saBloco.alvo=''; saBloco.extra='';
+      break;
+    }
+    case 'add-ds-grupo': { var agBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); agBloco.grupos.push({id:uid(), conector:'E', condicoes:[{campo:'', operador:'igual a', valor:''}]}); break; }
+    case 'remove-ds-grupo': { var rgBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); rgBloco.grupos = rgBloco.grupos.filter(function(g){return g.id!==t.dataset.groupid;}); break; }
+    case 'set-ds-grupo-conector': { var scBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); var scGrupo = scBloco.grupos.find(function(g){return g.id===t.dataset.groupid;}); scGrupo.conector = t.dataset.conector; break; }
+    case 'add-ds-cond': { var acBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); var acGrupo = acBloco.grupos.find(function(g){return g.id===t.dataset.groupid;}); acGrupo.condicoes.push({campo:'', operador:'igual a', valor:''}); break; }
+    case 'remove-ds-cond': { var rcBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); var rcGrupo = rcBloco.grupos.find(function(g){return g.id===t.dataset.groupid;}); rcGrupo.condicoes.splice(+t.dataset.idx,1); break; }
     case 'open-wizard':
       state.wizardOpen = true;
       state.wizardDraft = {name:'',description:'',category:CATEGORIES[0],icon:ICON_OPTIONS[0],color:COLOR_OPTIONS[0].v};
@@ -4797,6 +5412,13 @@ document.addEventListener('change', function(e){
     var dsFonteSel = val ? dataSourceById(val) : null;
     state.dsLinkDraft.camposIds = dsFonteSel ? dsFonteSel.fields.map(function(f){return f.id;}) : [];
   }
+  else if (bind==='fonterecord.campo') { state.fonteRecordDraft.valores[el.dataset.fieldid]=val; }
+  else if (bind==='dsautomacao.fonte') { var dsaF=currentDsAuto(); dsaF.fonteId=val; dsaF.evento={tipo:'item_criado'}; }
+  else if (bind==='dsautomacao.evento_tipo') { var dsaE=currentDsAuto(); dsaE.evento={tipo:val}; }
+  else if (bind==='dsautomacao.evento_campo') { var dsaC=currentDsAuto(); dsaC.evento.campoId=val||null; dsaC.evento.valores=[]; }
+  else if (bind==='dsautomacao.condCampo') { var dsaCB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); var dsaCG=dsaCB.grupos.find(function(g){return g.id===el.dataset.groupid;}); dsaCG.condicoes[+el.dataset.idx].campo=val; }
+  else if (bind==='dsautomacao.condOp') { var dsaOB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); var dsaOG=dsaOB.grupos.find(function(g){return g.id===el.dataset.groupid;}); dsaOG.condicoes[+el.dataset.idx].operador=val; }
+  else if (bind==='dsautomacao.acaoAlvo') { var dsaAB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsaAB.alvo=val; }
   else matched = false;
   if (matched) render();
 });
@@ -4837,12 +5459,19 @@ document.addEventListener('input', function(e){
     else if (bind==='sol.dscampo'){ var sol7b=findSolicitacao(el.dataset.solid); sol7b.dsValores = sol7b.dsValores||{}; sol7b.dsValores[el.dataset.fieldid]=val; }
     else if (bind==='reqdraft.justificativa'){ state.reqActionDrafts[el.dataset.tipo] = state.reqActionDrafts[el.dataset.tipo]||{}; state.reqActionDrafts[el.dataset.tipo].justificativa=val; }
     else if (bind==='novasol.campo'){ state.novaSolicitacaoDraft.valores[el.dataset.fieldid]=val; }
+    else if (bind==='novafonte.nome'){ state.novaFonteDraft.nome=val; }
+    else if (bind==='fonterecord.campo'){ state.fonteRecordDraft.valores[el.dataset.fieldid]=val; }
+    else if (bind==='dsautomacao.nome'){ currentDsAuto().nome=val; }
+    else if (bind==='dsautomacao.condVal'){ var dsaVB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); var dsaVG=dsaVB.grupos.find(function(g){return g.id===el.dataset.groupid;}); dsaVG.condicoes[+el.dataset.idx].valor=val; }
+    else if (bind==='dsautomacao.acaoExtra'){ var dsaXB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsaXB.extra=val; }
     return;
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }
   if (e.target.id==='apps-search'){ state.appsSearch = e.target.value; refreshAppsGridArea(); }
   if (e.target.id==='pv-search-input'){ state.pvSearch = e.target.value; refreshProcessViewBodyArea(); }
   if (e.target.id==='req-comment-input'){ state.reqCommentDraft = e.target.value; }
+  if (e.target.id==='dados-search'){ state.dadosSearch = e.target.value; refreshDadosArea(); }
+  if (e.target.id==='dados-record-search'){ state.dadosRecordSearch = e.target.value; refreshFonteRecordsArea(); }
 });
 function setText(sel, val){ var n = document.querySelector(sel); if (n) n.textContent = val; }
 

@@ -792,6 +792,45 @@ que esteja nessa etapa (ex: "Instalação do pacote Office", #SPT-008), o
 técnico vê o formulário complementar pedindo para cadastrar o equipamento
 envolvido no atendimento.
 
+**v56** — duas páginas novas na Administração, inspiradas em prints da
+plataforma real: **Dados** e **Automações**.
+
+`DATA_SOURCES` deixou de ser um catálogo estático (só usado para o vínculo
+de etapa da v55) e virou `state.dataSources`, uma coleção de verdade
+(`seedDataSources()`), com `records:[]` e `createdAt` em cada fonte —
+Cadastro de Equipamento e Cadastro de Fornecedor continuam lá, e entraram
+Sugestões de Ideias (6 campos, 5 registros — a mesma vista no print),
+Abertura de Chamado, Eventos e FAQ.
+
+A página **Dados** (`dadosHTML`) lista todas as fontes (Nome/Registros/
+Campos/Criado em, busca, "+ Nova Fonte de Dados"); clicar numa fonte abre
+o detalhe (`fonteDetailHTML`) — tabela de registros com colunas dinâmicas
+vindas de `fonte.fields`, busca, botão **Campos** (abre/fecha campos da
+fonte, com o mesmo padrão de "adicionar campo" já usado em Formulário/
+Etapas) e **+ Adicionar** (novo registro, formulário gerado a partir dos
+campos da fonte, validando obrigatórios). Sem nenhuma automação, a fonte
+mostra o banner **"Automatize sua fonte de dados"** (`.ds-automate-banner`)
+com CTA "Criar nova automação"; com automações, vira uma lista com
+"+ Nova Automação".
+
+O construtor de automação é nova (`ds*`), inspirada no
+evento→condição→ação que o processo já tinha, mas dessacoplada de um
+processo específico — vive em `state.dsAutomacoes` (lista global, cada
+automação com `fonteId`), reaproveitando 100% do CSS do canvas de
+automação existente (`.auto-node`, `.wf-panel`, `.cond-*`, `.action-tpl`).
+Eventos: `DS_EVENTO_TYPES` (Item criado / Campo Alterado / Item Excluído /
+Usuário Atribuído / Data Alcançada, os 5 do print); "Campo Alterado" mostra
+um seletor do campo da fonte e, se for de seleção única, chips com as
+opções ("Quando o valor mudar para:", igual ao print). Ações:
+`DS_ACOES` (Enviar notificação / Atualizar campo / Webhook / Chamar API /
+Executar agente de IA). O painel sempre mostra "Fonte de Dados" no topo —
+pode ser trocada a qualquer momento, o que reinicia o evento configurado.
+
+A nova página **Automações** (`automacoesAdminHTML`, nav item logo abaixo
+de Dados) lista todas as automações de todas as fontes, cada uma com o
+nome da fonte + resumo, toggle ativo/inativo e exclusão; "+ Nova
+Automação" abre o mesmo construtor, começando na primeira fonte da lista.
+
 ## Como abrir
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat

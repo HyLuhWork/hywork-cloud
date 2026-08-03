@@ -809,9 +809,10 @@ vindas de `fonte.fields`, busca, botão **Campos** (abre/fecha campos da
 fonte, com o mesmo padrão de "adicionar campo" já usado em Formulário/
 Etapas) e **+ Adicionar** (novo registro, formulário gerado a partir dos
 campos da fonte, validando obrigatórios). Sem nenhuma automação, a fonte
-mostra o banner **"Automatize sua fonte de dados"** (`.ds-automate-banner`)
-com CTA "Criar nova automação"; com automações, vira uma lista com
-"+ Nova Automação".
+mostra um ícone de raio (`.ds-automate-trigger`) ao lado de **Campos**/
+**Adicionar**; clicando nele abre um popover **"Automatize sua fonte de
+dados"** (`dsAutomatePopoverHTML`) com ilustração e CTA "Criar nova
+automação" (v57); com automações, vira uma lista com "+ Nova Automação".
 
 O construtor de automação é nova (`ds*`), inspirada no
 evento→condição→ação que o processo já tinha, mas dessacoplada de um
@@ -831,7 +832,16 @@ de Dados) lista todas as automações de todas as fontes, cada uma com o
 nome da fonte + resumo, toggle ativo/inativo e exclusão; "+ Nova
 Automação" abre o mesmo construtor, começando na primeira fonte da lista.
 
-## Como abrir
+**v57** — o CTA "Automatize sua fonte de dados" saiu do rodapé da tela
+(banner fixo abaixo da tabela) e virou um ícone de raio no cabeçalho da
+fonte, ao lado de **Campos**/**Adicionar** — só aparece quando a fonte
+ainda não tem automação. Clicar nele abre um popover ancorado ao ícone
+(`.ds-automate-popover`), fiel ao print de referência: painel duotone,
+metade esquerda com gradiente pêssego e uma ilustração (linhas com
+"contas" coloridas conectando a um anel cônico multicolor), metade
+direita com título/texto/CTA "Criar nova automação". Fecha ao clicar no
+X, ao clicar fora (mesmo padrão dos outros menus de toolbar do
+protótipo, `pv-toolbar-menu-wrap`) ou ao criar a automação.
 
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para

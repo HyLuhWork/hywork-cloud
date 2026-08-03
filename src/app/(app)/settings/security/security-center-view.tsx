@@ -1,11 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { Section, Stack, Switch, Select, Input, Button, Alert } from "@/components/ui";
+import {
+  Section,
+  Stack,
+  Switch,
+  Select,
+  Input,
+  Button,
+  Alert,
+  RadioCard,
+  KeyIcon,
+  LockIcon,
+  LayersIcon,
+  SmartphoneIcon,
+  MailIcon,
+  ShieldIcon,
+} from "@/components/ui";
 
 type SessionTimeoutUnit = "MINUTES" | "HOURS";
 type DevicePolicy = "MULTIPLE" | "SINGLE";
-type MfaPolicy = "OPTIONAL" | "REQUIRED";
+type MfaPolicy = "OPTIONAL" | "REQUIRED_ALL" | "REQUIRED_BY_ROLE";
+type UserRoleValue = "ADMIN" | "MEMBER";
+
+const ROLE_LABELS: Record<UserRoleValue, string> = {
+  ADMIN: "Administrador",
+  MEMBER: "Membro",
+};
 
 export interface EditableSecuritySettings {
   sessionTimeoutEnabled: boolean;
@@ -22,7 +43,12 @@ export interface EditableSecuritySettings {
   passwordRequireSpecialChar: boolean;
   passwordHistoryEnabled: boolean;
   passwordHistoryCount: number;
+  mfaEnabled: boolean;
   mfaPolicy: MfaPolicy;
+  mfaRequiredRoles: UserRoleValue[];
+  mfaMethodAuthenticatorApp: boolean;
+  mfaMethodSms: boolean;
+  mfaMethodEmail: boolean;
 }
 
 export function SecurityCenterView({ initialSettings }: { initialSettings: EditableSecuritySettings }) {
@@ -204,16 +230,110 @@ export function SecurityCenterView({ initialSettings }: { initialSettings: Edita
         </Stack>
       </Section>
 
-      <Section title="Autenticação" subtitle="Obrigatoriedade de MFA">
-        <div className="w-72">
-          <Select
-            value={settings.mfaPolicy}
-            onChange={(e) => update("mfaPolicy", e.target.value as MfaPolicy)}
-          >
-            <option value="OPTIONAL">MFA opcional</option>
-            <option value="REQUIRED">MFA obrigatório</option>
-          </Select>
-        </div>
+      <Section
+        title="Autenticação"
+        subtitle="Gerencie as políticas de Multi-Fator de Autenticação (MFA) para toda a organização."
+      >
+        <Stack direction="column" gap="6">
+          <Switch
+            id="mfaEnabled"
+            checked={settings.mfaEnabled}
+            onChange={(checked) => update("mfaEnabled", checked)}
+            label="Habilitar configurações de MFA"
+          />
+
+          {settings.mfaEnabled && (
+            <Stack direction="column" gap="6">
+              <div>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Política de obrigatoriedade
+                </div>
+                <Stack direction="column" gap="3">
+                  <RadioCard
+                    id="mfa-policy-optional"
+                    name="mfaPolicy"
+                    icon={<KeyIcon />}
+                    title="Opcional"
+                    description="O usuário decide individualmente se deseja ativar o MFA em seu perfil."
+                    checked={settings.mfaPolicy === "OPTIONAL"}
+                    onSelect={() => update("mfaPolicy", "OPTIONAL")}
+                  />
+                  <RadioCard
+                    id="mfa-policy-required-all"
+                    name="mfaPolicy"
+                    icon={<LockIcon />}
+                    title="Obrigatório para todos"
+                    description="Todos os colaboradores da organização serão obrigados a configurar o segundo fator."
+                    checked={settings.mfaPolicy === "REQUIRED_ALL"}
+                    onSelect={() => update("mfaPolicy", "REQUIRED_ALL")}
+                  />
+                  <RadioCard
+                    id="mfa-policy-required-role"
+                    name="mfaPolicy"
+                    icon={<LayersIcon />}
+                    title="Obrigatório por Grupo/Perfil"
+                    description="Exige o segundo fator apenas de perfis selecionados."
+                    checked={settings.mfaPolicy === "REQUIRED_BY_ROLE"}
+                    onSelect={() => update("mfaPolicy", "REQUIRED_BY_ROLE")}
+                  >
+                    <Stack direction="column" gap="2">
+                      {(Object.keys(ROLE_LABELS) as UserRoleValue[]).map((role) => (
+                        <label key={role} className="flex items-center gap-2 text-sm text-foreground">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 accent-primary"
+                            checked={settings.mfaRequiredRoles.includes(role)}
+                            onChange={(e) => {
+                              const next = e.target.checked
+                                ? [...settings.mfaRequiredRoles, role]
+                                : settings.mfaRequiredRoles.filter((r) => r !== role);
+                              update("mfaRequiredRoles", next);
+                            }}
+                          />
+                          {ROLE_LABELS[role]}
+                        </label>
+                      ))}
+                    </Stack>
+                  </RadioCard>
+                </Stack>
+              </div>
+
+              <div className="rounded-md border border-border bg-muted/30 p-4">
+                <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Métodos permitidos
+                </div>
+                <p className="mb-4 text-xs text-muted-foreground">Escolha as opções liberadas.</p>
+                <Stack direction="column" gap="3">
+                  <MethodRow
+                    icon={<SmartphoneIcon />}
+                    title="Código por SMS"
+                    description="Mensagem de texto"
+                    checked={settings.mfaMethodSms}
+                    onChange={(checked) => update("mfaMethodSms", checked)}
+                  />
+                  <MethodRow
+                    icon={<MailIcon />}
+                    title="Código por e-mail"
+                    description="E-mail corporativo"
+                    checked={settings.mfaMethodEmail}
+                    onChange={(checked) => update("mfaMethodEmail", checked)}
+                  />
+                  <MethodRow
+                    icon={<ShieldIcon />}
+                    title="Aplicativo autenticador"
+                    description="Google Authenticator, Microsoft Authenticator, etc."
+                    checked={settings.mfaMethodAuthenticatorApp}
+                    onChange={(checked) => update("mfaMethodAuthenticatorApp", checked)}
+                  />
+                </Stack>
+                <p className="mt-4 text-xs text-muted-foreground">
+                  Hoje o cadastro de MFA (/mfa/setup) só está implementado via aplicativo autenticador (TOTP).
+                  SMS e e-mail ficam registrados como política, mas ainda não enviam código.
+                </p>
+              </div>
+            </Stack>
+          )}
+        </Stack>
       </Section>
 
       <Stack direction="row" justify="end">
@@ -222,5 +342,34 @@ export function SecurityCenterView({ initialSettings }: { initialSettings: Edita
         </Button>
       </Stack>
     </Stack>
+  );
+}
+
+function MethodRow({
+  icon,
+  title,
+  description,
+  checked,
+  onChange,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-card p-3">
+      <div className="flex items-center gap-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+          {icon}
+        </span>
+        <div>
+          <div className="text-sm font-medium text-foreground">{title}</div>
+          <div className="text-xs text-muted-foreground">{description}</div>
+        </div>
+      </div>
+      <Switch checked={checked} onChange={onChange} />
+    </div>
   );
 }

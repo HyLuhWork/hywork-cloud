@@ -96,7 +96,17 @@ model SecuritySettings {
   passwordHistoryCount   Int     @default(3)
 
   // 6. MFA requirement
-  mfaPolicy String @default("OPTIONAL")
+  // mfaEnabled is the master switch for the whole MFA section; mfaPolicy only
+  // takes effect while it's on. mfaPolicy: "OPTIONAL" | "REQUIRED_ALL" | "REQUIRED_BY_ROLE".
+  // mfaRequiredRoles is a comma-separated list of UserRole values, only read
+  // when mfaPolicy is "REQUIRED_BY_ROLE" (this app has roles, not arbitrary
+  // groups, so "grupo/perfil" maps to role).
+  mfaEnabled                 Boolean @default(false)
+  mfaPolicy                  String  @default("OPTIONAL")
+  mfaRequiredRoles           String  @default("")
+  mfaMethodAuthenticatorApp  Boolean @default(true)
+  mfaMethodSms               Boolean @default(false)
+  mfaMethodEmail             Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

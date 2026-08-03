@@ -22,7 +22,15 @@ export default async function SecurityCenterPage() {
     passwordRequireSpecialChar: settings.passwordRequireSpecialChar,
     passwordHistoryEnabled: settings.passwordHistoryEnabled,
     passwordHistoryCount: settings.passwordHistoryCount,
+    mfaEnabled: settings.mfaEnabled,
     mfaPolicy: settings.mfaPolicy as EditableSecuritySettings["mfaPolicy"],
+    mfaRequiredRoles: settings.mfaRequiredRoles
+      .split(",")
+      .map((r) => r.trim())
+      .filter(Boolean) as EditableSecuritySettings["mfaRequiredRoles"],
+    mfaMethodAuthenticatorApp: settings.mfaMethodAuthenticatorApp,
+    mfaMethodSms: settings.mfaMethodSms,
+    mfaMethodEmail: settings.mfaMethodEmail,
   };
 
   return (

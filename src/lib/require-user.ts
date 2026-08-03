@@ -6,7 +6,7 @@ import { mfaSetupRequired } from "@/lib/mfa";
 export async function requireUser(): Promise<ActiveSession> {
   const session = await getSession();
   if (!session) redirect("/login");
-  if (mfaSetupRequired(session.settings.mfaPolicy, session.user.mfaEnabled)) {
+  if (mfaSetupRequired(session.settings, session.user.role, session.user.mfaEnabled)) {
     redirect("/mfa/setup");
   }
   return session;

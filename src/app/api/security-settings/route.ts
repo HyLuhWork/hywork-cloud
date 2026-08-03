@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/session";
-import { getSecuritySettings, updateSecuritySettings } from "@/lib/security-settings";
+import { getSecuritySettings, updateSecuritySettings, type SecuritySettingsInput } from "@/lib/security-settings";
+
+const ROLE_VALUES = ["ADMIN", "MEMBER"] as const;
 
 const schema = z.object({
   sessionTimeoutEnabled: z.boolean().optional(),
@@ -23,8 +25,24 @@ const schema = z.object({
   passwordHistoryEnabled: z.boolean().optional(),
   passwordHistoryCount: z.number().int().min(1).max(24).optional(),
 
-  mfaPolicy: z.enum(["OPTIONAL", "REQUIRED"]).optional(),
+  mfaEnabled: z.boolean().optional(),
+  mfaPolicy: z.enum(["OPTIONAL", "REQUIRED_ALL", "REQUIRED_BY_ROLE"]).optional(),
+  mfaRequiredRoles: z.array(z.enum(ROLE_VALUES)).optional(),
+  mfaMethodAuthenticatorApp: z.boolean().optional(),
+  mfaMethodSms: z.boolean().optional(),
+  mfaMethodEmail: z.boolean().optional(),
 });
+
+/** DB stores mfaRequiredRoles as a comma-separated string; the API exposes it as a string array. */
+function serializeSettings(settings: Awaited<ReturnType<typeof getSecuritySettings>>) {
+  return {
+    ...settings,
+    mfaRequiredRoles: settings.mfaRequiredRoles
+      .split(",")
+      .map((r) => r.trim())
+      .filter(Boolean),
+  };
+}
 
 export async function GET() {
   const session = await getSession();
@@ -32,7 +50,7 @@ export async function GET() {
   if (session.user.role !== "ADMIN") return NextResponse.json({ error: "Acesso negado." }, { status: 403 });
 
   const settings = await getSecuritySettings(session.tenant.id);
-  return NextResponse.json(settings);
+  return NextResponse.json(serializeSettings(settings));
 }
 
 export async function PATCH(req: NextRequest) {
@@ -56,6 +74,12 @@ export async function PATCH(req: NextRequest) {
     );
   }
 
-  const settings = await updateSecuritySettings(session.tenant.id, body.data);
-  return NextResponse.json(settings);
+  const { mfaRequiredRoles, ...rest } = body.data;
+  const input: SecuritySettingsInput = { ...rest };
+  if (mfaRequiredRoles !== undefined) {
+    input.mfaRequiredRoles = mfaRequiredRoles.join(",");
+  }
+
+  const settings = await updateSecuritySettings(session.tenant.id, input);
+  return NextResponse.json(serializeSettings(settings));
 }

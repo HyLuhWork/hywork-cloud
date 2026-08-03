@@ -30,7 +30,12 @@ export type SecuritySettingsInput = Partial<
     | "passwordRequireSpecialChar"
     | "passwordHistoryEnabled"
     | "passwordHistoryCount"
+    | "mfaEnabled"
     | "mfaPolicy"
+    | "mfaRequiredRoles"
+    | "mfaMethodAuthenticatorApp"
+    | "mfaMethodSms"
+    | "mfaMethodEmail"
   >
 >;
 

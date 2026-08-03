@@ -843,6 +843,26 @@ direita com título/texto/CTA "Criar nova automação". Fecha ao clicar no
 X, ao clicar fora (mesmo padrão dos outros menus de toolbar do
 protótipo, `pv-toolbar-menu-wrap`) ou ao criar a automação.
 
+**v58** — nova seção **Engajamento** na barra lateral do Admin, entre
+Pessoas & Cultura e Administração: **Campanhas**, **Desafios** (com
+submenu **Todos os desafios** / **Aprovações de desafios**), **Badges**
+e **Sistema de Pontos**. É só estrutura de menu por enquanto — todos os
+itens usam `data-action="noop"`, sem página atrelada, no mesmo padrão já
+usado por outros itens de placeholder do menu (Analytics, Modelos,
+Conteúdos, Reconhecimentos, Configurações).
+
+Desafios é o único item com filhos, então reaproveitou (recriou) o
+padrão `.nav-subitem` que tinha sido removido na v36 por estar sem uso —
+agora com um comportamento novo: `.nav-item-toggle` com chevron que gira
+(`.nav-item-chevron`), controlando um `.nav-subgroup` que expande/recolhe
+(`state.navDesafiosOpen`, ação `toggle-nav-desafios`). Como a sidebar do
+Admin só é reconstruída quando o modo (Admin/Colaborador) muda —
+`renderShell()` reaproveita o mesmo `<aside>` entre renders e só
+sincroniza estado via funções pontuais tipo `updateAdminNavActive()` —,
+o toggle segue esse mesmo padrão: `updateNavDesafiosGroup()`, chamada a
+cada `render()`, adiciona/remove a classe `.open` no `#nav-desafios-group`
+em vez de reconstruir o HTML da sidebar inteira.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

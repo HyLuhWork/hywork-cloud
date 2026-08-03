@@ -78,6 +78,15 @@
   .nav-item:hover{background:var(--muted);color:var(--ink)}
   .nav-item.active{color:var(--primary);border-left-color:var(--primary)}
   .nav-item.active svg{opacity:1;color:var(--primary)}
+  .nav-item-toggle{justify-content:space-between}
+  .nav-item-toggle .nav-item-main{display:flex;align-items:center;gap:10px}
+  .nav-item-chevron{display:flex;opacity:.55;transition:transform .15s ease}
+  .nav-subgroup.open .nav-item-chevron{transform:rotate(180deg)}
+  .nav-subitems{display:none;flex-direction:column;padding:2px 0 4px}
+  .nav-subgroup.open .nav-subitems{display:flex}
+  .nav-subitem{display:flex;align-items:center;gap:9px;padding:6px 10px 6px 40px;border-radius:var(--radius-sm);color:var(--ink-muted);font-size:12.5px;font-weight:600;text-decoration:none;border-left:2.5px solid transparent}
+  .nav-subitem:hover{background:var(--muted);color:var(--ink)}
+  .nav-subitem.active{color:var(--primary);border-left-color:var(--primary);background:var(--primary-50)}
   .sidebar-foot{margin-top:auto;padding-top:10px}
 
   .app-main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
@@ -956,6 +965,10 @@ function ic(name, size){
     headset:'<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.8" y="13.3" width="4.2" height="6.6" rx="1.6"/><rect x="17" y="13.3" width="4.2" height="6.6" rx="1.6"/><path d="M19.1 19.9v.6a2.6 2.6 0 0 1-2.6 2.6h-2.3"/>',
     teams:'<circle cx="9" cy="7.5" r="3.2"/><path d="M3 20v-.8a5.2 5.2 0 0 1 5.2-5.2h1.6a5.2 5.2 0 0 1 5.2 5.2v.8"/><circle cx="17.3" cy="8.2" r="2.3"/><path d="M15.8 9.3a3.8 3.8 0 0 1 5.2 3.5v1"/>',
     clip:'<path d="M8 12.5V7a4 4 0 0 1 8 0v9a2.5 2.5 0 0 1-5 0V8.5"/>',
+    megaphone:'<path d="M3 9.5v5h3l10 4V5.5l-10 4H3Z"/><path d="M19 9a3.5 3.5 0 0 1 0 6"/>',
+    trophy:'<path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4.5A2.5 2.5 0 0 0 7 9"/><path d="M17 5h2.5A2.5 2.5 0 0 1 17 9"/><path d="M12 13v3"/><path d="M8.5 20h7"/><path d="M9.5 20a2.5 2.5 0 0 1 5 0"/>',
+    medal:'<circle cx="12" cy="14.5" r="5.2"/><path d="M9 4 7 9.5M15 4l2 5.5"/><path d="m9.6 14.6 1.6 1.6 3-3.4"/>',
+    star:'<path d="m12 3 2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.8 6.4 20l1.4-6.2L3 9.5l6.4-.6L12 3Z"/>',
   };
   var body = p[name] || p.info;
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+body+'</svg>';
@@ -1846,6 +1859,7 @@ var state = {
   appTab:'minhas', // 'minhas' | 'pendencias' | 'historico' | 'dashboard' | 'kanban' | 'todas' | 'configurar'
   editorReturnTo:'home', // onde "Voltar para Processos" no editor deve levar: 'home' (catálogo do admin) ou 'app' (o Aplicativo de onde veio via Configurar Processo)
   appNavOpen:false, // dropdown "Processos" aberto no topnav da intranet
+  navDesafiosOpen:false, // submenu "Desafios" expandido na barra lateral do Admin
   novaSolicitacaoOpen:null, // processId
   novaSolicitacaoDraft:null, // {valores:{}}
   trackerModalOpen:null, // solicitacao id
@@ -1988,12 +2002,16 @@ function renderShell(){
   updateModeToggle();
   updateIntranetNavActive();
   updateAdminNavActive();
+  updateNavDesafiosGroup();
 }
 function updateAdminNavActive(){
   var home = qs('#nav-home-link'); if (home) home.classList.toggle('active', state.screen==='home');
   var apps = qs('#nav-apps-link'); if (apps) apps.classList.toggle('active', state.screen==='apps-admin');
   var dados = qs('#nav-dados-link'); if (dados) dados.classList.toggle('active', state.screen==='dados');
   var automacoes = qs('#nav-automacoes-link'); if (automacoes) automacoes.classList.toggle('active', state.screen==='automacoes-admin');
+}
+function updateNavDesafiosGroup(){
+  var el = qs('#nav-desafios-group'); if (el) el.classList.toggle('open', !!state.navDesafiosOpen);
 }
 function updateIntranetNavActive(){
   var nav = qs('.itn-nav'); if (!nav) return;
@@ -2036,6 +2054,20 @@ function adminShellHTML(){
       navItem('doc','Conteúdos',false)+
       '<div class="nav-group-label">Pessoas &amp; Cultura</div>'+
       navItem('award','Reconhecimentos',false)+
+      '<div class="nav-group-label">Engajamento</div>'+
+      navItem('megaphone','Campanhas',false)+
+      '<div class="nav-subgroup'+(state.navDesafiosOpen?' open':'')+'" id="nav-desafios-group">'+
+        '<a href="#" class="nav-item nav-item-toggle" data-action="toggle-nav-desafios">'+
+          '<span class="nav-item-main">'+ic('trophy',17)+'<span>Desafios</span></span>'+
+          '<span class="nav-item-chevron">'+ic('chevronDown',13)+'</span>'+
+        '</a>'+
+        '<div class="nav-subitems">'+
+          '<a href="#" class="nav-subitem" data-action="noop">Todos os desafios</a>'+
+          '<a href="#" class="nav-subitem" data-action="noop">Aprovações de desafios</a>'+
+        '</div>'+
+      '</div>'+
+      navItem('medal','Badges',false)+
+      navItem('star','Sistema de Pontos',false)+
       '<div id="admin-nav-group">'+
         '<div class="nav-group-label">Administração</div>'+
         navItem('users','Usuários',false)+
@@ -4747,6 +4779,7 @@ document.addEventListener('click', function(e){
     case 'open-fonte-detail': state.dadosOpenFonteId = t.dataset.id; state.dadosRecordSearch = ''; state.dsAutomatePopoverOpen = false; break;
     case 'close-fonte-detail': state.dadosOpenFonteId = null; state.dsAutomatePopoverOpen = false; break;
     case 'toggle-ds-automate-popover': state.dsAutomatePopoverOpen = !state.dsAutomatePopoverOpen; break;
+    case 'toggle-nav-desafios': state.navDesafiosOpen = !state.navDesafiosOpen; break;
     case 'open-nova-fonte': state.novaFonteOpen = true; state.novaFonteDraft = {nome:'', campos:[]}; break;
     case 'close-nova-fonte': case 'close-nova-fonte-overlay': state.novaFonteOpen = false; break;
     case 'add-novafonte-campo': {

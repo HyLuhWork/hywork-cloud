@@ -1019,6 +1019,19 @@ clarinho, tá mt forte o azul"): `--canvas-bg` (fundo do canvas de automação,
 o azulado ficava forte demais atrás dos nós do fluxo. O `--canvas-bg` do tema
 escuro (`#191E26`) não foi alterado.
 
+**v64** — pedido do usuário ("coloque o título do flow no header igual no
+print... e o ícone pra voltar"), com print de referência mostrando um ícone
+de casinha, o nome do fluxo e um toggle numa barra fina com borda inferior:
+o header do editor de automação (`.back-link` "← Voltar para Automações" +
+botão "Salvar automação") virou uma `.wf-topbar` — ícone de casa
+(`.wf-home-btn`, ainda navega de volta para a lista) + nome da automação
+(`.wf-topbar-title`, refletindo `auto.nome` ao vivo enquanto o campo "Nome
+da automação" do painel é editado, via `setText('#wf-topbar-title', …)`
+nos binds `dsautomacao.nome`/`automacao.nome`) à esquerda, e o toggle
+Ativo/Inativo (reaproveitando a ação `toggle-ds-automacao-ativo`/
+`toggle-automacao-ativo` que já existia na listagem) + "Salvar automação"
+à direita. Aplicado nos dois construtores (`ds` e `automacao`).
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

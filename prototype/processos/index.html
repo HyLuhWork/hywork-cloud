@@ -356,6 +356,12 @@
   .editor-topbar{padding:16px 28px 0}
   .back-link{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--ink-muted);margin-bottom:14px}
   .back-link:hover{color:var(--ink)}
+  .wf-topbar{padding:13px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--border)}
+  .wf-topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
+  .wf-home-btn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-md);border:1px solid var(--border);color:var(--ink-muted);flex:none;transition:background .15s,color .15s}
+  .wf-home-btn:hover{background:var(--muted);color:var(--ink)}
+  .wf-topbar-title{font-size:14.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wf-topbar-right{display:flex;align-items:center;gap:16px;flex:none}
   .editor-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:14px}
   .editor-header-left{display:flex;gap:14px;align-items:flex-start}
   .editor-icon{width:44px;height:44px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
@@ -2868,11 +2874,17 @@ function dsAutomacaoEditorHTML(auto){
     '<div><div class="an-eyebrow">Quando</div><div class="an-title">'+esc(dsAutomacaoEventoText(auto))+'</div></div></div>'+
   '</div>';
   var blocosHTML = chainHTML(auto.blocos, selected, DS_CHAIN_CTX);
-  return '<div style="padding:16px 28px 0;display:flex;align-items:center;justify-content:space-between;gap:12px">'+
-      '<a href="#" class="back-link" data-action="close-ds-automacao-editor">'+ic('arrowLeft',14)+'Voltar para Automações</a>'+
-      '<button class="btn btn-primary btn-sm" data-action="save-ds-automacao">'+ic('check',14)+'Salvar automação</button>'+
+  return '<div class="wf-topbar">'+
+      '<div class="wf-topbar-left">'+
+        '<a href="#" class="wf-home-btn" data-action="close-ds-automacao-editor" title="Voltar para Automações">'+ic('home',16)+'</a>'+
+        '<div class="wf-topbar-title" id="wf-topbar-title">'+esc(auto.nome)+'</div>'+
+      '</div>'+
+      '<div class="wf-topbar-right">'+
+        '<label class="switch" data-action="toggle-ds-automacao-ativo" data-id="'+auto.id+'"><input type="checkbox" '+(auto.ativo?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>'+
+        '<button class="btn btn-primary btn-sm" data-action="save-ds-automacao">'+ic('check',14)+'Salvar automação</button>'+
+      '</div>'+
     '</div>'+
-    '<div class="wf-layout" style="height:calc(100vh - 170px)">'+
+    '<div class="wf-layout" style="height:calc(100vh - 174px)">'+
       '<div class="wf-canvas-wrap"><div class="wf-flow">'+
         triggerNode+'<div class="wf-connector"></div>'+blocosHTML+
       '</div></div>'+
@@ -4752,11 +4764,17 @@ function automacaoEditorHTML(){
 
   var blocosHTML = chainHTML(auto.blocos, selected, PROC_CHAIN_CTX);
 
-  return '<div style="padding:16px 28px 0;display:flex;align-items:center;justify-content:space-between;gap:12px">'+
-      '<a href="#" class="back-link" data-action="close-automacao-editor">'+ic('arrowLeft',14)+'Voltar para Automações</a>'+
-      '<button class="btn btn-primary btn-sm" data-action="save-automacao" data-id="'+auto.id+'">'+ic('check',14)+'Salvar automação</button>'+
+  return '<div class="wf-topbar">'+
+      '<div class="wf-topbar-left">'+
+        '<a href="#" class="wf-home-btn" data-action="close-automacao-editor" title="Voltar para Automações">'+ic('home',16)+'</a>'+
+        '<div class="wf-topbar-title" id="wf-topbar-title">'+esc(auto.nome)+'</div>'+
+      '</div>'+
+      '<div class="wf-topbar-right">'+
+        '<label class="switch" data-action="toggle-automacao-ativo" data-id="'+auto.id+'"><input type="checkbox" '+(auto.ativo?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>'+
+        '<button class="btn btn-primary btn-sm" data-action="save-automacao" data-id="'+auto.id+'">'+ic('check',14)+'Salvar automação</button>'+
+      '</div>'+
     '</div>'+
-    '<div class="wf-layout">'+
+    '<div class="wf-layout" style="height:calc(100vh - 174px)">'+
       '<div class="wf-canvas-wrap"><div class="wf-flow">'+
         triggerNode+'<div class="wf-connector"></div>'+blocosHTML+
       '</div></div>'+
@@ -5955,7 +5973,7 @@ document.addEventListener('input', function(e){
     else if (bind==='step.sla_prazo'){ var s3=findStep(el.dataset.stepid); s3.sla.prazo=val; }
     else if (bind==='rule.label'){ var r=findRegra(el.dataset.stepid, el.dataset.regraid); r.label=val; }
     else if (bind==='rule.condVal'){ var r2=findRegra(el.dataset.stepid, el.dataset.regraid); r2.condicoes[0]=r2.condicoes[0]||{}; r2.condicoes[0].valor=val; }
-    else if (bind==='automacao.nome'){ var auN=findAutomacao(el.dataset.autoid); auN.nome=val; }
+    else if (bind==='automacao.nome'){ var auN=findAutomacao(el.dataset.autoid); auN.nome=val; setText('#wf-topbar-title', val || 'Nova automação'); }
     else if (bind==='automacao.condVal'){ var bV=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); var gV=bV.grupos.find(function(g){return g.id===el.dataset.groupid;}); gV.condicoes[+el.dataset.idx].valor=val; }
     else if (bind==='automacao.acaoExtra'){ var bE=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); bE.extra=val; }
     else if (bind==='automacao.acaoAlvo'){ var bA=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(bA) bA.alvo=val; }
@@ -5969,7 +5987,7 @@ document.addEventListener('input', function(e){
     else if (bind==='novasol.campo'){ state.novaSolicitacaoDraft.valores[el.dataset.fieldid]=val; }
     else if (bind==='novafonte.nome'){ state.novaFonteDraft.nome=val; }
     else if (bind==='fonterecord.campo'){ state.fonteRecordDraft.valores[el.dataset.fieldid]=val; }
-    else if (bind==='dsautomacao.nome'){ currentDsAuto().nome=val; }
+    else if (bind==='dsautomacao.nome'){ currentDsAuto().nome=val; setText('#wf-topbar-title', val || 'Nova automação'); }
     else if (bind==='dsautomacao.condVal'){ var dsaVB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); var dsaVG=dsaVB.grupos.find(function(g){return g.id===el.dataset.groupid;}); dsaVG.condicoes[+el.dataset.idx].valor=val; }
     else if (bind==='dsautomacao.acaoExtra'){ var dsaXB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsaXB.extra=val; }
     else if (bind==='dsautomacao.acaoCampo'){ var dsAcIB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsAcIB.campos=dsAcIB.campos||{}; dsAcIB.campos[el.dataset.key]=val; }

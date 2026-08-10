@@ -903,7 +903,8 @@
   .ap-grid-wrap{flex:1;min-width:0;display:flex;gap:0;overflow-y:auto;padding:16px 22px 22px}
   .ap-col{flex:1;min-width:0;padding:0 12px}
   .ap-col+.ap-col{border-left:1px solid var(--border)}
-  .ap-col-label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);padding:4px 8px 8px}
+  .ap-col-label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);padding:4px 8px 8px;margin-top:14px}
+  .ap-col-label:first-child{margin-top:0}
   .ap-tile{display:flex;align-items:center;gap:11px;width:100%;padding:9px 8px;border-radius:var(--radius-sm);text-align:left}
   .ap-tile:hover{background:var(--muted)}
   .ap-tile .ap-tile-ic{width:28px;height:28px;border-radius:7px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;flex:none}
@@ -1205,7 +1206,11 @@ var EVENTO_TYPES = [
   {tipo:'usuario_atribuido', label:'Usuário Atribuído', icon:'users', desc:'Quando alguém é definido como responsável por uma etapa.'},
   {tipo:'data_alcancada', label:'Data Alcançada', icon:'calendar', desc:'Quando um prazo ou SLA é alcançado.'},
 ];
-function eventoMeta(tipo){ return EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) || EVENTO_TYPES[0]; }
+function eventoMeta(tipo){
+  return EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) ||
+    TRIGGER_BUILTIN.find(function(e){return e.tipo===tipo;}) ||
+    EVENTO_TYPES[0];
+}
 
 var AUTOMACAO_ACOES = [
   {tipo:'notificacao', label:'Enviar mensagem', icon:'send', cat:'comunicacao', maisUsado:true},
@@ -1429,6 +1434,46 @@ function actionPickerGridHTML(){
 function refreshActionPickerGrid(){
   var el = qs('#ap-grid-wrap'); if (!el) return;
   el.innerHTML = actionPickerGridHTML();
+}
+
+/* ---- Modal "Selecione um gatilho" — mostrada ao criar uma automação do zero ---- */
+function triggerPickerModalHTML(){
+  var ctx = state.triggerPickerOpen;
+  return '<div class="overlay" data-action="close-trigger-picker-overlay"><div class="modal modal-lg" style="height:640px">'+
+    '<div class="ap-head"><h3>Selecione um gatilho</h3>'+
+      '<div class="ap-search">'+ic('search',14)+'<input id="tp-search-input" placeholder="Procurar..." value="'+esc(ctx.search)+'"/></div>'+
+      '<div style="flex:1"></div>'+
+      '<button class="icon-btn" data-action="close-trigger-picker">'+ic('x',16)+'</button>'+
+    '</div>'+
+    '<div class="ap-body"><div class="ap-grid-wrap" id="tp-grid-wrap">'+triggerPickerGridHTML()+'</div></div>'+
+  '</div></div>';
+}
+function triggerTileHTML(it){
+  var action = it.disabled ? 'pick-ap-integration' : 'pick-trigger';
+  return '<button class="ap-tile'+(it.disabled?' disabled':'')+'" data-action="'+action+'" data-tipo="'+it.tipo+'"'+(it.disabled?' data-name="'+esc(it.label)+'"':'')+'>'+
+    '<div class="ap-tile-ic">'+ic(it.icon,15)+'</div><div class="ap-tile-label">'+esc(it.label)+'</div>'+
+    (it.badge ? '<span class="ap-tile-badge soon">'+esc(it.badge)+'</span>' : '')+
+  '</button>';
+}
+function triggerPickerGridHTML(){
+  var ctx = state.triggerPickerOpen;
+  var sections = triggerSectionsFor(ctx.scope, ctx.search);
+  var nativeHTML = sections.length ? sections.map(function(s){
+    return '<div class="ap-col-label">'+esc(s.label.toUpperCase())+'</div>'+s.items.map(triggerTileHTML).join('');
+  }).join('') : '<div class="ap-empty">Nada por aqui.</div>';
+  var integrations = apIntegrationTilesFor('mais-usados', ctx.search);
+  var integHTML = integrations.length ? integrations.map(function(it){
+    return '<button class="ap-tile disabled" data-action="pick-ap-integration" data-name="'+esc(it.name)+'">'+
+      '<div class="ap-tile-ic">'+ic(it.icon,15)+'</div><div class="ap-tile-label">'+esc(it.name)+'</div>'+
+      '<span class="ap-tile-badge soon">Em breve</span>'+
+    '</button>';
+  }).join('') : '<div class="ap-empty">Nada por aqui.</div>';
+  return '<div class="ap-col">'+nativeHTML+'</div>'+
+    '<div class="ap-col"><div class="ap-col-label">INTEGRAÇÕES</div>'+integHTML+'</div>';
+}
+function refreshTriggerPickerGrid(){
+  var el = qs('#tp-grid-wrap'); if (!el) return;
+  el.innerHTML = triggerPickerGridHTML();
 }
 
 function makeRegra(o){
@@ -2063,6 +2108,7 @@ var state = {
   dsAutomacaoEditorId:null, // id da automação de fonte de dados em edição | null
   dsAutomacaoSelectedBlockId:null,
   actionPickerOpen:null, // {scope:'ds'|'automacao', ramoId, replaceBlockId, search, cat} | null — modal "Selecione uma ação"
+  triggerPickerOpen:null, // {scope:'ds'|'automacao', fonteId, search} | null — modal "Selecione um gatilho" (ao criar automação do zero)
   wizardOpen:false,
   wizardDraft:null,
   hystoreTemplateOpen:null, // template index | null
@@ -2654,11 +2700,11 @@ function inlineFonteRecordFieldHTML(f, draft){
 /* ---- Catálogo de eventos "Hywork microflows" — todas as entidades e gatilhos do PDF de referência ---- */
 var DS_EVENTO_GROUPS = [
   {label:'Páginas', events:[
-    {tipo:'pages.published', label:'Página publicada', icon:'doc', desc:'Quando uma página fica pública/visível para o público-alvo.'},
+    {tipo:'pages.published', label:'Página publicada', icon:'doc', desc:'Quando uma página fica pública/visível para o público-alvo.', maisUsado:true},
     {tipo:'pages.viewed', label:'Página visualizada', icon:'eye', desc:'Quando alguém acessa/visualiza uma página (com amostragem).'},
   ]},
   {label:'Feed', events:[
-    {tipo:'feed.post.published', label:'Post publicado', icon:'forum', desc:'Quando um post se torna visível no feed.'},
+    {tipo:'feed.post.published', label:'Post publicado', icon:'forum', desc:'Quando um post se torna visível no feed.', maisUsado:true},
     {tipo:'feed.post.viewed', label:'Post visualizado', icon:'eye', desc:'Quando alguém visualiza o post (amostrado).'},
     {tipo:'feed.reaction.added', label:'Reação adicionada', icon:'bulb', desc:'Quando alguém reage ao post.'},
     {tipo:'feed.reaction.removed', label:'Reação removida', icon:'x', desc:'Quando uma reação é retirada.'},
@@ -2668,18 +2714,18 @@ var DS_EVENTO_GROUPS = [
     {tipo:'feed.post.shared', label:'Post compartilhado', icon:'transfer', desc:'Quando alguém compartilha o post internamente.'},
   ]},
   {label:'Dados (formulários/sugestões)', events:[
-    {tipo:'data.record.created', label:'Registro criado', icon:'plus', desc:'Quando um colaborador envia um registro via formulário (ex.: sugestão, pedido).'},
-    {tipo:'data.record.updated', label:'Registro atualizado', icon:'edit', desc:'Quando o colaborador edita/atualiza seu registro.'},
+    {tipo:'data.record.created', label:'Registro criado', icon:'plus', desc:'Quando um colaborador envia um registro via formulário (ex.: sugestão, pedido).', maisUsado:true},
+    {tipo:'data.record.updated', label:'Registro atualizado', icon:'edit', desc:'Quando o colaborador edita/atualiza seu registro.', maisUsado:true},
   ]},
   {label:'Colaboradores', events:[
-    {tipo:'employees.created', label:'Colaborador cadastrado', icon:'users', desc:'Quando um novo colaborador é cadastrado (início do onboarding).'},
+    {tipo:'employees.created', label:'Colaborador cadastrado', icon:'users', desc:'Quando um novo colaborador é cadastrado (início do onboarding).', maisUsado:true},
     {tipo:'employees.birthday.today', label:'Aniversário hoje', icon:'calendar', desc:'No dia do aniversário.'},
     {tipo:'employees.anniversary.today', label:'Aniversário de casa hoje', icon:'award', desc:'No aniversário de casa.'},
     {tipo:'employees.status.changed', label:'Status alterado', icon:'transfer', desc:'Quando muda status (férias, remoto, afastamento).'},
     {tipo:'employees.timeline.event.added', label:'Evento adicionado à timeline', icon:'timeline', desc:'Quando um evento novo é incluído na timeline individual (ex.: treinamento concluído, reconhecimento, badge, feedback recebido).'},
   ]},
   {label:'Notícias', events:[
-    {tipo:'news.published', label:'Notícia publicada', icon:'doc', desc:'Quando uma notícia é publicada.'},
+    {tipo:'news.published', label:'Notícia publicada', icon:'doc', desc:'Quando uma notícia é publicada.', maisUsado:true},
     {tipo:'news.viewed', label:'Notícia visualizada', icon:'eye', desc:'Quando alguém lê a notícia (amostrado).'},
     {tipo:'news.reaction.added', label:'Reação adicionada', icon:'bulb', desc:'Quando alguém reage à notícia.'},
     {tipo:'news.reaction.removed', label:'Reação removida', icon:'x', desc:'Quando reação é retirada.'},
@@ -2695,7 +2741,38 @@ var DS_EVENTO_GROUPS = [
   ]},
 ];
 var DS_EVENTO_TYPES = DS_EVENTO_GROUPS.reduce(function(acc,g){ return acc.concat(g.events); }, []);
-function dsEventoMeta(tipo){ return DS_EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) || DS_EVENTO_TYPES[0]; }
+/* Gatilhos "embutidos" (não ligados a uma entidade específica) — PDF: "Triggers: para o MVP Eventos e Cron.
+   (Webhook, mcp trigger posteriormente)". Cron já é selecionável; Webhook/MCP ficam como "Em breve". */
+var TRIGGER_BUILTIN = [
+  {tipo:'cron.once', label:'Agendamento único', icon:'calendar', desc:'Dispara uma vez, na data/hora configurada.', maisUsado:true},
+  {tipo:'cron.recurring', label:'Cronograma recorrente', icon:'clock', desc:'Dispara repetidamente, seguindo um cronograma (cron).', maisUsado:true},
+  {tipo:'webhook.received', label:'Webhook', icon:'webhook', desc:'Dispara quando este fluxo recebe uma chamada HTTP externa.', badge:'Em breve', disabled:true},
+  {tipo:'mcp.trigger', label:'Trigger MCP', icon:'api', desc:'Dispara a partir de uma ferramenta MCP externa.', badge:'Em breve', disabled:true},
+];
+function dsEventoMeta(tipo){
+  return DS_EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) ||
+    TRIGGER_BUILTIN.find(function(e){return e.tipo===tipo;}) ||
+    DS_EVENTO_TYPES[0];
+}
+/* Seções da modal "Selecione um gatilho" — 'ds' agrupa por entidade (igual ao PDF); 'automacao' usa o
+   catálogo de eventos de processo (EVENTO_TYPES), que é sobre o ciclo de vida da solicitação, não da intranet. */
+function triggerSectionsFor(scope, search){
+  var q = (search||'').trim().toLowerCase();
+  function matches(it){ return !q || it.label.toLowerCase().indexOf(q)!==-1; }
+  var sections = [];
+  if (scope==='ds'){
+    sections.push({label:'Mais usados', items: DS_EVENTO_TYPES.filter(function(e){return e.maisUsado;}).concat(TRIGGER_BUILTIN.filter(function(e){return e.maisUsado;}))});
+    sections.push({label:'Embutido', items: TRIGGER_BUILTIN.filter(function(e){return !e.maisUsado;})});
+    DS_EVENTO_GROUPS.forEach(function(g){ sections.push({label:g.label, items:g.events.filter(function(e){return !e.maisUsado;})}); });
+  } else {
+    var maisUsadosProcTipos = ['item_criado','entrou_etapa','acao_executada'];
+    var maisUsadosProc = EVENTO_TYPES.filter(function(e){ return maisUsadosProcTipos.indexOf(e.tipo)!==-1; });
+    sections.push({label:'Mais usados', items: maisUsadosProc.concat(TRIGGER_BUILTIN.filter(function(e){return e.maisUsado;}))});
+    sections.push({label:'Embutido', items: TRIGGER_BUILTIN.filter(function(e){return !e.maisUsado;})});
+    sections.push({label:'Processo', items: EVENTO_TYPES.filter(function(e){return maisUsadosProcTipos.indexOf(e.tipo)===-1;})});
+  }
+  return sections.map(function(s){ return {label:s.label, items:s.items.filter(matches)}; }).filter(function(s){ return s.items.length>0; });
+}
 var DS_ACOES = [
   {tipo:'notificacao', label:'Enviar mensagem', icon:'send', cat:'comunicacao', maisUsado:true},
   {tipo:'atualizar_campo', label:'Criar, atualizar ou deletar registro', icon:'db', cat:'dados', maisUsado:true},
@@ -2820,6 +2897,7 @@ function dsAutomacaoTriggerPanelHTML(auto){
     DS_EVENTO_GROUPS.map(function(g){
       return '<optgroup label="'+esc(g.label)+'">'+g.events.map(function(e){return '<option value="'+e.tipo+'"'+(ev.tipo===e.tipo?' selected':'')+'>'+esc(e.label)+'</option>';}).join('')+'</optgroup>';
     }).join('')+
+    '<optgroup label="Embutido">'+TRIGGER_BUILTIN.filter(function(e){return !e.disabled;}).map(function(e){return '<option value="'+e.tipo+'"'+(ev.tipo===e.tipo?' selected':'')+'>'+esc(e.label)+'</option>';}).join('')+'</optgroup>'+
   '</select><div class="field-hint" style="margin-top:6px">'+esc(meta.desc)+'</div>';
 
   return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Nome da automação</div>'+
@@ -4697,7 +4775,8 @@ function automacaoTriggerPanelHTML(auto){
   var ev = auto.evento;
   var meta = eventoMeta(ev.tipo);
   var eventSelect = '<select class="select" data-bind="automacao.evento_tipo" data-autoid="'+auto.id+'">'+
-    EVENTO_TYPES.map(function(e){return '<option value="'+e.tipo+'"'+(ev.tipo===e.tipo?' selected':'')+'>'+esc(e.label)+'</option>';}).join('')+
+    '<optgroup label="Processo">'+EVENTO_TYPES.map(function(e){return '<option value="'+e.tipo+'"'+(ev.tipo===e.tipo?' selected':'')+'>'+esc(e.label)+'</option>';}).join('')+'</optgroup>'+
+    '<optgroup label="Embutido">'+TRIGGER_BUILTIN.filter(function(e){return !e.disabled;}).map(function(e){return '<option value="'+e.tipo+'"'+(ev.tipo===e.tipo?' selected':'')+'>'+esc(e.label)+'</option>';}).join('')+'</optgroup>'+
   '</select><div class="field-hint" style="margin-top:6px">'+esc(meta.desc)+'</div>';
 
   var extra = '';
@@ -4858,6 +4937,7 @@ function renderModal(){
   if (state.fonteFieldsOpen){ root.innerHTML = fonteFieldsModalHTML(); return; }
   if (state.fonteRecordOpen){ root.innerHTML = fonteRecordModalHTML(); return; }
   if (state.actionPickerOpen){ root.innerHTML = actionPickerModalHTML(); return; }
+  if (state.triggerPickerOpen){ root.innerHTML = triggerPickerModalHTML(); return; }
   root.innerHTML='';
 }
 function wizardModalHTML(){
@@ -5169,10 +5249,7 @@ document.addEventListener('click', function(e){
     }
     case 'new-ds-automacao': {
       var naFonteId = t.dataset.fonteid || (state.dataSources[0] && state.dataSources[0].id);
-      var naAuto = makeDsAutomacao({fonteId:naFonteId});
-      state.dsAutomacoes.push(naAuto);
-      state.dsAutomacaoEditorId = naAuto.id;
-      state.dsAutomacaoSelectedBlockId = 'trigger';
+      state.triggerPickerOpen = {scope:'ds', fonteId:naFonteId, search:''};
       state.dsAutomatePopoverOpen = false;
       break;
     }
@@ -5225,7 +5302,28 @@ document.addEventListener('click', function(e){
       state.actionPickerOpen = null;
       break;
     }
-    case 'pick-ap-integration': { showToast(t.dataset.name+' chega em breve.'); state.actionPickerOpen = null; break; }
+    case 'pick-ap-integration': { showToast(t.dataset.name+' chega em breve.'); state.actionPickerOpen = null; state.triggerPickerOpen = null; break; }
+
+    /* modal "Selecione um gatilho" — abre ao criar uma automação do zero, compartilhada entre os dois construtores */
+    case 'close-trigger-picker': case 'close-trigger-picker-overlay': state.triggerPickerOpen = null; break;
+    case 'pick-trigger': {
+      var tpCtx = state.triggerPickerOpen;
+      var tpTipo = t.dataset.tipo;
+      if (tpCtx.scope==='ds'){
+        var tpAuto = makeDsAutomacao({fonteId:tpCtx.fonteId, evento:{tipo:tpTipo}});
+        state.dsAutomacoes.push(tpAuto);
+        state.dsAutomacaoEditorId = tpAuto.id;
+        state.dsAutomacaoSelectedBlockId = 'trigger';
+      } else {
+        var tpD = currentData(); tpD.automacoes = tpD.automacoes||[];
+        var tpNa = makeAutomacao({evento:{tipo:tpTipo}});
+        tpD.automacoes.push(tpNa);
+        state.automacaoEditorId = tpNa.id;
+        state.automacaoSelectedBlockId = 'trigger';
+      }
+      state.triggerPickerOpen = null;
+      break;
+    }
     case 'open-wizard':
       state.wizardOpen = true;
       state.wizardDraft = {name:'',description:'',category:CATEGORIES[0],icon:ICON_OPTIONS[0],color:COLOR_OPTIONS[0].v};
@@ -5611,10 +5709,7 @@ document.addEventListener('click', function(e){
       break;
     }
     case 'new-automacao': {
-      var d8=currentData(); d8.automacoes = d8.automacoes||[];
-      var na = makeAutomacao({});
-      d8.automacoes.push(na);
-      state.automacaoEditorId = na.id; state.automacaoSelectedBlockId='trigger';
+      state.triggerPickerOpen = {scope:'automacao', search:''};
       break;
     }
     case 'open-automacao-editor': {
@@ -5885,6 +5980,7 @@ document.addEventListener('input', function(e){
   if (e.target.id==='dados-search'){ state.dadosSearch = e.target.value; refreshDadosArea(); }
   if (e.target.id==='dados-record-search'){ state.dadosRecordSearch = e.target.value; refreshFonteRecordsArea(); }
   if (e.target.id==='ap-search-input'){ state.actionPickerOpen.search = e.target.value; refreshActionPickerGrid(); }
+  if (e.target.id==='tp-search-input'){ state.triggerPickerOpen.search = e.target.value; refreshTriggerPickerGrid(); }
 });
 function setText(sel, val){ var n = document.querySelector(sel); if (n) n.textContent = val; }
 

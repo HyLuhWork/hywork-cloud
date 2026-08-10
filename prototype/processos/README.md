@@ -962,6 +962,38 @@ referência "Hywork microflows", fornecido pelo usuário:
   exclusivos de Processo continuam com painéis próprios, sem passar por
   essa função. Ícones novos: `timeline`, `stop`, `download`.
 
+**v61** — "Nova Automação"/"Criar nova automação" (nos quatro pontos de
+entrada: página global Automações, dentro de uma Fonte de Dados, e na
+aba Automações de um Processo) deixou de criar a automação na hora e
+abrir direto o editor com um evento padrão — agora abre primeiro a modal
+**"Selecione um gatilho"** (`triggerPickerModalHTML`), a partir de um
+print de referência (Softr): busca, seções empilhadas à esquerda (Mais
+usados, Embutido, e por entidade) e uma coluna "Integrações" à direita,
+mesmo estilo visual da modal "Selecione uma ação" da v59 (reaproveita
+`.ap-modal`/`.ap-head`/`.ap-search`/`.ap-col`/`.ap-tile`), mas sem barra
+lateral de categorias — todas as seções ficam empilhadas e roláveis na
+coluna esquerda, mais fiel ao print. Escolher um gatilho cria a
+automação com esse evento já selecionado e abre o editor direto no
+painel do gatilho — daí o pedido: "já vem com o gatilho selecionado".
+
+`triggerSectionsFor(scope, search)` monta as seções: automação de Fonte
+de Dados usa `DS_EVENTO_GROUPS` (as 6 entidades do PDF da v60, evento
+por evento); automação de Processo usa `EVENTO_TYPES`. Os itens com
+`maisUsado:true` só aparecem na seção "Mais usados" — ficam de fora da
+própria seção de origem para não duplicar (bug pego em teste: sem esse
+filtro "Colaborador cadastrado" aparecia duas vezes na tela). Nova
+seção **"Embutido"**, a partir da linha do PDF "Triggers: para o MVP
+Eventos e Cron. (Webhook, mcp trigger posteriormente)": `TRIGGER_BUILTIN`
+tem **Agendamento único** e **Cronograma recorrente** (selecionáveis de
+verdade — são o "Cron" do MVP) e **Webhook**/**Trigger MCP** (com badge
+"Em breve", clicam para toast em vez de selecionar — são o "posteriormente"
+do PDF). `dsEventoMeta`/`eventoMeta` ganharam fallback para
+`TRIGGER_BUILTIN`, e os `<select>` de evento nos dois painéis de gatilho
+ganharam um `<optgroup>` "Embutido" — sem isso o dropdown mostrava a
+primeira opção da lista em vez do Cron de verdade escolhido na modal
+(bug pego em teste, corrigido antes de publicar). A coluna "Integrações"
+reaproveita `INTEGRATION_TILES` (mesmo catálogo decorativo da v59).
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

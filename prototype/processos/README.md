@@ -994,6 +994,25 @@ primeira opção da lista em vez do Cron de verdade escolhido na modal
 (bug pego em teste, corrigido antes de publicar). A coluna "Integrações"
 reaproveita `INTEGRATION_TILES` (mesmo catálogo decorativo da v59).
 
+**v62** — pedido do usuário ("sinto falta de você usar esse background
+cinza em outros lugares", sobre o cartão cinza do grupo de condições):
+`.wf-panel-section` — usado só dentro dos painéis dos construtores de
+automação (gatilho, condição, ação, galhos — nenhum outro lugar do
+protótipo usa essa classe) — ganhou o mesmo tratamento visual do
+`.cond-group` (fundo `var(--muted)`, borda, `border-radius`, padding),
+então todo campo/grupo de campos do painel lateral (Evento, Fonte de
+Dados, Destinatário, Canal, Mensagem, Tipo de ação etc.) agora aparece
+no próprio cartão cinza, em vez de flutuar solto contra o fundo branco
+do painel. Uma exceção: o wrapper que envolve os grupos de condição
+("Se...") não podia ganhar o mesmo fundo, porque already contém os
+cartões `.cond-group` dentro dele — um cartão cinza dentro de outro
+cartão cinza perderia a borda; esse wrapper ganhou a classe modificadora
+`.wf-panel-section-plain` (remove fundo/borda/padding, mantém só o
+espaçamento) para voltar a ficar "solto" como antes. O painel de Galhos,
+que não usava `.wf-panel-section`, passou a usar — e as linhas de ramo
+(`.galho-row`) ganharam `background:var(--surface)` explícito para não
+se misturar com o cinza do cartão que passou a envolvê-las.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

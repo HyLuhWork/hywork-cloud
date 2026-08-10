@@ -438,7 +438,7 @@
   .wf-canvas-wrap{flex:1;min-width:0;min-height:0;position:relative;background-color:var(--canvas-bg);background-image:
     radial-gradient(var(--border-strong) 1px, transparent 1px);
     background-size:16px 16px;background-position:-7px -7px;padding:40px 20px;overflow:auto}
-  .wf-flow{display:flex;flex-direction:column;align-items:center;gap:0;width:380px;margin:0 auto}
+  .wf-flow{display:flex;flex-direction:column;align-items:center;gap:0;width:max-content;max-width:none;margin:0 auto}
   .wf-node{width:100%;background:var(--surface);border:1.5px solid var(--border-strong);border-radius:var(--radius-lg);padding:12px 14px;box-shadow:var(--shadow-sm);position:relative;cursor:pointer;z-index:1}
   .wf-node:hover{border-color:var(--navy-400)}
   .wf-node.selected{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-50)}
@@ -850,22 +850,69 @@
   .automacao-card .ac-name2 svg{color:var(--primary)}
   .automacao-card .ac-summary2{font-size:12px;color:var(--ink-muted);margin-top:6px}
   .automacao-card .ac-delete2{position:absolute;top:13px;right:14px}
-  .auto-node{width:100%;background:var(--surface);border:1.5px solid var(--border-strong);border-radius:var(--radius-lg);padding:13px 15px;box-shadow:var(--shadow-sm);cursor:pointer;position:relative}
+  .auto-node{width:380px;background:var(--surface);border:1.5px solid var(--border-strong);border-radius:var(--radius-lg);padding:13px 15px;box-shadow:var(--shadow-sm);cursor:pointer;position:relative}
   .auto-node:hover{border-color:var(--navy-400)}
   .auto-node.selected{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-50)}
   .auto-node-top{display:flex;align-items:center;gap:11px}
   .auto-node .an-ic{width:34px;height:34px;border-radius:9px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
   .auto-node.kind-condicao .an-ic{background:var(--warning-50);color:var(--warning)}
   .auto-node.kind-acao .an-ic{background:var(--success-50);color:var(--success)}
+  .auto-node.kind-galhos .an-ic{background:var(--success-50);color:var(--success)}
   .auto-node .an-eyebrow{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint)}
   .auto-node .an-title{font-size:13.5px;font-weight:700;margin-top:1px}
   .auto-node .an-delete{position:absolute;top:8px;right:8px}
-  .auto-add-circle{width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto}
+  .auto-add-circle{width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto;position:relative;flex:none}
   .auto-add-circle:hover{background:var(--navy-900)}
-  .auto-add-choices{display:flex;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);width:100%;box-shadow:var(--shadow-sm)}
-  .auto-add-choice{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;font-size:13px;font-weight:700;color:var(--ink-muted)}
-  .auto-add-choice:hover{background:var(--muted);color:var(--ink)}
-  .auto-add-choice+.auto-add-choice{border-left:1px solid var(--border)}
+  .auto-add-circle::after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%) translateY(3px);background:var(--ink);color:var(--surface);font-size:11.5px;font-weight:700;padding:6px 11px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s ease,transform .12s ease;box-shadow:var(--shadow-md);z-index:5}
+  .auto-add-circle:hover::after{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ---------- galhos (branches) ---------- */
+  .wf-fork-connector{width:2px;height:24px;background:var(--border-strong)}
+  .wf-branches{display:flex;gap:36px;justify-content:center;position:relative;margin-top:18px}
+  .wf-branches::before{content:'';position:absolute;top:-18px;left:9%;right:9%;border-top:1.5px dashed var(--border-strong)}
+  .wf-branch-col{display:flex;flex-direction:column;align-items:center;width:300px;position:relative}
+  .wf-branch-col::before{content:'';position:absolute;top:-18px;left:50%;width:0;height:18px;border-left:1.5px dashed var(--border-strong)}
+  .branch-cond-chip{width:100%;display:flex;align-items:flex-start;gap:8px;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:10px 12px;box-shadow:var(--shadow-sm);cursor:pointer;position:relative;font-size:12px;color:var(--ink);line-height:1.4}
+  .branch-cond-chip:hover{border-color:var(--navy-400)}
+  .branch-cond-chip.selected{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-50)}
+  .branch-cond-chip .bcc-text{flex:1}
+  .branch-cond-chip .bcc-x{position:absolute;top:-9px;right:-9px;width:20px;height:20px;background:var(--error);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+  .branch-cond-chip .bcc-x:hover{background:#b91c1c}
+  .branch-label-pill{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ink);margin-top:9px}
+  .branch-label-pill .blp-letter{width:19px;height:19px;border-radius:6px;background:var(--muted);color:var(--ink-muted);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex:none}
+  .galho-row-list{display:flex;flex-direction:column;gap:6px}
+  .galho-row{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 11px}
+  .galho-row:hover{border-color:var(--navy-400);background:var(--muted)}
+  .galho-row-letter{width:22px;height:22px;border-radius:7px;background:var(--muted);color:var(--ink-muted);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none}
+  .galho-row-name{flex:1;font-size:12.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .galho-row-tag{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--ink-faint);flex:none}
+
+  /* ---------- modal "Selecione uma ação" ---------- */
+  .ap-head{display:flex;align-items:center;gap:16px;padding:18px 22px;border-bottom:1px solid var(--border);flex:none}
+  .ap-head h3{font-size:16px;flex:none}
+  .ap-search{flex:1;max-width:380px;display:flex;align-items:center;gap:8px;background:var(--muted);border-radius:var(--radius-md);padding:8px 12px;color:var(--ink-faint)}
+  .ap-search input{background:none;border:none;outline:none;width:100%;color:var(--ink);font-size:13px}
+  .ap-body{display:flex;flex:1;min-height:0}
+  .ap-sidebar{width:200px;flex:none;border-right:1px solid var(--border);padding:14px 10px;overflow-y:auto}
+  .ap-cat-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:var(--radius-sm);font-size:12.5px;font-weight:600;color:var(--ink-muted);text-align:left}
+  .ap-cat-item svg{flex:none;opacity:.8}
+  .ap-cat-item:hover{background:var(--muted);color:var(--ink)}
+  .ap-cat-item.active{background:var(--primary-50);color:var(--primary-dark)}
+  .ap-cat-item.active svg{color:var(--primary-dark);opacity:1}
+  .ap-grid-wrap{flex:1;min-width:0;display:flex;gap:0;overflow-y:auto;padding:16px 22px 22px}
+  .ap-col{flex:1;min-width:0;padding:0 12px}
+  .ap-col+.ap-col{border-left:1px solid var(--border)}
+  .ap-col-label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);padding:4px 8px 8px}
+  .ap-tile{display:flex;align-items:center;gap:11px;width:100%;padding:9px 8px;border-radius:var(--radius-sm);text-align:left}
+  .ap-tile:hover{background:var(--muted)}
+  .ap-tile .ap-tile-ic{width:28px;height:28px;border-radius:7px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;flex:none}
+  .ap-tile .ap-tile-label{font-size:12.5px;font-weight:600;color:var(--ink);flex:1}
+  .ap-tile .ap-tile-badge{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:2px 7px;border-radius:var(--radius-full);flex:none}
+  .ap-tile .ap-tile-badge.pro{background:var(--primary-50);color:var(--primary-dark)}
+  .ap-tile .ap-tile-badge.soon{background:var(--muted);color:var(--ink-faint)}
+  .ap-tile.disabled{opacity:.62}
+  .ap-tile.disabled .ap-tile-ic{background:var(--muted);color:var(--ink-faint)}
+  .ap-empty{padding:30px 10px;text-align:center;color:var(--ink-faint);font-size:12.5px}
 
   @media (max-width:1100px){
     .fb-layout{grid-template-columns:195px 1fr}
@@ -966,6 +1013,7 @@ function ic(name, size){
     teams:'<circle cx="9" cy="7.5" r="3.2"/><path d="M3 20v-.8a5.2 5.2 0 0 1 5.2-5.2h1.6a5.2 5.2 0 0 1 5.2 5.2v.8"/><circle cx="17.3" cy="8.2" r="2.3"/><path d="M15.8 9.3a3.8 3.8 0 0 1 5.2 3.5v1"/>',
     clip:'<path d="M8 12.5V7a4 4 0 0 1 8 0v9a2.5 2.5 0 0 1-5 0V8.5"/>',
     megaphone:'<path d="M3 9.5v5h3l10 4V5.5l-10 4H3Z"/><path d="M19 9a3.5 3.5 0 0 1 0 6"/>',
+    condition:'<path d="M12 3 21 12 12 21 3 12Z"/>',
     trophy:'<path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4.5A2.5 2.5 0 0 0 7 9"/><path d="M17 5h2.5A2.5 2.5 0 0 1 17 9"/><path d="M12 13v3"/><path d="M8.5 20h7"/><path d="M9.5 20a2.5 2.5 0 0 1 5 0"/>',
     medal:'<circle cx="12" cy="14.5" r="5.2"/><path d="M9 4 7 9.5M15 4l2 5.5"/><path d="m9.6 14.6 1.6 1.6 3-3.4"/>',
     star:'<path d="m12 3 2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.8 6.4 20l1.4-6.2L3 9.5l6.4-.6L12 3Z"/>',
@@ -1156,19 +1204,70 @@ var EVENTO_TYPES = [
 function eventoMeta(tipo){ return EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) || EVENTO_TYPES[0]; }
 
 var AUTOMACAO_ACOES = [
-  {tipo:'notificacao', label:'Enviar notificação', icon:'bell'},
-  {tipo:'mudar_etapa', label:'Mudar etapa', icon:'flow'},
-  {tipo:'solicitar_preenchimento', label:'Solicitar preenchimento', icon:'edit'},
-  {tipo:'atualizar_campo', label:'Atualizar campo', icon:'edit'},
-  {tipo:'atualizar_sla', label:'Atualizar SLA', icon:'clock'},
-  {tipo:'definir_responsavel', label:'Definir responsável', icon:'users'},
-  {tipo:'criar_tarefa', label:'Criar tarefa', icon:'task'},
-  {tipo:'webhook', label:'Webhook', icon:'webhook'},
-  {tipo:'api', label:'Chamar API', icon:'api'},
-  {tipo:'teams', label:'Mensagem no Teams', icon:'teams'},
-  {tipo:'ia_agente', label:'Executar agente de IA', icon:'ai'},
+  {tipo:'notificacao', label:'Enviar notificação', icon:'bell', cat:'comunicacao', maisUsado:true},
+  {tipo:'mudar_etapa', label:'Mudar etapa', icon:'flow', cat:'processo', maisUsado:true},
+  {tipo:'solicitar_preenchimento', label:'Solicitar preenchimento', icon:'edit', cat:'processo'},
+  {tipo:'atualizar_campo', label:'Atualizar campo', icon:'edit', cat:'dados', maisUsado:true},
+  {tipo:'atualizar_sla', label:'Atualizar SLA', icon:'clock', cat:'processo'},
+  {tipo:'definir_responsavel', label:'Definir responsável', icon:'users', cat:'processo'},
+  {tipo:'criar_tarefa', label:'Criar tarefa', icon:'task', cat:'processo'},
+  {tipo:'webhook', label:'Webhook', icon:'webhook', cat:'dados'},
+  {tipo:'api', label:'Chamar API', icon:'api', cat:'dados', badge:'PROFISSIONAL'},
+  {tipo:'teams', label:'Mensagem no Teams', icon:'teams', cat:'comunicacao'},
+  {tipo:'ia_agente', label:'Executar agente de IA', icon:'ai', cat:'ia', maisUsado:true},
 ];
 function acaoAutomacaoMeta(tipo){ return AUTOMACAO_ACOES.find(function(a){return a.tipo===tipo;}) || AUTOMACAO_ACOES[0]; }
+
+/* ---- Modal "Selecione uma ação" (compartilhado entre automações de Processos e de Fontes de Dados) ---- */
+var LOGIC_BLOCKS = [
+  {kind:'condicao', label:'Condição', icon:'condition', cat:'logica', maisUsado:true, desc:'Só segue adiante se algo for verdade.'},
+  {kind:'galhos', label:'Galhos', icon:'fork', cat:'logica', maisUsado:true, desc:'Vários caminhos em paralelo, cada um com sua condição.'},
+];
+var AP_CATEGORIES = [
+  {id:'mais-usados', label:'Mais usados', icon:'chart'},
+  {id:'ia', label:'IA', icon:'ai'},
+  {id:'comunicacao', label:'Comunicação', icon:'forum'},
+  {id:'dados', label:'Dados', icon:'db'},
+  {id:'logica', label:'Lógica', icon:'fork'},
+  {id:'processo', label:'Processo', icon:'flow', scopeOnly:'automacao'},
+];
+var INTEGRATION_TILES = [
+  {name:'Slack', icon:'forum', cat:'comunicacao'},
+  {name:'Microsoft Teams', icon:'teams', cat:'comunicacao'},
+  {name:'Gmail', icon:'mail', cat:'comunicacao'},
+  {name:'WhatsApp Business', icon:'send', cat:'comunicacao'},
+  {name:'Airtable', icon:'grid', cat:'dados'},
+  {name:'Google Sheets', icon:'select', cat:'dados'},
+  {name:'Notion', icon:'doc', cat:'dados'},
+  {name:'HubSpot', icon:'link', cat:'dados'},
+  {name:'Salesforce', icon:'cart', cat:'dados'},
+  {name:'OpenAI', icon:'ai', cat:'ia'},
+  {name:'Anthropic', icon:'ai', cat:'ia'},
+  {name:'Zendesk', icon:'headset', cat:'processo'},
+  {name:'Jira', icon:'task', cat:'processo'},
+  {name:'Trello', icon:'grid', cat:'processo'},
+  {name:'DocuSign', icon:'sig', cat:'processo'},
+];
+function apCategoriesFor(scope){ return AP_CATEGORIES.filter(function(c){ return !c.scopeOnly || c.scopeOnly===scope; }); }
+function apAcoesFor(scope){ return scope==='ds' ? DS_ACOES : AUTOMACAO_ACOES; }
+function apNativeItemsFor(scope, cat, search){
+  var q = (search||'').trim().toLowerCase();
+  var acoes = apAcoesFor(scope).map(function(a){ return {kind:'acao', tipo:a.tipo, label:a.label, icon:a.icon, cat:a.cat, badge:a.badge, maisUsado:a.maisUsado}; });
+  var items = LOGIC_BLOCKS.concat(acoes);
+  return items.filter(function(it){
+    if (q) return it.label.toLowerCase().indexOf(q)!==-1;
+    if (cat==='mais-usados') return !!it.maisUsado;
+    return it.cat===cat;
+  });
+}
+function apIntegrationTilesFor(cat, search){
+  var q = (search||'').trim().toLowerCase();
+  return INTEGRATION_TILES.filter(function(t){
+    if (q) return t.name.toLowerCase().indexOf(q)!==-1;
+    if (cat==='mais-usados') return true;
+    return t.cat===cat;
+  });
+}
 
 function allRuleTriggerOptions(){
   var d = currentData(); if (!d) return [];
@@ -1184,9 +1283,140 @@ function allRuleTriggerOptions(){
 function makeAutomacao(o){
   return Object.assign({ id: uid(), nome:'Nova automação', ativo:true, evento:{tipo:'item_criado'}, blocos:[] }, o);
 }
-function makeAutomacaoBloco(kind){
+function makeAutomacaoBloco(kind, tipo){
   if (kind==='condicao') return {id:uid(), kind:'condicao', grupos:[{id:uid(), condicoes:[{campo:'Valor total', operador:'maior ou igual a', valor:''}]}]};
-  return {id:uid(), kind:'acao', tipo:'notificacao', alvo:'Solicitante', extra:''};
+  if (kind==='galhos') return {id:uid(), kind:'galhos', ramos:[makeRamo('Ramo 1'), makeRamo('Ramo 2')]};
+  return {id:uid(), kind:'acao', tipo:tipo||'notificacao', alvo:'Solicitante', extra:''};
+}
+/* ---- Ramo (galho) de um bloco "Galhos" — compartilhado entre automações de Processos e de Fontes de Dados ----
+   Tem o mesmo formato { id, grupos } de um bloco "condicao" (mesma edição de condições), mas nunca tem .kind,
+   o que o distingue de um bloco de verdade nas buscas/edições recursivas da árvore. */
+function makeRamo(nome){
+  return {id:uid(), nome:nome, grupos:[{id:uid(), condicoes:[{campo:'', operador:'igual a', valor:''}]}], blocos:[]};
+}
+/* Busca recursiva por id em qualquer nível da árvore de blocos (inclui ramos e os blocos dentro de cada ramo). */
+function findBlocoDeep(blocos, id){
+  for (var i=0;i<blocos.length;i++){
+    var b = blocos[i];
+    if (b.id===id) return b;
+    if (b.kind==='galhos'){
+      for (var j=0;j<b.ramos.length;j++){
+        var r = b.ramos[j];
+        if (r.id===id) return r;
+        var found = findBlocoDeep(r.blocos, id);
+        if (found) return found;
+      }
+    }
+  }
+  return null;
+}
+/* Remove por id em qualquer nível da árvore de blocos. Retorna true se encontrou e removeu. */
+function removeBlocoDeep(blocos, id){
+  for (var i=0;i<blocos.length;i++){
+    if (blocos[i].id===id){ blocos.splice(i,1); return true; }
+    var b = blocos[i];
+    if (b.kind==='galhos'){
+      for (var j=0;j<b.ramos.length;j++){
+        if (removeBlocoDeep(b.ramos[j].blocos, id)) return true;
+      }
+    }
+  }
+  return false;
+}
+function ramoCondSummaryText(ramo){
+  var g = ramo.grupos[0];
+  if (!g || !g.condicoes.length || !g.condicoes[0].campo) return 'Definir condição';
+  var c = g.condicoes[0];
+  var more = (ramo.grupos.length>1 || g.condicoes.length>1);
+  return c.campo+' '+c.operador+' '+(c.valor||'…')+(more ? ' (+)' : '');
+}
+/* Botão "+" do canvas — abre a modal "Selecione uma ação". scope: 'ds'|'automacao'. ramoId: null = tronco principal. */
+function apAddButtonHTML(scope, ramoId){
+  return '<button class="auto-add-circle" data-action="open-action-picker" data-scope="'+scope+'" data-ramoid="'+(ramoId||'')+'" data-tooltip="Adicionar uma nova ação">'+ic('plus',16)+'</button>';
+}
+/* Cartão de um bloco no canvas. opts vem de ctx.optsFor(b): {icon, eyebrow, title}. */
+function autoBlocoNodeHTML(b, selected, ctx, opts){
+  var isSel = selected===b.id;
+  return '<div class="auto-node kind-'+b.kind+(isSel?' selected':'')+'" data-action="'+ctx.selectAction+'" data-blockid="'+b.id+'">'+
+    '<button class="icon-btn an-delete" data-action="'+ctx.deleteAction+'" data-blockid="'+b.id+'" title="Excluir">'+ic('x',13)+'</button>'+
+    '<div class="auto-node-top"><div class="an-ic">'+ic(opts.icon,16)+'</div>'+
+    '<div><div class="an-eyebrow">'+esc(opts.eyebrow)+'</div><div class="an-title">'+esc(opts.title)+'</div></div></div>'+
+  '</div>';
+}
+/* Renderiza uma cadeia de blocos (tronco principal ou o conteúdo de um ramo), terminando no "+" —
+   exceto quando o último bloco é "Galhos", caso em que os ramos assumem a continuação. Recursivo:
+   cada ramo de um bloco "Galhos" renderiza sua própria cadeia chamando esta mesma função.
+   ctx: {scope, selectAction, deleteAction, deleteRamoAction, optsFor, ramoId} */
+function chainHTML(blocos, selected, ctx){
+  var out = blocos.map(function(b){
+    var node = '<div class="wf-connector"></div>'+autoBlocoNodeHTML(b, selected, ctx, ctx.optsFor(b));
+    if (b.kind==='galhos') node += galhosForkHTML(b, selected, ctx);
+    return node;
+  }).join('');
+  var last = blocos[blocos.length-1];
+  if (!last || last.kind!=='galhos'){
+    out += '<div class="wf-gap"></div>'+apAddButtonHTML(ctx.scope, ctx.ramoId||null);
+  }
+  return out;
+}
+function galhosForkHTML(b, selected, ctx){
+  var cols = b.ramos.map(function(r, i){
+    var letter = String.fromCharCode(65+i);
+    var isSel = selected===r.id;
+    var ramoCtx = Object.assign({}, ctx, {ramoId:r.id});
+    return '<div class="wf-branch-col">'+
+      '<div class="branch-cond-chip'+(isSel?' selected':'')+'" data-action="'+ctx.selectAction+'" data-blockid="'+r.id+'">'+
+        '<span class="bcc-text">'+esc(ramoCondSummaryText(r))+'</span>'+
+        (b.ramos.length>1 ? '<button class="icon-btn bcc-x" data-action="'+ctx.deleteRamoAction+'" data-blockid="'+b.id+'" data-ramoid="'+r.id+'" title="Excluir ramo">'+ic('x',12)+'</button>' : '')+
+      '</div>'+
+      '<div class="branch-label-pill"><span class="blp-letter">'+letter+'</span><span id="branch-label-'+r.id+'">'+esc(r.nome)+'</span></div>'+
+      chainHTML(r.blocos, selected, ramoCtx)+
+    '</div>';
+  }).join('');
+  return '<div class="wf-fork-connector"></div><div class="wf-branches">'+cols+'</div>';
+}
+
+/* ---- Modal "Selecione uma ação" ---- */
+function actionPickerModalHTML(){
+  var ctx = state.actionPickerOpen;
+  var cats = apCategoriesFor(ctx.scope);
+  var catsHTML = cats.map(function(c){
+    return '<button class="ap-cat-item'+(ctx.cat===c.id?' active':'')+'" data-action="set-ap-cat" data-cat="'+c.id+'">'+ic(c.icon,15)+'<span>'+esc(c.label)+'</span></button>';
+  }).join('');
+  return '<div class="overlay" data-action="close-action-picker-overlay"><div class="modal modal-lg" style="height:640px">'+
+    '<div class="ap-head"><h3>Selecione uma ação</h3>'+
+      '<div class="ap-search">'+ic('search',14)+'<input id="ap-search-input" placeholder="Procurar..." value="'+esc(ctx.search)+'"/></div>'+
+      '<div style="flex:1"></div>'+
+      '<button class="icon-btn" data-action="close-action-picker">'+ic('x',16)+'</button>'+
+    '</div>'+
+    '<div class="ap-body">'+
+      '<div class="ap-sidebar">'+catsHTML+'</div>'+
+      '<div class="ap-grid-wrap" id="ap-grid-wrap">'+actionPickerGridHTML()+'</div>'+
+    '</div>'+
+  '</div></div>';
+}
+function actionPickerGridHTML(){
+  var ctx = state.actionPickerOpen;
+  var natives = apNativeItemsFor(ctx.scope, ctx.cat, ctx.search, !!ctx.replaceBlockId);
+  var integrations = apIntegrationTilesFor(ctx.cat, ctx.search);
+  var nativeHTML = natives.length ? natives.map(function(it){
+    return '<button class="ap-tile" data-action="pick-ap-native" data-kind="'+it.kind+'" data-tipo="'+(it.tipo||'')+'">'+
+      '<div class="ap-tile-ic">'+ic(it.icon,15)+'</div><div class="ap-tile-label">'+esc(it.label)+'</div>'+
+      (it.badge ? '<span class="ap-tile-badge pro">'+esc(it.badge)+'</span>' : '')+
+    '</button>';
+  }).join('') : '<div class="ap-empty">Nada por aqui.</div>';
+  var integHTML = integrations.length ? integrations.map(function(it){
+    return '<button class="ap-tile disabled" data-action="pick-ap-integration" data-name="'+esc(it.name)+'">'+
+      '<div class="ap-tile-ic">'+ic(it.icon,15)+'</div><div class="ap-tile-label">'+esc(it.name)+'</div>'+
+      '<span class="ap-tile-badge soon">Em breve</span>'+
+    '</button>';
+  }).join('') : '<div class="ap-empty">Nada por aqui.</div>';
+  return '<div class="ap-col"><div class="ap-col-label">Nativo do Hywork</div>'+nativeHTML+'</div>'+
+    '<div class="ap-col"><div class="ap-col-label">Integrações</div>'+integHTML+'</div>';
+}
+function refreshActionPickerGrid(){
+  var el = qs('#ap-grid-wrap'); if (!el) return;
+  el.innerHTML = actionPickerGridHTML();
 }
 
 function makeRegra(o){
@@ -1820,7 +2050,7 @@ var state = {
   dsAutomacoes: [], // automações de fontes de dados (lista global, cada uma com fonteId)
   dsAutomacaoEditorId:null, // id da automação de fonte de dados em edição | null
   dsAutomacaoSelectedBlockId:null,
-  dsAutomacaoAddChoiceOpen:false,
+  actionPickerOpen:null, // {scope:'ds'|'automacao', ramoId, replaceBlockId, search, cat} | null — modal "Selecione uma ação"
   wizardOpen:false,
   wizardDraft:null,
   hystoreTemplateOpen:null, // template index | null
@@ -1845,7 +2075,6 @@ var state = {
   toast:null,
   automacaoEditorId:null,
   automacaoSelectedBlockId:null, // 'trigger' or a bloco id
-  automacaoAddChoiceOpen:false,
   automacoesSubTab:'automacao', // 'automacao' | 'logs'
   publishAnimating:false,
   publishAnimStage:0,
@@ -1972,7 +2201,7 @@ function historicoFinalizadas(){
   });
 }
 function findAutomacao(id){ var d=currentData(); return d && (d.automacoes||[]).find(function(a){return a.id===id;}); }
-function findAutomacaoBloco(autoId, blocoId){ var a=findAutomacao(autoId); return a && a.blocos.find(function(b){return b.id===blocoId;}); }
+function findAutomacaoBloco(autoId, blocoId){ var a=findAutomacao(autoId); return a && findBlocoDeep(a.blocos, blocoId); }
 
 /* ---- Variantes por processo (usadas pelo Aplicativo de cada processo na Intranet) ---- */
 function minhasSolicitacoesFor(pid){ return minhasSolicitacoes().filter(function(x){return x.processo.id===pid;}); }
@@ -2419,21 +2648,22 @@ var DS_EVENTO_TYPES = [
 ];
 function dsEventoMeta(tipo){ return DS_EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) || DS_EVENTO_TYPES[0]; }
 var DS_ACOES = [
-  {tipo:'notificacao', label:'Enviar notificação', icon:'bell'},
-  {tipo:'atualizar_campo', label:'Atualizar campo', icon:'edit'},
-  {tipo:'webhook', label:'Webhook', icon:'webhook'},
-  {tipo:'api', label:'Chamar API', icon:'api'},
-  {tipo:'ia_agente', label:'Executar agente de IA', icon:'ai'},
+  {tipo:'notificacao', label:'Enviar notificação', icon:'bell', cat:'comunicacao', maisUsado:true},
+  {tipo:'atualizar_campo', label:'Atualizar campo', icon:'edit', cat:'dados', maisUsado:true},
+  {tipo:'webhook', label:'Webhook', icon:'webhook', cat:'dados'},
+  {tipo:'api', label:'Chamar API', icon:'api', cat:'dados', badge:'PROFISSIONAL'},
+  {tipo:'ia_agente', label:'Executar agente de IA', icon:'ai', cat:'ia', maisUsado:true},
 ];
 function dsAcaoMeta(tipo){ return DS_ACOES.find(function(a){return a.tipo===tipo;}) || DS_ACOES[0]; }
 function makeDsAutomacao(o){ return Object.assign({id:uid(), nome:'Nova automação', ativo:true, evento:{tipo:'item_criado'}, blocos:[]}, o); }
-function makeDsBloco(kind){
+function makeDsBloco(kind, tipo){
   if (kind==='condicao') return {id:uid(), kind:'condicao', grupos:[{id:uid(), condicoes:[{campo:'', operador:'igual a', valor:''}]}]};
-  return {id:uid(), kind:'acao', tipo:'notificacao', alvo:'', extra:''};
+  if (kind==='galhos') return {id:uid(), kind:'galhos', ramos:[makeRamo('Ramo 1'), makeRamo('Ramo 2')]};
+  return {id:uid(), kind:'acao', tipo:tipo||'notificacao', alvo:'', extra:''};
 }
 function findDsAuto(id){ return state.dsAutomacoes.find(function(a){return a.id===id;}); }
 function currentDsAuto(){ return findDsAuto(state.dsAutomacaoEditorId); }
-function findDsBlocoIn(auto, blockId){ return auto && auto.blocos.find(function(b){return b.id===blockId;}); }
+function findDsBlocoIn(auto, blockId){ return auto && findBlocoDeep(auto.blocos, blockId); }
 function automacoesForFonte(fonteId){ return state.dsAutomacoes.filter(function(a){return a.fonteId===fonteId;}); }
 function dsAutomacaoEventoText(a){
   var meta = dsEventoMeta(a.evento.tipo);
@@ -2499,30 +2729,19 @@ function automacoesAdminHTML(){
       '<div class="empty-state"><div class="es-ic">'+ic('bolt',22)+'</div><div class="es-title">Nenhuma automação criada ainda</div><div class="es-sub">Crie regras como "quando um item for criado, envie uma notificação" para qualquer fonte de dados.</div><button class="btn btn-primary" style="margin-top:6px" data-action="new-ds-automacao">'+ic('plus',14)+'Nova Automação</button></div>')+
   '</div>';
 }
+var DS_CHAIN_CTX = {scope:'ds', selectAction:'select-ds-automacao-block', deleteAction:'delete-ds-automacao-bloco', deleteRamoAction:'delete-ds-ramo', optsFor:dsBlocoOptsFor};
+function dsBlocoOptsFor(b){
+  if (b.kind==='condicao') return {icon:'condition', eyebrow:'Se', title:dsCondicaoSummaryText(b)};
+  if (b.kind==='galhos') return {icon:'fork', eyebrow:'Galhos', title:b.ramos.length+' caminhos em paralelo'};
+  return {icon:dsAcaoMeta(b.tipo).icon, eyebrow:'Então', title:dsAcaoSummaryText(b)};
+}
 function dsAutomacaoEditorHTML(auto){
   var selected = state.dsAutomacaoSelectedBlockId;
   var triggerNode = '<div class="auto-node kind-trigger'+(selected==='trigger'?' selected':'')+'" data-action="select-ds-automacao-block" data-blockid="trigger">'+
     '<div class="auto-node-top"><div class="an-ic">'+ic(dsEventoMeta(auto.evento.tipo).icon,16)+'</div>'+
     '<div><div class="an-eyebrow">Quando</div><div class="an-title">'+esc(dsAutomacaoEventoText(auto))+'</div></div></div>'+
   '</div>';
-  var blocosHTML = auto.blocos.map(function(b){
-    var isCondicao = b.kind==='condicao';
-    var eyebrow = isCondicao ? 'Se' : 'Então';
-    var title = isCondicao ? dsCondicaoSummaryText(b) : dsAcaoSummaryText(b);
-    var icon = isCondicao ? 'fork' : dsAcaoMeta(b.tipo).icon;
-    return '<div class="wf-connector"></div>'+
-      '<div class="auto-node kind-'+b.kind+(selected===b.id?' selected':'')+'" data-action="select-ds-automacao-block" data-blockid="'+b.id+'">'+
-      '<button class="icon-btn an-delete" data-action="delete-ds-automacao-bloco" data-blockid="'+b.id+'" title="Excluir">'+ic('x',13)+'</button>'+
-      '<div class="auto-node-top"><div class="an-ic">'+ic(icon,16)+'</div>'+
-      '<div><div class="an-eyebrow">'+eyebrow+'</div><div class="an-title">'+esc(title)+'</div></div></div>'+
-    '</div>';
-  }).join('');
-  var addBlock = state.dsAutomacaoAddChoiceOpen ?
-    '<div class="auto-add-choices">'+
-      '<button class="auto-add-choice" data-action="add-ds-automacao-bloco" data-kind="condicao">'+ic('fork',15)+'Condição</button>'+
-      '<button class="auto-add-choice" data-action="add-ds-automacao-bloco" data-kind="acao">'+ic('bolt',15)+'Ação</button>'+
-    '</div>' :
-    '<button class="auto-add-circle" data-action="toggle-ds-automacao-addchoice" title="Adicionar condição ou ação">'+ic('plus',16)+'</button>';
+  var blocosHTML = chainHTML(auto.blocos, selected, DS_CHAIN_CTX);
   return '<div style="padding:16px 28px 0;display:flex;align-items:center;justify-content:space-between;gap:12px">'+
       '<a href="#" class="back-link" data-action="close-ds-automacao-editor">'+ic('arrowLeft',14)+'Voltar para Automações</a>'+
       '<button class="btn btn-primary btn-sm" data-action="save-ds-automacao">'+ic('check',14)+'Salvar automação</button>'+
@@ -2530,7 +2749,6 @@ function dsAutomacaoEditorHTML(auto){
     '<div class="wf-layout" style="height:calc(100vh - 170px)">'+
       '<div class="wf-canvas-wrap"><div class="wf-flow">'+
         triggerNode+'<div class="wf-connector"></div>'+blocosHTML+
-        '<div class="wf-gap"></div>'+addBlock+
       '</div></div>'+
       '<div class="wf-panel">'+dsAutomacaoPanelHTML(auto)+'</div>'+
     '</div>';
@@ -2540,7 +2758,9 @@ function dsAutomacaoPanelHTML(auto){
   if (!sel || sel==='trigger') return dsAutomacaoTriggerPanelHTML(auto);
   var bloco = findDsBlocoIn(auto, sel);
   if (!bloco) return dsAutomacaoTriggerPanelHTML(auto);
-  if (bloco.kind==='condicao') return dsAutomacaoCondicaoPanelHTML(auto, bloco);
+  if (!bloco.kind) return dsAutomacaoCondicaoPanelHTML(auto, bloco, true);
+  if (bloco.kind==='condicao') return dsAutomacaoCondicaoPanelHTML(auto, bloco, false);
+  if (bloco.kind==='galhos') return dsGalhosPanelHTML(auto, bloco);
   return dsAutomacaoAcaoPanelHTML(auto, bloco);
 }
 function dsAutomacaoTriggerPanelHTML(auto){
@@ -2582,7 +2802,24 @@ function dsAutomacaoTriggerPanelHTML(auto){
       extra+
     '</div>';
 }
-function dsAutomacaoCondicaoPanelHTML(auto, bloco){
+function dsGalhosPanelHTML(auto, bloco){
+  var rows = bloco.ramos.map(function(r,i){
+    var letter = String.fromCharCode(65+i);
+    return '<div class="galho-row" data-action="select-ds-automacao-block" data-blockid="'+r.id+'">'+
+      '<span class="galho-row-letter">'+letter+'</span>'+
+      '<span class="galho-row-name">'+esc(r.nome)+'</span>'+
+      '<span class="galho-row-tag">Condicional'+ic('chevronDown',12)+'</span>'+
+    '</div>';
+  }).join('');
+  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Galhos</div></div>'+
+    '<div class="wf-panel-body">'+
+      '<div class="wf-panel-section-label">Galhos</div>'+
+      '<div class="field-hint" style="margin-bottom:10px">Todas as filiais qualificadas funcionarão em paralelo.</div>'+
+      '<div class="galho-row-list">'+rows+'</div>'+
+      '<button class="link-btn" style="margin-top:10px" data-action="add-ds-ramo" data-blockid="'+bloco.id+'">'+ic('plus',12)+'Adicionar</button>'+
+    '</div>';
+}
+function dsAutomacaoCondicaoPanelHTML(auto, bloco, isRamo){
   var fonte = dataSourceById(auto.fonteId);
   var campos = fonte ? fonte.fields : [];
   var grupos = bloco.grupos;
@@ -2609,16 +2846,20 @@ function dsAutomacaoCondicaoPanelHTML(auto, bloco){
       '</div>'+
     '</div>';
   }).join('');
-  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Se...</div><div class="wf-panel-sub">A automação só segue se isso for verdade.</div></div>'+
+  var head = isRamo ?
+    '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Nome do ramo</div>'+
+      '<input class="input" style="margin-top:8px" data-bind="dsautomacao.ramoNome" data-blockid="'+bloco.id+'" value="'+esc(bloco.nome)+'"/>'+
+      '<div class="wf-panel-sub" style="margin-top:6px">Este caminho segue quando a condição abaixo for verdade.</div></div>' :
+    '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Se...</div><div class="wf-panel-sub">A automação só segue se isso for verdade.</div></div>';
+  return head+
     '<div class="wf-panel-body"><div class="wf-panel-section">'+gruposHTML+
     '<button class="link-btn" style="margin-top:10px" data-action="add-ds-grupo" data-blockid="'+bloco.id+'">'+ic('plus',12)+'Adicionar grupo de condições</button>'+
     '</div></div>';
 }
 function dsAutomacaoAcaoPanelHTML(auto, bloco){
+  var meta = dsAcaoMeta(bloco.tipo);
   var body = '<div class="wf-panel-section"><div class="wf-panel-section-label">Tipo de ação</div>'+
-    DS_ACOES.map(function(a){
-      return '<button class="action-tpl'+(bloco.tipo===a.tipo?' selected':'')+'" data-action="set-ds-acao-tipo" data-blockid="'+bloco.id+'" data-tipo="'+a.tipo+'"><div class="at-ic">'+ic(a.icon,14)+'</div><div class="at-title">'+a.label+'</div></button>';
-    }).join('')+
+    '<button class="action-tpl selected" data-action="open-action-picker-replace" data-scope="ds" data-blockid="'+bloco.id+'"><div class="at-ic">'+ic(meta.icon,14)+'</div><div class="at-title">'+esc(meta.label)+'</div><span class="link-btn" style="margin-left:auto">Trocar</span></button>'+
   '</div>';
   return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Então...</div><div class="wf-panel-sub">O que a automação faz quando dispara</div></div>'+
     '<div class="wf-panel-body">'+body+dsAcaoExtraFieldsHTML(auto, bloco)+'</div>';
@@ -4319,6 +4560,12 @@ function automacoesListHTML(){
       '<div class="empty-state"><div class="es-ic">'+ic('bolt',22)+'</div><div class="es-title">Nenhuma automação configurada</div><div class="es-sub">Crie regras como "quando X acontecer, faça Y" — notificações, mudança de etapa e mais.</div><button class="btn btn-primary" style="margin-top:6px" data-action="new-automacao">'+ic('plus',14)+'Nova Automação</button></div>')+
   '</div>';
 }
+var PROC_CHAIN_CTX = {scope:'automacao', selectAction:'select-automacao-block', deleteAction:'delete-automacao-bloco', deleteRamoAction:'delete-automacao-ramo', optsFor:procBlocoOptsFor};
+function procBlocoOptsFor(b){
+  if (b.kind==='condicao') return {icon:'condition', eyebrow:'Se', title:condicaoSummaryText(b)};
+  if (b.kind==='galhos') return {icon:'fork', eyebrow:'Galhos', title:b.ramos.length+' caminhos em paralelo'};
+  return {icon:acaoAutomacaoMeta(b.tipo).icon, eyebrow:'Então', title:acaoSummaryText(b)};
+}
 function automacaoEditorHTML(){
   var auto = findAutomacao(state.automacaoEditorId);
   if (!auto) { state.automacaoEditorId=null; return automacoesListHTML(); }
@@ -4329,25 +4576,7 @@ function automacaoEditorHTML(){
     '<div><div class="an-eyebrow">Quando</div><div class="an-title" id="auto-trigger-title">'+esc(automacaoEventoText(auto))+'</div></div></div>'+
   '</div>';
 
-  var blocosHTML = auto.blocos.map(function(b){
-    var isCondicao = b.kind==='condicao';
-    var eyebrow = isCondicao ? 'Se' : 'Então';
-    var title = isCondicao ? condicaoSummaryText(b) : acaoSummaryText(b);
-    var icon = isCondicao ? 'fork' : acaoAutomacaoMeta(b.tipo).icon;
-    return '<div class="wf-connector"></div>'+
-      '<div class="auto-node kind-'+b.kind+(selected===b.id?' selected':'')+'" data-action="select-automacao-block" data-blockid="'+b.id+'">'+
-      '<button class="icon-btn an-delete" data-action="delete-automacao-bloco" data-blockid="'+b.id+'" title="Excluir">'+ic('x',13)+'</button>'+
-      '<div class="auto-node-top"><div class="an-ic">'+ic(icon,16)+'</div>'+
-      '<div><div class="an-eyebrow">'+eyebrow+'</div><div class="an-title">'+esc(title)+'</div></div></div>'+
-    '</div>';
-  }).join('');
-
-  var addBlock = state.automacaoAddChoiceOpen ?
-    '<div class="auto-add-choices">'+
-      '<button class="auto-add-choice" data-action="add-automacao-bloco" data-kind="condicao">'+ic('fork',15)+'Condição</button>'+
-      '<button class="auto-add-choice" data-action="add-automacao-bloco" data-kind="acao">'+ic('bolt',15)+'Ação</button>'+
-    '</div>' :
-    '<button class="auto-add-circle" data-action="toggle-automacao-addchoice" title="Adicionar condição ou ação">'+ic('plus',16)+'</button>';
+  var blocosHTML = chainHTML(auto.blocos, selected, PROC_CHAIN_CTX);
 
   return '<div style="padding:16px 28px 0;display:flex;align-items:center;justify-content:space-between;gap:12px">'+
       '<a href="#" class="back-link" data-action="close-automacao-editor">'+ic('arrowLeft',14)+'Voltar para Automações</a>'+
@@ -4356,7 +4585,6 @@ function automacaoEditorHTML(){
     '<div class="wf-layout">'+
       '<div class="wf-canvas-wrap"><div class="wf-flow">'+
         triggerNode+'<div class="wf-connector"></div>'+blocosHTML+
-        '<div class="wf-gap"></div>'+addBlock+
       '</div></div>'+
       '<div class="wf-panel">'+automacaoPanelHTML(auto)+'</div>'+
     '</div>';
@@ -4366,7 +4594,9 @@ function automacaoPanelHTML(auto){
   if (!sel || sel==='trigger') return automacaoTriggerPanelHTML(auto);
   var bloco = findAutomacaoBloco(auto.id, sel);
   if (!bloco) return automacaoTriggerPanelHTML(auto);
-  if (bloco.kind==='condicao') return automacaoCondicaoPanelHTML(auto, bloco);
+  if (!bloco.kind) return automacaoCondicaoPanelHTML(auto, bloco, true);
+  if (bloco.kind==='condicao') return automacaoCondicaoPanelHTML(auto, bloco, false);
+  if (bloco.kind==='galhos') return automacaoGalhosPanelHTML(auto, bloco);
   return automacaoAcaoPanelHTML(auto, bloco);
 }
 function automacaoTriggerPanelHTML(auto){
@@ -4390,7 +4620,24 @@ function automacaoTriggerPanelHTML(auto){
     '<input class="input" style="margin-top:8px" data-bind="automacao.nome" data-autoid="'+auto.id+'" value="'+esc(auto.nome)+'"/></div>'+
     '<div class="wf-panel-body"><div class="wf-panel-section"><div class="wf-panel-section-label">Evento — quando dispara</div>'+eventSelect+'</div>'+extra+'</div>';
 }
-function automacaoCondicaoPanelHTML(auto, bloco){
+function automacaoGalhosPanelHTML(auto, bloco){
+  var rows = bloco.ramos.map(function(r,i){
+    var letter = String.fromCharCode(65+i);
+    return '<div class="galho-row" data-action="select-automacao-block" data-blockid="'+r.id+'">'+
+      '<span class="galho-row-letter">'+letter+'</span>'+
+      '<span class="galho-row-name">'+esc(r.nome)+'</span>'+
+      '<span class="galho-row-tag">Condicional'+ic('chevronDown',12)+'</span>'+
+    '</div>';
+  }).join('');
+  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Galhos</div></div>'+
+    '<div class="wf-panel-body">'+
+      '<div class="wf-panel-section-label">Galhos</div>'+
+      '<div class="field-hint" style="margin-bottom:10px">Todas as filiais qualificadas funcionarão em paralelo.</div>'+
+      '<div class="galho-row-list">'+rows+'</div>'+
+      '<button class="link-btn" style="margin-top:10px" data-action="add-automacao-ramo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+ic('plus',12)+'Adicionar</button>'+
+    '</div>';
+}
+function automacaoCondicaoPanelHTML(auto, bloco, isRamo){
   var grupos = bloco.grupos;
   var campos = allProcessFields();
   var gruposHTML = grupos.map(function(g, gi){
@@ -4416,16 +4663,20 @@ function automacaoCondicaoPanelHTML(auto, bloco){
       '</div>'+
     '</div>';
   }).join('');
-  return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Se...</div><div class="wf-panel-sub">A automação só segue se isso for verdade. Grupos de condições podem se combinar com E ou OU.</div></div>'+
+  var head = isRamo ?
+    '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Nome do ramo</div>'+
+      '<input class="input" style="margin-top:8px" data-bind="automacao.ramoNome" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.nome)+'"/>'+
+      '<div class="wf-panel-sub" style="margin-top:6px">Este caminho segue quando a condição abaixo for verdade.</div></div>' :
+    '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Se...</div><div class="wf-panel-sub">A automação só segue se isso for verdade. Grupos de condições podem se combinar com E ou OU.</div></div>';
+  return head+
     '<div class="wf-panel-body"><div class="wf-panel-section">'+gruposHTML+
     '<button class="link-btn" style="margin-top:10px" data-action="add-automacao-grupo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+ic('plus',12)+'Adicionar grupo de condições</button>'+
     '</div></div>';
 }
 function automacaoAcaoPanelHTML(auto, bloco){
+  var meta = acaoAutomacaoMeta(bloco.tipo);
   var body = '<div class="wf-panel-section"><div class="wf-panel-section-label">Tipo de ação</div>'+
-    AUTOMACAO_ACOES.map(function(a){
-      return '<button class="action-tpl'+(bloco.tipo===a.tipo?' selected':'')+'" data-action="set-automacao-acao-tipo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" data-tipo="'+a.tipo+'"><div class="at-ic">'+ic(a.icon,14)+'</div><div class="at-title">'+a.label+'</div></button>';
-    }).join('')+
+    '<button class="action-tpl selected" data-action="open-action-picker-replace" data-scope="automacao" data-blockid="'+bloco.id+'"><div class="at-ic">'+ic(meta.icon,14)+'</div><div class="at-title">'+esc(meta.label)+'</div><span class="link-btn" style="margin-left:auto">Trocar</span></button>'+
   '</div>';
   return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Então...</div><div class="wf-panel-sub">O que a automação faz quando dispara</div></div>'+
     '<div class="wf-panel-body">'+body+acaoExtraFieldsHTML(auto, bloco)+'</div>';
@@ -4525,6 +4776,7 @@ function renderModal(){
   if (state.novaFonteOpen){ root.innerHTML = novaFonteModalHTML(); return; }
   if (state.fonteFieldsOpen){ root.innerHTML = fonteFieldsModalHTML(); return; }
   if (state.fonteRecordOpen){ root.innerHTML = fonteRecordModalHTML(); return; }
+  if (state.actionPickerOpen){ root.innerHTML = actionPickerModalHTML(); return; }
   root.innerHTML='';
 }
 function wizardModalHTML(){
@@ -4840,12 +5092,11 @@ document.addEventListener('click', function(e){
       state.dsAutomacoes.push(naAuto);
       state.dsAutomacaoEditorId = naAuto.id;
       state.dsAutomacaoSelectedBlockId = 'trigger';
-      state.dsAutomacaoAddChoiceOpen = false;
       state.dsAutomatePopoverOpen = false;
       break;
     }
-    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSelectedBlockId = 'trigger'; state.dsAutomacaoAddChoiceOpen = false; break;
-    case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; state.dsAutomacaoSelectedBlockId = null; state.dsAutomacaoAddChoiceOpen = false; break;
+    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSelectedBlockId = 'trigger'; break;
+    case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; state.dsAutomacaoSelectedBlockId = null; break;
     case 'save-ds-automacao': state.dsAutomacaoEditorId = null; state.dsAutomacaoSelectedBlockId = null; showToast('Automação salva.'); break;
     case 'toggle-ds-automacao-ativo': { var taAuto = findDsAuto(t.dataset.id); taAuto.ativo = !taAuto.ativo; break; }
     case 'delete-ds-automacao': {
@@ -4853,17 +5104,18 @@ document.addEventListener('click', function(e){
       if (state.dsAutomacaoEditorId===t.dataset.id){ state.dsAutomacaoEditorId=null; state.dsAutomacaoSelectedBlockId=null; }
       break;
     }
-    case 'select-ds-automacao-block': state.dsAutomacaoSelectedBlockId = t.dataset.blockid; state.dsAutomacaoAddChoiceOpen = false; break;
-    case 'toggle-ds-automacao-addchoice': state.dsAutomacaoAddChoiceOpen = !state.dsAutomacaoAddChoiceOpen; break;
-    case 'add-ds-automacao-bloco': {
-      var abAuto = currentDsAuto(); var abBloco = makeDsBloco(t.dataset.kind);
-      abAuto.blocos.push(abBloco); state.dsAutomacaoSelectedBlockId = abBloco.id; state.dsAutomacaoAddChoiceOpen = false;
-      break;
-    }
+    case 'select-ds-automacao-block': state.dsAutomacaoSelectedBlockId = t.dataset.blockid; break;
     case 'delete-ds-automacao-bloco': {
       var dbAuto = currentDsAuto();
-      dbAuto.blocos = dbAuto.blocos.filter(function(b){return b.id!==t.dataset.blockid;});
+      removeBlocoDeep(dbAuto.blocos, t.dataset.blockid);
       if (state.dsAutomacaoSelectedBlockId===t.dataset.blockid) state.dsAutomacaoSelectedBlockId = 'trigger';
+      break;
+    }
+    case 'add-ds-ramo': { var arBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); arBloco.ramos.push(makeRamo('Ramo '+(arBloco.ramos.length+1))); break; }
+    case 'delete-ds-ramo': {
+      var drBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid);
+      if (drBloco.ramos.length>1) drBloco.ramos = drBloco.ramos.filter(function(r){return r.id!==t.dataset.ramoid;});
+      if (state.dsAutomacaoSelectedBlockId===t.dataset.ramoid) state.dsAutomacaoSelectedBlockId = drBloco.id;
       break;
     }
     case 'toggle-ds-evento-valor': {
@@ -4873,16 +5125,33 @@ document.addEventListener('click', function(e){
       if (tvIdx===-1) tvAuto.evento.valores.push(t.dataset.valor); else tvAuto.evento.valores.splice(tvIdx,1);
       break;
     }
-    case 'set-ds-acao-tipo': {
-      var saBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid);
-      saBloco.tipo = t.dataset.tipo; saBloco.alvo=''; saBloco.extra='';
-      break;
-    }
     case 'add-ds-grupo': { var agBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); agBloco.grupos.push({id:uid(), conector:'E', condicoes:[{campo:'', operador:'igual a', valor:''}]}); break; }
     case 'remove-ds-grupo': { var rgBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); rgBloco.grupos = rgBloco.grupos.filter(function(g){return g.id!==t.dataset.groupid;}); break; }
     case 'set-ds-grupo-conector': { var scBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); var scGrupo = scBloco.grupos.find(function(g){return g.id===t.dataset.groupid;}); scGrupo.conector = t.dataset.conector; break; }
     case 'add-ds-cond': { var acBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); var acGrupo = acBloco.grupos.find(function(g){return g.id===t.dataset.groupid;}); acGrupo.condicoes.push({campo:'', operador:'igual a', valor:''}); break; }
     case 'remove-ds-cond': { var rcBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); var rcGrupo = rcBloco.grupos.find(function(g){return g.id===t.dataset.groupid;}); rcGrupo.condicoes.splice(+t.dataset.idx,1); break; }
+
+    /* modal "Selecione uma ação" — compartilhada entre automações de Processos e de Fontes de Dados */
+    case 'open-action-picker': state.actionPickerOpen = {scope:t.dataset.scope, ramoId:t.dataset.ramoid||null, replaceBlockId:null, search:'', cat:'mais-usados'}; break;
+    case 'open-action-picker-replace': state.actionPickerOpen = {scope:t.dataset.scope, ramoId:null, replaceBlockId:t.dataset.blockid, search:'', cat:'mais-usados'}; break;
+    case 'close-action-picker': case 'close-action-picker-overlay': state.actionPickerOpen = null; break;
+    case 'set-ap-cat': state.actionPickerOpen.cat = t.dataset.cat; break;
+    case 'pick-ap-native': {
+      var pctx = state.actionPickerOpen;
+      var pAuto = pctx.scope==='ds' ? currentDsAuto() : findAutomacao(state.automacaoEditorId);
+      if (pctx.replaceBlockId){
+        var rBloco = findBlocoDeep(pAuto.blocos, pctx.replaceBlockId);
+        rBloco.tipo = t.dataset.tipo; rBloco.alvo=''; rBloco.extra='';
+      } else {
+        var targetArr = pctx.ramoId ? findBlocoDeep(pAuto.blocos, pctx.ramoId).blocos : pAuto.blocos;
+        var novo = pctx.scope==='ds' ? makeDsBloco(t.dataset.kind, t.dataset.tipo) : makeAutomacaoBloco(t.dataset.kind, t.dataset.tipo);
+        targetArr.push(novo);
+        if (pctx.scope==='ds') state.dsAutomacaoSelectedBlockId = novo.id; else state.automacaoSelectedBlockId = novo.id;
+      }
+      state.actionPickerOpen = null;
+      break;
+    }
+    case 'pick-ap-integration': { showToast(t.dataset.name+' chega em breve.'); state.actionPickerOpen = null; break; }
     case 'open-wizard':
       state.wizardOpen = true;
       state.wizardDraft = {name:'',description:'',category:CATEGORIES[0],icon:ICON_OPTIONS[0],color:COLOR_OPTIONS[0].v};
@@ -5271,15 +5540,15 @@ document.addEventListener('click', function(e){
       var d8=currentData(); d8.automacoes = d8.automacoes||[];
       var na = makeAutomacao({});
       d8.automacoes.push(na);
-      state.automacaoEditorId = na.id; state.automacaoSelectedBlockId='trigger'; state.automacaoAddChoiceOpen=false;
+      state.automacaoEditorId = na.id; state.automacaoSelectedBlockId='trigger';
       break;
     }
     case 'open-automacao-editor': {
-      state.automacaoEditorId = t.dataset.id; state.automacaoSelectedBlockId='trigger'; state.automacaoAddChoiceOpen=false;
+      state.automacaoEditorId = t.dataset.id; state.automacaoSelectedBlockId='trigger';
       break;
     }
     case 'close-automacao-editor': {
-      state.automacaoEditorId = null; state.automacaoSelectedBlockId = null; state.automacaoAddChoiceOpen=false;
+      state.automacaoEditorId = null; state.automacaoSelectedBlockId = null;
       break;
     }
     case 'toggle-automacao-ativo': { var ta=findAutomacao(t.dataset.id); ta.ativo = !ta.ativo; break; }
@@ -5288,19 +5557,22 @@ document.addEventListener('click', function(e){
       if (state.automacaoEditorId===t.dataset.id){ state.automacaoEditorId=null; state.automacaoSelectedBlockId=null; }
       break;
     }
-    case 'select-automacao-block': { state.automacaoSelectedBlockId = t.dataset.blockid; state.automacaoAddChoiceOpen=false; break; }
-    case 'toggle-automacao-addchoice': state.automacaoAddChoiceOpen = !state.automacaoAddChoiceOpen; break;
-    case 'add-automacao-bloco': {
-      var auB=findAutomacao(state.automacaoEditorId);
-      var nb = makeAutomacaoBloco(t.dataset.kind);
-      auB.blocos.push(nb);
-      state.automacaoSelectedBlockId = nb.id; state.automacaoAddChoiceOpen=false;
-      break;
-    }
+    case 'select-automacao-block': { state.automacaoSelectedBlockId = t.dataset.blockid; break; }
     case 'delete-automacao-bloco': {
       var auD=findAutomacao(state.automacaoEditorId);
-      auD.blocos = auD.blocos.filter(function(b){return b.id!==t.dataset.blockid;});
+      removeBlocoDeep(auD.blocos, t.dataset.blockid);
       if (state.automacaoSelectedBlockId===t.dataset.blockid) state.automacaoSelectedBlockId='trigger';
+      break;
+    }
+    case 'add-automacao-ramo': {
+      var arBlocoP = findAutomacaoBloco(t.dataset.autoid, t.dataset.blockid);
+      arBlocoP.ramos.push(makeRamo('Ramo '+(arBlocoP.ramos.length+1)));
+      break;
+    }
+    case 'delete-automacao-ramo': {
+      var drBlocoP = findAutomacaoBloco(state.automacaoEditorId, t.dataset.blockid);
+      if (drBlocoP.ramos.length>1) drBlocoP.ramos = drBlocoP.ramos.filter(function(r){return r.id!==t.dataset.ramoid;});
+      if (state.automacaoSelectedBlockId===t.dataset.ramoid) state.automacaoSelectedBlockId = drBlocoP.id;
       break;
     }
     case 'add-automacao-grupo': {
@@ -5333,11 +5605,6 @@ document.addEventListener('click', function(e){
     }
     case 'save-automacao': {
       showToast('Automação salva.');
-      break;
-    }
-    case 'set-automacao-acao-tipo': {
-      var bT=findAutomacaoBloco(t.dataset.autoid, t.dataset.blockid);
-      bT.tipo = t.dataset.tipo; bT.alvo=''; bT.extra='';
       break;
     }
 
@@ -5519,6 +5786,7 @@ document.addEventListener('input', function(e){
     else if (bind==='automacao.condVal'){ var bV=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); var gV=bV.grupos.find(function(g){return g.id===el.dataset.groupid;}); gV.condicoes[+el.dataset.idx].valor=val; }
     else if (bind==='automacao.acaoExtra'){ var bE=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); bE.extra=val; }
     else if (bind==='automacao.acaoAlvo'){ var bA=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(bA) bA.alvo=val; }
+    else if (bind==='automacao.ramoNome'){ var bRN=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); bRN.nome=val; setText('#branch-label-'+el.dataset.blockid, val || 'Ramo'); }
     else if (bind==='formcfg.nome'){ currentData().formConfig.nome=val; }
     else if (bind==='formcfg.descricao'){ currentData().formConfig.descricao=val; }
     else if (bind==='sol.campo'){ var sol7=findSolicitacao(el.dataset.solid); sol7.valores[el.dataset.fieldid]=val; }
@@ -5530,6 +5798,7 @@ document.addEventListener('input', function(e){
     else if (bind==='dsautomacao.nome'){ currentDsAuto().nome=val; }
     else if (bind==='dsautomacao.condVal'){ var dsaVB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); var dsaVG=dsaVB.grupos.find(function(g){return g.id===el.dataset.groupid;}); dsaVG.condicoes[+el.dataset.idx].valor=val; }
     else if (bind==='dsautomacao.acaoExtra'){ var dsaXB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsaXB.extra=val; }
+    else if (bind==='dsautomacao.ramoNome'){ var dsaRN=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsaRN.nome=val; setText('#branch-label-'+el.dataset.blockid, val || 'Ramo'); }
     return;
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }
@@ -5538,6 +5807,7 @@ document.addEventListener('input', function(e){
   if (e.target.id==='req-comment-input'){ state.reqCommentDraft = e.target.value; }
   if (e.target.id==='dados-search'){ state.dadosSearch = e.target.value; refreshDadosArea(); }
   if (e.target.id==='dados-record-search'){ state.dadosRecordSearch = e.target.value; refreshFonteRecordsArea(); }
+  if (e.target.id==='ap-search-input'){ state.actionPickerOpen.search = e.target.value; refreshActionPickerGrid(); }
 });
 function setText(sel, val){ var n = document.querySelector(sel); if (n) n.textContent = val; }
 

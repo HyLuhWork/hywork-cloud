@@ -863,6 +863,52 @@ o toggle segue esse mesmo padrão: `updateNavDesafiosGroup()`, chamada a
 cada `render()`, adiciona/remove a classe `.open` no `#nav-desafios-group`
 em vez de reconstruir o HTML da sidebar inteira.
 
+**v59** — reforma grande dos dois construtores de automação (Processos e
+Fontes de Dados), a partir de prints de referência de um concorrente
+(fluxo com bloco "Galhos" e modal "Selecione uma ação"):
+
+- **Modal "Selecione uma ação"** (`actionPickerModalHTML`) substitui a
+  lista simples de 5–11 botões que existia dentro do painel "Então...".
+  Busca, categorias à esquerda (Mais usados/IA/Comunicação/Dados/Lógica/
+  Processo — a última só para automações de Processo) e duas colunas à
+  direita: **Nativo do Hywork** (ações de verdade, filtráveis por
+  categoria/busca) e **Integrações** (grade decorativa — Slack, Airtable,
+  Google Sheets, OpenAI etc. — com badge "Em breve"; clicar mostra um
+  toast, não finge que funciona). Abre ao clicar no "+" do canvas (que
+  agora tem tooltip "Adicionar uma nova ação" no hover, via
+  `.auto-add-circle::after`) ou no botão "Trocar" do painel de uma ação
+  já existente (`open-action-picker-replace`, muda o tipo no lugar em vez
+  de criar um bloco novo).
+- **Bloco "Galhos"** — condição multi-caminho (switch/case): vários ramos
+  em paralelo, cada um com nome e condição próprios, desenhados no canvas
+  como um fork com colunas lado a lado (`.wf-branches`, linhas
+  tracejadas). Foi a mudança mais profunda: um bloco deixou de viver só
+  numa lista plana (`auto.blocos`) e passou a poder ser uma árvore — um
+  bloco `kind:'galhos'` tem `ramos:[{id, nome, grupos, blocos}]`, e cada
+  ramo tem sua própria condição (mesmo formato `{grupos}` de um bloco
+  "condicao" — um ramo nunca tem `.kind`, o que o distingue nas buscas) e
+  sua própria cadeia de blocos (que pode, recursivamente, conter outro
+  "Galhos"). `findBlocoDeep`/`removeBlocoDeep` (compartilhadas entre os
+  dois construtores) buscam/removem por id em qualquer profundidade da
+  árvore; `chainHTML`/`galhosForkHTML` (também compartilhadas) renderizam
+  qualquer cadeia — tronco principal ou o conteúdo de um ramo — de forma
+  recursiva. O painel de um bloco "Galhos" lista os ramos com avatar de
+  letra (A, B, C…) e um atalho "Condicional" para a condição de cada um
+  (`dsGalhosPanelHTML`/`automacaoGalhosPanelHTML`); o painel de um ramo é
+  o mesmo editor de condições de sempre, só que com um campo extra para
+  renomear o ramo no topo.
+- Ícone novo para "Condição" (losango, `condition`) para não colidir mais
+  com o ícone de "Galhos" (que passou a usar o antigo ícone de fork de
+  3 nós, mais coerente para "múltiplos caminhos").
+
+Tudo isso é código genuinamente compartilhado entre os dois construtores
+(não duplicado como o resto do arquivo) — `chainHTML`, `galhosForkHTML`,
+`ramoCondSummaryText`, `apAddButtonHTML`, `autoBlocoNodeHTML`,
+`actionPickerModalHTML` e as funções de busca/remoção recebem um `ctx`
+(ou o `scope`, `'ds'` ou `'automacao'`) com as diferenças de cada
+construtor (qual ação de seleção/exclusão disparar, onde buscar a
+automação atual, etc.) em vez de existirem em duas cópias quase-iguais.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

@@ -632,6 +632,7 @@
   .wf-panel-empty .we-ic{width:44px;height:44px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
   .wf-panel-section{margin-bottom:22px}
   .wf-panel-section-label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .wf-panel-section-label .field-optional{text-transform:none;font-weight:600;letter-spacing:normal;color:var(--ink-faint);opacity:.75}
   details.wf-collapse{border:1px solid var(--border);border-radius:var(--radius-md);padding:0;margin-bottom:6px}
   details.wf-collapse summary{list-style:none;cursor:pointer;padding:11px 13px;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;color:var(--ink)}
   details.wf-collapse summary::-webkit-details-marker{display:none}
@@ -1014,6 +1015,9 @@ function ic(name, size){
     clip:'<path d="M8 12.5V7a4 4 0 0 1 8 0v9a2.5 2.5 0 0 1-5 0V8.5"/>',
     megaphone:'<path d="M3 9.5v5h3l10 4V5.5l-10 4H3Z"/><path d="M19 9a3.5 3.5 0 0 1 0 6"/>',
     condition:'<path d="M12 3 21 12 12 21 3 12Z"/>',
+    timeline:'<path d="M3 12h18"/><circle cx="7" cy="12" r="2.2"/><circle cx="14" cy="12" r="2.2"/><circle cx="20.5" cy="12" r="1.6"/>',
+    stop:'<circle cx="12" cy="12" r="9"/><rect x="8.2" y="8.2" width="7.6" height="7.6" rx="1"/>',
+    download:'<path d="M12 4v10M8 10l4 4 4-4"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>',
     trophy:'<path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4.5A2.5 2.5 0 0 0 7 9"/><path d="M17 5h2.5A2.5 2.5 0 0 1 17 9"/><path d="M12 13v3"/><path d="M8.5 20h7"/><path d="M9.5 20a2.5 2.5 0 0 1 5 0"/>',
     medal:'<circle cx="12" cy="14.5" r="5.2"/><path d="M9 4 7 9.5M15 4l2 5.5"/><path d="m9.6 14.6 1.6 1.6 3-3.4"/>',
     star:'<path d="m12 3 2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.8 6.4 20l1.4-6.2L3 9.5l6.4-.6L12 3Z"/>',
@@ -1204,17 +1208,22 @@ var EVENTO_TYPES = [
 function eventoMeta(tipo){ return EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) || EVENTO_TYPES[0]; }
 
 var AUTOMACAO_ACOES = [
-  {tipo:'notificacao', label:'Enviar notificação', icon:'bell', cat:'comunicacao', maisUsado:true},
+  {tipo:'notificacao', label:'Enviar mensagem', icon:'send', cat:'comunicacao', maisUsado:true},
   {tipo:'mudar_etapa', label:'Mudar etapa', icon:'flow', cat:'processo', maisUsado:true},
   {tipo:'solicitar_preenchimento', label:'Solicitar preenchimento', icon:'edit', cat:'processo'},
-  {tipo:'atualizar_campo', label:'Atualizar campo', icon:'edit', cat:'dados', maisUsado:true},
+  {tipo:'atualizar_campo', label:'Criar, atualizar ou deletar registro', icon:'db', cat:'dados', maisUsado:true},
+  {tipo:'consultar_info', label:'Consultar informação', icon:'search', cat:'dados'},
+  {tipo:'aguardar_tempo', label:'Aguardar um tempo', icon:'clock', cat:'logica'},
+  {tipo:'interacao_humana', label:'Interação humana', icon:'users', cat:'pessoas'},
+  {tipo:'timeline_evento', label:'Adicionar evento à timeline', icon:'timeline', cat:'pessoas'},
+  {tipo:'parar_fluxo', label:'Parar fluxo', icon:'stop', cat:'logica'},
   {tipo:'atualizar_sla', label:'Atualizar SLA', icon:'clock', cat:'processo'},
   {tipo:'definir_responsavel', label:'Definir responsável', icon:'users', cat:'processo'},
   {tipo:'criar_tarefa', label:'Criar tarefa', icon:'task', cat:'processo'},
   {tipo:'webhook', label:'Webhook', icon:'webhook', cat:'dados'},
   {tipo:'api', label:'Chamar API', icon:'api', cat:'dados', badge:'PROFISSIONAL'},
   {tipo:'teams', label:'Mensagem no Teams', icon:'teams', cat:'comunicacao'},
-  {tipo:'ia_agente', label:'Executar agente de IA', icon:'ai', cat:'ia', maisUsado:true},
+  {tipo:'ia_agente', label:'Utilizar agente', icon:'ai', cat:'ia', maisUsado:true},
 ];
 function acaoAutomacaoMeta(tipo){ return AUTOMACAO_ACOES.find(function(a){return a.tipo===tipo;}) || AUTOMACAO_ACOES[0]; }
 
@@ -1228,6 +1237,7 @@ var AP_CATEGORIES = [
   {id:'ia', label:'IA', icon:'ai'},
   {id:'comunicacao', label:'Comunicação', icon:'forum'},
   {id:'dados', label:'Dados', icon:'db'},
+  {id:'pessoas', label:'Pessoas', icon:'users'},
   {id:'logica', label:'Lógica', icon:'fork'},
   {id:'processo', label:'Processo', icon:'flow', scopeOnly:'automacao'},
 ];
@@ -1286,7 +1296,7 @@ function makeAutomacao(o){
 function makeAutomacaoBloco(kind, tipo){
   if (kind==='condicao') return {id:uid(), kind:'condicao', grupos:[{id:uid(), condicoes:[{campo:'Valor total', operador:'maior ou igual a', valor:''}]}]};
   if (kind==='galhos') return {id:uid(), kind:'galhos', ramos:[makeRamo('Ramo 1'), makeRamo('Ramo 2')]};
-  return {id:uid(), kind:'acao', tipo:tipo||'notificacao', alvo:'Solicitante', extra:''};
+  return {id:uid(), kind:'acao', tipo:tipo||'notificacao', alvo:'Solicitante', extra:'', campos:{}};
 }
 /* ---- Ramo (galho) de um bloco "Galhos" — compartilhado entre automações de Processos e de Fontes de Dados ----
    Tem o mesmo formato { id, grupos } de um bloco "condicao" (mesma edição de condições), mas nunca tem .kind,
@@ -1323,6 +1333,8 @@ function removeBlocoDeep(blocos, id){
   }
   return false;
 }
+/* Campo extra livre de um bloco de ação (bloco.campos, dicionário chave→valor) — compartilhado entre os dois construtores. */
+function campoVal(bloco, key){ return (bloco.campos && bloco.campos[key]) || ''; }
 function ramoCondSummaryText(ramo){
   var g = ramo.grupos[0];
   if (!g || !g.condicoes.length || !g.condicoes[0].campo) return 'Definir condição';
@@ -2639,40 +2651,76 @@ function inlineFonteRecordFieldHTML(f, draft){
 }
 
 /* ---- Automações de fontes de dados ---- */
-var DS_EVENTO_TYPES = [
-  {tipo:'item_criado', label:'Item criado', icon:'plus', desc:'Quando um novo registro é criado nesta fonte de dados.'},
-  {tipo:'campo_alterado', label:'Campo Alterado', icon:'edit', desc:'Quando um campo do registro é alterado.'},
-  {tipo:'item_excluido', label:'Item Excluído', icon:'trash', desc:'Quando um registro desta fonte é excluído.'},
-  {tipo:'usuario_atribuido', label:'Usuário Atribuído', icon:'users', desc:'Quando alguém é definido como responsável pelo registro.'},
-  {tipo:'data_alcancada', label:'Data Alcançada', icon:'calendar', desc:'Quando uma data definida no registro é alcançada.'},
+/* ---- Catálogo de eventos "Hywork microflows" — todas as entidades e gatilhos do PDF de referência ---- */
+var DS_EVENTO_GROUPS = [
+  {label:'Páginas', events:[
+    {tipo:'pages.published', label:'Página publicada', icon:'doc', desc:'Quando uma página fica pública/visível para o público-alvo.'},
+    {tipo:'pages.viewed', label:'Página visualizada', icon:'eye', desc:'Quando alguém acessa/visualiza uma página (com amostragem).'},
+  ]},
+  {label:'Feed', events:[
+    {tipo:'feed.post.published', label:'Post publicado', icon:'forum', desc:'Quando um post se torna visível no feed.'},
+    {tipo:'feed.post.viewed', label:'Post visualizado', icon:'eye', desc:'Quando alguém visualiza o post (amostrado).'},
+    {tipo:'feed.reaction.added', label:'Reação adicionada', icon:'bulb', desc:'Quando alguém reage ao post.'},
+    {tipo:'feed.reaction.removed', label:'Reação removida', icon:'x', desc:'Quando uma reação é retirada.'},
+    {tipo:'feed.comment.created', label:'Comentário criado', icon:'forum', desc:'Quando alguém comenta.'},
+    {tipo:'feed.comment.deleted', label:'Comentário removido', icon:'trash', desc:'Quando o comentário é removido.'},
+    {tipo:'feed.poll.voted', label:'Voto em enquete', icon:'check', desc:'Quando alguém vota em enquete.'},
+    {tipo:'feed.post.shared', label:'Post compartilhado', icon:'transfer', desc:'Quando alguém compartilha o post internamente.'},
+  ]},
+  {label:'Dados (formulários/sugestões)', events:[
+    {tipo:'data.record.created', label:'Registro criado', icon:'plus', desc:'Quando um colaborador envia um registro via formulário (ex.: sugestão, pedido).'},
+    {tipo:'data.record.updated', label:'Registro atualizado', icon:'edit', desc:'Quando o colaborador edita/atualiza seu registro.'},
+  ]},
+  {label:'Colaboradores', events:[
+    {tipo:'employees.created', label:'Colaborador cadastrado', icon:'users', desc:'Quando um novo colaborador é cadastrado (início do onboarding).'},
+    {tipo:'employees.birthday.today', label:'Aniversário hoje', icon:'calendar', desc:'No dia do aniversário.'},
+    {tipo:'employees.anniversary.today', label:'Aniversário de casa hoje', icon:'award', desc:'No aniversário de casa.'},
+    {tipo:'employees.status.changed', label:'Status alterado', icon:'transfer', desc:'Quando muda status (férias, remoto, afastamento).'},
+    {tipo:'employees.timeline.event.added', label:'Evento adicionado à timeline', icon:'timeline', desc:'Quando um evento novo é incluído na timeline individual (ex.: treinamento concluído, reconhecimento, badge, feedback recebido).'},
+  ]},
+  {label:'Notícias', events:[
+    {tipo:'news.published', label:'Notícia publicada', icon:'doc', desc:'Quando uma notícia é publicada.'},
+    {tipo:'news.viewed', label:'Notícia visualizada', icon:'eye', desc:'Quando alguém lê a notícia (amostrado).'},
+    {tipo:'news.reaction.added', label:'Reação adicionada', icon:'bulb', desc:'Quando alguém reage à notícia.'},
+    {tipo:'news.reaction.removed', label:'Reação removida', icon:'x', desc:'Quando reação é retirada.'},
+    {tipo:'news.comment.created', label:'Comentário criado', icon:'forum', desc:'Quando alguém comenta na notícia.'},
+    {tipo:'news.comment.deleted', label:'Comentário removido', icon:'trash', desc:'Quando comentário é removido.'},
+    {tipo:'news.tagged', label:'Tag recebida', icon:'link', desc:'Quando recebe uma tag (usado em segmentação/personalização).'},
+  ]},
+  {label:'Documentos (HyDrive)', events:[
+    {tipo:'hydrive.document.viewed', label:'Documento visualizado', icon:'eye', desc:'Quando alguém abre um documento.'},
+    {tipo:'hydrive.document.downloaded', label:'Documento baixado', icon:'download', desc:'Quando alguém baixa um documento.'},
+    {tipo:'hydrive.document.shared', label:'Documento compartilhado', icon:'transfer', desc:'Quando alguém compartilha documento internamente.'},
+    {tipo:'hydrive.document.comment.added', label:'Comentário adicionado', icon:'forum', desc:'Quando alguém comenta em documento.'},
+  ]},
 ];
+var DS_EVENTO_TYPES = DS_EVENTO_GROUPS.reduce(function(acc,g){ return acc.concat(g.events); }, []);
 function dsEventoMeta(tipo){ return DS_EVENTO_TYPES.find(function(e){return e.tipo===tipo;}) || DS_EVENTO_TYPES[0]; }
 var DS_ACOES = [
-  {tipo:'notificacao', label:'Enviar notificação', icon:'bell', cat:'comunicacao', maisUsado:true},
-  {tipo:'atualizar_campo', label:'Atualizar campo', icon:'edit', cat:'dados', maisUsado:true},
+  {tipo:'notificacao', label:'Enviar mensagem', icon:'send', cat:'comunicacao', maisUsado:true},
+  {tipo:'atualizar_campo', label:'Criar, atualizar ou deletar registro', icon:'db', cat:'dados', maisUsado:true},
+  {tipo:'consultar_info', label:'Consultar informação', icon:'search', cat:'dados', maisUsado:true},
+  {tipo:'aguardar_tempo', label:'Aguardar um tempo', icon:'clock', cat:'logica'},
+  {tipo:'interacao_humana', label:'Interação humana', icon:'users', cat:'pessoas', maisUsado:true},
+  {tipo:'ia_agente', label:'Utilizar agente', icon:'ai', cat:'ia', maisUsado:true},
+  {tipo:'timeline_evento', label:'Adicionar evento à timeline', icon:'timeline', cat:'pessoas'},
+  {tipo:'parar_fluxo', label:'Parar fluxo', icon:'stop', cat:'logica'},
   {tipo:'webhook', label:'Webhook', icon:'webhook', cat:'dados'},
   {tipo:'api', label:'Chamar API', icon:'api', cat:'dados', badge:'PROFISSIONAL'},
-  {tipo:'ia_agente', label:'Executar agente de IA', icon:'ai', cat:'ia', maisUsado:true},
 ];
 function dsAcaoMeta(tipo){ return DS_ACOES.find(function(a){return a.tipo===tipo;}) || DS_ACOES[0]; }
-function makeDsAutomacao(o){ return Object.assign({id:uid(), nome:'Nova automação', ativo:true, evento:{tipo:'item_criado'}, blocos:[]}, o); }
+function makeDsAutomacao(o){ return Object.assign({id:uid(), nome:'Nova automação', ativo:true, evento:{tipo:'data.record.created'}, blocos:[]}, o); }
 function makeDsBloco(kind, tipo){
   if (kind==='condicao') return {id:uid(), kind:'condicao', grupos:[{id:uid(), condicoes:[{campo:'', operador:'igual a', valor:''}]}]};
   if (kind==='galhos') return {id:uid(), kind:'galhos', ramos:[makeRamo('Ramo 1'), makeRamo('Ramo 2')]};
-  return {id:uid(), kind:'acao', tipo:tipo||'notificacao', alvo:'', extra:''};
+  return {id:uid(), kind:'acao', tipo:tipo||'notificacao', alvo:'', extra:'', campos:{}};
 }
 function findDsAuto(id){ return state.dsAutomacoes.find(function(a){return a.id===id;}); }
 function currentDsAuto(){ return findDsAuto(state.dsAutomacaoEditorId); }
 function findDsBlocoIn(auto, blockId){ return auto && findBlocoDeep(auto.blocos, blockId); }
 function automacoesForFonte(fonteId){ return state.dsAutomacoes.filter(function(a){return a.fonteId===fonteId;}); }
 function dsAutomacaoEventoText(a){
-  var meta = dsEventoMeta(a.evento.tipo);
-  var fonte = dataSourceById(a.fonteId);
-  if (a.evento.tipo==='campo_alterado' && a.evento.campoId && fonte){
-    var f = fonte.fields.find(function(x){return x.id===a.evento.campoId;});
-    if (f) return meta.label+': '+f.label;
-  }
-  return meta.label;
+  return dsEventoMeta(a.evento.tipo).label;
 }
 function dsAutomacaoSummary(a){
   var meta = dsEventoMeta(a.evento.tipo);
@@ -2764,42 +2812,21 @@ function dsAutomacaoPanelHTML(auto){
   return dsAutomacaoAcaoPanelHTML(auto, bloco);
 }
 function dsAutomacaoTriggerPanelHTML(auto){
-  var fonte = dataSourceById(auto.fonteId);
   var ev = auto.evento;
   var meta = dsEventoMeta(ev.tipo);
+  var isDadosEvent = ev.tipo.indexOf('data.record.')===0;
   var fonteSelect = '<select class="select" data-bind="dsautomacao.fonte">'+state.dataSources.map(function(f){return '<option value="'+f.id+'"'+(f.id===auto.fonteId?' selected':'')+'>'+esc(f.name)+'</option>';}).join('')+'</select>';
   var eventSelect = '<select class="select" data-bind="dsautomacao.evento_tipo">'+
-    DS_EVENTO_TYPES.map(function(e){return '<option value="'+e.tipo+'"'+(ev.tipo===e.tipo?' selected':'')+'>'+esc(e.label)+'</option>';}).join('')+
+    DS_EVENTO_GROUPS.map(function(g){
+      return '<optgroup label="'+esc(g.label)+'">'+g.events.map(function(e){return '<option value="'+e.tipo+'"'+(ev.tipo===e.tipo?' selected':'')+'>'+esc(e.label)+'</option>';}).join('')+'</optgroup>';
+    }).join('')+
   '</select><div class="field-hint" style="margin-top:6px">'+esc(meta.desc)+'</div>';
-
-  var extra = '';
-  if (ev.tipo==='campo_alterado' && fonte){
-    var camposSelect = '<option value="">Escolher campo…</option>'+fonte.fields.map(function(f){return '<option value="'+f.id+'"'+(f.id===ev.campoId?' selected':'')+'>'+esc(f.label)+'</option>';}).join('');
-    var campoAtual = fonte.fields.find(function(f){return f.id===ev.campoId;});
-    var valoresChips = '';
-    if (campoAtual && campoAtual.options){
-      var vals = ev.valores || [];
-      valoresChips = '<div class="wf-panel-section-label" style="margin-top:12px">Quando o valor mudar para:</div><div class="chip-row">'+
-        campoAtual.options.map(function(o){
-          var active = vals.indexOf(o)!==-1;
-          return '<button class="chip'+(active?' active':'')+'" data-action="toggle-ds-evento-valor" data-valor="'+esc(o)+'">'+esc(o)+'</button>';
-        }).join('')+'</div>';
-    }
-    extra = '<div class="wf-panel-section"><div class="wf-panel-section-label">Escolha o campo</div><select class="select" data-bind="dsautomacao.evento_campo">'+camposSelect+'</select>'+valoresChips+'</div>';
-  } else if (ev.tipo==='usuario_atribuido'){
-    extra = '<div class="wf-panel-section"><div class="field-hint">Dispara quando um usuário é definido como responsável por um registro desta fonte.</div></div>';
-  } else if (ev.tipo==='data_alcancada' && fonte){
-    var camposData = fonte.fields.filter(function(f){return f.type==='date';});
-    extra = '<div class="wf-panel-section"><div class="wf-panel-section-label">Campo de data</div>'+
-      (camposData.length ? '<select class="select" data-bind="dsautomacao.evento_campo">'+camposData.map(function(f){return '<option value="'+f.id+'"'+(f.id===ev.campoId?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Esta fonte não tem nenhum campo de data.</div>')+'</div>';
-  }
 
   return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Nome da automação</div>'+
     '<input class="input" style="margin-top:8px" data-bind="dsautomacao.nome" value="'+esc(auto.nome)+'"/></div>'+
     '<div class="wf-panel-body">'+
-      '<div class="wf-panel-section"><div class="wf-panel-section-label">Fonte de Dados</div>'+fonteSelect+'</div>'+
       '<div class="wf-panel-section"><div class="wf-panel-section-label">Evento — quando dispara</div>'+eventSelect+'</div>'+
-      extra+
+      (isDadosEvent ? '<div class="wf-panel-section"><div class="wf-panel-section-label">Fonte de Dados</div>'+fonteSelect+'</div>' : '')+
     '</div>';
 }
 function dsGalhosPanelHTML(auto, bloco){
@@ -2867,22 +2894,89 @@ function dsAutomacaoAcaoPanelHTML(auto, bloco){
 function dsAcaoExtraFieldsHTML(auto, bloco){
   var fonte = dataSourceById(auto.fonteId);
   var campos = fonte ? fonte.fields : [];
+  return acaoExtraFieldsHTMLGeneric('ds', auto, bloco, campos,
+    ['Responsável do registro','Gestor da área','Equipe de Service Desk','Todos os usuários','Financeiro','Recursos Humanos'],
+    ['Esta fonte de dados','Colaboradores','Notícias','Documentos (HyDrive)']);
+}
+/* Campos extras dos tipos de ação (blocos "acao"), compartilhados entre os dois construtores de automação —
+   ver PDF de referência "Hywork microflows" (seção Step types) para o catálogo completo. */
+function acaoExtraFieldsHTMLGeneric(scope, auto, bloco, campos, destinatarioOpts, entidadeOpts){
+  var bp = scope==='ds' ? 'dsautomacao' : 'automacao';
+  var idAttrs = scope==='ds' ? ' data-blockid="'+bloco.id+'"' : ' data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'"';
+  var cAttrs = idAttrs+' data-bind="'+bp+'.acaoCampo"';
+  function cv(key){ return campoVal(bloco, key); }
+  function sec(label, inner){ return '<div class="wf-panel-section"><div class="wf-panel-section-label">'+label+'</div>'+inner+'</div>'; }
+  function selectField(key, opts, current){
+    return '<select class="select"'+cAttrs+' data-key="'+key+'">'+opts.map(function(o){return '<option'+(o===current?' selected':'')+'>'+esc(o)+'</option>';}).join('')+'</select>';
+  }
+  function textField(key, placeholder, current){
+    return '<input class="input" placeholder="'+esc(placeholder||'')+'"'+cAttrs+' data-key="'+key+'" value="'+esc(current||'')+'"/>';
+  }
+  function checkRow(key, title, sub, checked){
+    return '<div class="switch-row" style="margin-top:10px"><div class="sr-text"><div class="sr-title">'+esc(title)+'</div>'+(sub?'<div class="sr-sub">'+esc(sub)+'</div>':'')+'</div>'+
+      '<label class="switch"><input type="checkbox"'+cAttrs+' data-key="'+key+'" '+(checked?'checked':'')+'/><span class="track"><span class="thumb"></span></span></label></div>';
+  }
+
   if (bloco.tipo==='notificacao'){
-    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Destinatário</div>'+
-      '<select class="select" data-bind="dsautomacao.acaoAlvo" data-blockid="'+bloco.id+'">'+
-        ['Responsável do registro','Gestor da área','Equipe de Service Desk','Todos os usuários','Financeiro','Recursos Humanos'].map(function(o){return '<option'+(o===bloco.alvo?' selected':'')+'>'+o+'</option>';}).join('')+
-      '</select><div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acaoExtra" data-blockid="'+bloco.id+'">'+esc(bloco.extra||'')+'</textarea></div></div>';
+    var agendamento = cv('agendamento')||'Imediato';
+    return sec('Destinatário', '<select class="select" data-bind="'+bp+'.acaoAlvo"'+idAttrs+'>'+destinatarioOpts.map(function(o){return '<option'+(o===bloco.alvo?' selected':'')+'>'+o+'</option>';}).join('')+'</select>')+
+      sec('Canal', selectField('canal', ['Feed','E-mail','Push'], cv('canal')||'Feed'))+
+      '<div class="wf-panel-section"><div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="'+bp+'.acaoExtra"'+idAttrs+'>'+esc(bloco.extra||'')+'</textarea></div></div>'+
+      sec('Anexos/links <span class="field-optional">(opcional)</span>', textField('anexos','https://…', cv('anexos')))+
+      sec('Template com variáveis <span class="field-optional">(opcional)</span>', textField('template','Ex: Olá {{nome}}, sua sugestão foi aprovada!', cv('template')))+
+      sec('Agendamento', selectField('agendamento', ['Imediato','Horário futuro'], agendamento)+
+        (agendamento==='Horário futuro' ? '<div style="margin-top:8px">'+textField('agendamento_quando','dd/mm/aaaa hh:mm', cv('agendamento_quando'))+'</div>' : ''));
   }
   if (bloco.tipo==='atualizar_campo'){
-    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Campo</div>'+
-      (campos.length ? '<select class="select" data-bind="dsautomacao.acaoAlvo" data-blockid="'+bloco.id+'"><option value="">Escolher…</option>'+campos.map(function(f){return '<option'+(f.label===bloco.alvo?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Nenhum campo nesta fonte ainda.</div>')+
-      '<div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Novo valor</label><input class="input" data-bind="dsautomacao.acaoExtra" data-blockid="'+bloco.id+'" value="'+esc(bloco.extra||'')+'"/></div></div>';
+    var acaoCrud = cv('acao_crud')||'Atualizar';
+    return sec('Entidade', selectField('entidade', entidadeOpts, cv('entidade')||entidadeOpts[0]))+
+      sec('Ação', selectField('acao_crud', ['Criar','Atualizar','Deletar'], acaoCrud))+
+      (acaoCrud!=='Deletar' ? sec('Campo', campos.length ? '<select class="select" data-bind="'+bp+'.acaoAlvo"'+idAttrs+'><option value="">Escolher…</option>'+campos.map(function(f){return '<option'+(f.label===bloco.alvo?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Nenhum campo nesta fonte ainda.</div>')+
+        '<div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Novo valor</label><input class="input" data-bind="'+bp+'.acaoExtra"'+idAttrs+' value="'+esc(bloco.extra||'')+'"/></div>' : '')+
+      sec('Condições para atualização <span class="field-optional">(opcional)</span>', textField('condicoes','Ex: status = ativo', cv('condicoes')))+
+      sec('Origem <span class="field-optional">(opcional)</span>', selectField('origem', ['Fluxo','Usuário','Sistema'], cv('origem')||'Fluxo'));
+  }
+  if (bloco.tipo==='consultar_info'){
+    return sec('Fonte de dados', selectField('fonte_consulta', entidadeOpts, cv('fonte_consulta')||entidadeOpts[0]))+
+      sec('Critério de busca', textField('criterio','Ex: departamento = RH', cv('criterio')))+
+      sec('Campos a retornar <span class="field-optional">(opcional)</span>', textField('campos_retornar','Ex: nome, e-mail, cargo', cv('campos_retornar')))+
+      sec('Limite de resultados <span class="field-optional">(opcional)</span>', '<input class="input" type="number" min="1" placeholder="Ex: 10"'+cAttrs+' data-key="limite" value="'+esc(cv('limite'))+'"/>');
+  }
+  if (bloco.tipo==='aguardar_tempo'){
+    var modo = cv('modo')||'Intervalo';
+    return sec('Quando seguir', selectField('modo', ['Intervalo','Data/hora exata'], modo))+
+      (modo==='Intervalo' ?
+        '<div class="wf-panel-section"><div class="wf-panel-section-label">Intervalo</div><div style="display:flex;gap:8px"><input class="input" type="number" min="1" style="flex:1" placeholder="Ex: 24"'+cAttrs+' data-key="intervalo_valor" value="'+esc(cv('intervalo_valor'))+'"/>'+selectField('intervalo_unidade',['minutos','horas','dias'], cv('intervalo_unidade')||'horas')+'</div></div>' :
+        sec('Data/hora exata', textField('data_exata','dd/mm/aaaa hh:mm', cv('data_exata'))))+
+      sec('Jitter (variação aleatória) <span class="field-optional">(opcional)</span>', textField('jitter','Ex: ±10 min', cv('jitter')))+
+      checkRow('cancelar_condicao','Cancelar se condição mudar','Interrompe a espera se as condições não forem mais verdadeiras.', cv('cancelar_condicao')==='true'||cv('cancelar_condicao')===true);
+  }
+  if (bloco.tipo==='interacao_humana'){
+    return sec('Quem deve responder', '<select class="select" data-bind="'+bp+'.acaoAlvo"'+idAttrs+'>'+destinatarioOpts.map(function(o){return '<option'+(o===bloco.alvo?' selected':'')+'>'+o+'</option>';}).join('')+'</select>')+
+      sec('Tipo de interação', selectField('tipo_interacao', ['Aprovar/Reprovar','Múltipla escolha','Texto livre'], cv('tipo_interacao')||'Aprovar/Reprovar'))+
+      sec('Prazo/SLA', textField('prazo','Ex: 24 horas', cv('prazo')))+
+      checkRow('lembretes','Lembretes automáticos','Reforça o pedido de resposta até o prazo.', cv('lembretes')==='true'||cv('lembretes')===true)+
+      sec('Rota de timeout <span class="field-optional">(opcional)</span>', textField('timeout','O que fazer se ninguém responder a tempo', cv('timeout')))+
+      checkRow('reatribuicao','Permitir reatribuição','Deixa quem recebeu encaminhar para outra pessoa.', cv('reatribuicao')==='true'||cv('reatribuicao')===true);
   }
   if (bloco.tipo==='ia_agente'){
-    return '<div class="wf-panel-section"><div class="field-row"><label class="field-label">Agente de IA</label><input class="input" placeholder="Ex: Agente de Triagem" data-bind="dsautomacao.acaoAlvo" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div>'+
-      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Instrução para o agente</label><textarea class="textarea" data-bind="dsautomacao.acaoExtra" data-blockid="'+bloco.id+'">'+esc(bloco.extra||'')+'</textarea></div></div>';
+    return '<div class="wf-panel-section"><div class="field-row"><label class="field-label">Qual agente</label><select class="select" data-bind="'+bp+'.acaoAlvo"'+idAttrs+'>'+['HyAssistant','Hyvee','Dora','Agente personalizado'].map(function(o){return '<option'+(o===bloco.alvo?' selected':'')+'>'+o+'</option>';}).join('')+'</select></div></div>'+
+      sec('Entrada', selectField('entrada_tipo', ['Texto','Dados','Evento'], cv('entrada_tipo')||'Texto'))+
+      '<div class="wf-panel-section"><div class="field-row" style="margin-bottom:0"><label class="field-label">Instrução para o agente</label><textarea class="textarea" data-bind="'+bp+'.acaoExtra"'+idAttrs+'>'+esc(bloco.extra||'')+'</textarea></div></div>'+
+      sec('Saída esperada', selectField('saida', ['Resumo','Insights','Recomendação','Texto livre'], cv('saida')||'Resumo'))+
+      sec('Parâmetros de ajuste <span class="field-optional">(opcional)</span>', '<textarea class="textarea"'+cAttrs+' data-key="parametros">'+esc(cv('parametros'))+'</textarea>');
   }
-  return '<div class="wf-panel-section"><div class="field-row" style="margin-bottom:0"><label class="field-label">URL</label><input class="input" placeholder="https://" data-bind="dsautomacao.acaoAlvo" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div></div>';
+  if (bloco.tipo==='timeline_evento'){
+    return sec('Colaborador alvo', '<select class="select" data-bind="'+bp+'.acaoAlvo"'+idAttrs+'>'+['Colaborador do fluxo'].concat(destinatarioOpts).map(function(o){return '<option'+(o===bloco.alvo?' selected':'')+'>'+o+'</option>';}).join('')+'</select>')+
+      sec('Título/descrição do evento', textField('titulo','Ex: Concluiu treinamento de Segurança', cv('titulo')))+
+      sec('Categoria', selectField('categoria', ['Treinamento','Reconhecimento','Engajamento'], cv('categoria')||'Treinamento'))+
+      sec('Data customizada <span class="field-optional">(opcional)</span>', textField('data_custom','dd/mm/aaaa — padrão é o momento do fluxo', cv('data_custom')));
+  }
+  if (bloco.tipo==='parar_fluxo'){
+    return '<div class="wf-panel-section"><div class="field-row"><label class="field-label">Motivo ou mensagem de encerramento</label><textarea class="textarea" data-bind="'+bp+'.acaoExtra"'+idAttrs+'>'+esc(bloco.extra||'')+'</textarea></div></div>'+
+      sec('Código interno de status <span class="field-optional">(opcional)</span>', textField('codigo','Ex: STOP_NOT_TARGET', cv('codigo')));
+  }
+  return '<div class="wf-panel-section"><div class="field-row" style="margin-bottom:0"><label class="field-label">URL</label><input class="input" placeholder="https://" data-bind="'+bp+'.acaoAlvo"'+idAttrs+' value="'+esc(bloco.alvo||'')+'"/></div></div>';
 }
 function dsCondicaoSummaryText(bloco){
   var g = bloco.grupos[0];
@@ -4683,12 +4777,6 @@ function automacaoAcaoPanelHTML(auto, bloco){
 }
 function acaoExtraFieldsHTML(auto, bloco){
   var d = currentData();
-  if (bloco.tipo==='notificacao'){
-    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Destinatário</div>'+
-      '<select class="select" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+
-        ['Solicitante','Responsável da etapa atual','Gestor do solicitante','Gestor da equipe responsável','Financeiro','Recursos Humanos','Equipe de Service Desk','Técnico de TI'].map(function(o){return '<option'+(o===bloco.alvo?' selected':'')+'>'+o+'</option>';}).join('')+
-      '</select><div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+esc(bloco.extra||'')+'</textarea></div></div>';
-  }
   if (bloco.tipo==='mudar_etapa'){
     return '<div class="wf-panel-section"><div class="wf-panel-section-label">Etapa de destino</div>'+
       '<select class="select" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+
@@ -4700,12 +4788,6 @@ function acaoExtraFieldsHTML(auto, bloco){
     return '<div class="wf-panel-section"><div class="wf-panel-section-label">Campo a preencher</div>'+
       (camposSP.length ? '<select class="select" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+camposSP.map(function(f){return '<option'+(f.label===bloco.alvo?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Nenhum campo no processo ainda.</div>')+
       '<div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Mensagem para quem preenche</label><input class="input" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.extra||'')+'"/></div></div>';
-  }
-  if (bloco.tipo==='atualizar_campo'){
-    var camposAC = allProcessFields();
-    return '<div class="wf-panel-section"><div class="wf-panel-section-label">Campo</div>'+
-      (camposAC.length ? '<select class="select" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+camposAC.map(function(f){return '<option'+(f.label===bloco.alvo?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>' : '<div class="field-hint">Nenhum campo no processo ainda.</div>')+
-      '<div class="field-row" style="margin-top:10px;margin-bottom:0"><label class="field-label">Novo valor</label><input class="input" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.extra||'')+'"/></div></div>';
   }
   if (bloco.tipo==='atualizar_sla'){
     return '<div class="wf-panel-section"><div class="field-row"><label class="field-label">Novo prazo de SLA</label><input class="input" placeholder="Ex: 1 hora" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div>'+
@@ -4719,15 +4801,14 @@ function acaoExtraFieldsHTML(auto, bloco){
     return '<div class="wf-panel-section"><div class="field-row"><label class="field-label">Canal do Teams</label><input class="input" placeholder="Ex: Suporte TI" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div>'+
       '<div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+esc(bloco.extra||'')+'</textarea></div></div>';
   }
-  if (bloco.tipo==='ia_agente'){
-    return '<div class="wf-panel-section"><div class="field-row"><label class="field-label">Agente de IA</label><input class="input" placeholder="Ex: Agente de Triagem" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div>'+
-      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Instrução para o agente</label><textarea class="textarea" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'">'+esc(bloco.extra||'')+'</textarea></div></div>';
-  }
   if (bloco.tipo==='criar_tarefa'){
     return '<div class="wf-panel-section"><div class="field-row"><label class="field-label">Responsável</label><input class="input" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div>'+
       '<div class="field-row" style="margin-bottom:0"><label class="field-label">Descrição da tarefa</label><input class="input" data-bind="automacao.acaoExtra" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.extra||'')+'"/></div></div>';
   }
-  return '<div class="wf-panel-section"><div class="field-row" style="margin-bottom:0"><label class="field-label">URL</label><input class="input" placeholder="https://" data-bind="automacao.acaoAlvo" data-autoid="'+auto.id+'" data-blockid="'+bloco.id+'" value="'+esc(bloco.alvo||'')+'"/></div></div>';
+  var camposAC2 = allProcessFields();
+  return acaoExtraFieldsHTMLGeneric('automacao', auto, bloco, camposAC2,
+    ['Solicitante','Responsável da etapa atual','Gestor do solicitante','Gestor da equipe responsável','Financeiro','Recursos Humanos','Equipe de Service Desk','Técnico de TI'],
+    ['Este processo','Colaboradores','Notícias','Documentos (HyDrive)']);
 }
 
 /* ---- Permissões tab ---- */
@@ -5116,13 +5197,6 @@ document.addEventListener('click', function(e){
       var drBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid);
       if (drBloco.ramos.length>1) drBloco.ramos = drBloco.ramos.filter(function(r){return r.id!==t.dataset.ramoid;});
       if (state.dsAutomacaoSelectedBlockId===t.dataset.ramoid) state.dsAutomacaoSelectedBlockId = drBloco.id;
-      break;
-    }
-    case 'toggle-ds-evento-valor': {
-      var tvAuto = currentDsAuto();
-      tvAuto.evento.valores = tvAuto.evento.valores || [];
-      var tvIdx = tvAuto.evento.valores.indexOf(t.dataset.valor);
-      if (tvIdx===-1) tvAuto.evento.valores.push(t.dataset.valor); else tvAuto.evento.valores.splice(tvIdx,1);
       break;
     }
     case 'add-ds-grupo': { var agBloco = findDsBlocoIn(currentDsAuto(), t.dataset.blockid); agBloco.grupos.push({id:uid(), conector:'E', condicoes:[{campo:'', operador:'igual a', valor:''}]}); break; }
@@ -5746,12 +5820,13 @@ document.addEventListener('change', function(e){
     state.dsLinkDraft.camposIds = dsFonteSel ? dsFonteSel.fields.map(function(f){return f.id;}) : [];
   }
   else if (bind==='fonterecord.campo') { state.fonteRecordDraft.valores[el.dataset.fieldid]=val; }
-  else if (bind==='dsautomacao.fonte') { var dsaF=currentDsAuto(); dsaF.fonteId=val; dsaF.evento={tipo:'item_criado'}; }
+  else if (bind==='dsautomacao.fonte') { currentDsAuto().fonteId=val; }
   else if (bind==='dsautomacao.evento_tipo') { var dsaE=currentDsAuto(); dsaE.evento={tipo:val}; }
-  else if (bind==='dsautomacao.evento_campo') { var dsaC=currentDsAuto(); dsaC.evento.campoId=val||null; dsaC.evento.valores=[]; }
   else if (bind==='dsautomacao.condCampo') { var dsaCB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); var dsaCG=dsaCB.grupos.find(function(g){return g.id===el.dataset.groupid;}); dsaCG.condicoes[+el.dataset.idx].campo=val; }
   else if (bind==='dsautomacao.condOp') { var dsaOB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); var dsaOG=dsaOB.grupos.find(function(g){return g.id===el.dataset.groupid;}); dsaOG.condicoes[+el.dataset.idx].operador=val; }
   else if (bind==='dsautomacao.acaoAlvo') { var dsaAB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsaAB.alvo=val; }
+  else if (bind==='automacao.acaoCampo') { var acB=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); acB.campos=acB.campos||{}; acB.campos[el.dataset.key]=val; }
+  else if (bind==='dsautomacao.acaoCampo') { var dsAcB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsAcB.campos=dsAcB.campos||{}; dsAcB.campos[el.dataset.key]=val; }
   else matched = false;
   if (matched) render();
 });
@@ -5786,6 +5861,7 @@ document.addEventListener('input', function(e){
     else if (bind==='automacao.condVal'){ var bV=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); var gV=bV.grupos.find(function(g){return g.id===el.dataset.groupid;}); gV.condicoes[+el.dataset.idx].valor=val; }
     else if (bind==='automacao.acaoExtra'){ var bE=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); bE.extra=val; }
     else if (bind==='automacao.acaoAlvo'){ var bA=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(bA) bA.alvo=val; }
+    else if (bind==='automacao.acaoCampo'){ var acIB=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); acIB.campos=acIB.campos||{}; acIB.campos[el.dataset.key]=val; }
     else if (bind==='automacao.ramoNome'){ var bRN=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); bRN.nome=val; setText('#branch-label-'+el.dataset.blockid, val || 'Ramo'); }
     else if (bind==='formcfg.nome'){ currentData().formConfig.nome=val; }
     else if (bind==='formcfg.descricao'){ currentData().formConfig.descricao=val; }
@@ -5798,6 +5874,7 @@ document.addEventListener('input', function(e){
     else if (bind==='dsautomacao.nome'){ currentDsAuto().nome=val; }
     else if (bind==='dsautomacao.condVal'){ var dsaVB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); var dsaVG=dsaVB.grupos.find(function(g){return g.id===el.dataset.groupid;}); dsaVG.condicoes[+el.dataset.idx].valor=val; }
     else if (bind==='dsautomacao.acaoExtra'){ var dsaXB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsaXB.extra=val; }
+    else if (bind==='dsautomacao.acaoCampo'){ var dsAcIB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsAcIB.campos=dsAcIB.campos||{}; dsAcIB.campos[el.dataset.key]=val; }
     else if (bind==='dsautomacao.ramoNome'){ var dsaRN=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsaRN.nome=val; setText('#branch-label-'+el.dataset.blockid, val || 'Ramo'); }
     return;
   }

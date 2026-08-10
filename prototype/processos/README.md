@@ -909,6 +909,59 @@ Tudo isso é código genuinamente compartilhado entre os dois construtores
 construtor (qual ação de seleção/exclusão disparar, onde buscar a
 automação atual, etc.) em vez de existirem em duas cópias quase-iguais.
 
+**v60** — catálogo de eventos e ações ampliado a partir do PDF de
+referência "Hywork microflows", fornecido pelo usuário:
+
+- **Eventos (gatilhos)** — o seletor "Evento — quando dispara" da
+  automação de Fonte de Dados (`DS_EVENTO_GROUPS`) passou a listar os
+  ~28 eventos do PDF, agrupados por `<optgroup>` nas 6 entidades da
+  intranet: **Páginas** (`pages.published`/`pages.viewed`), **Feed** (post
+  publicado/visualizado, reação adicionada/removida, comentário criado/
+  removido, voto em enquete, post compartilhado), **Dados** (registro
+  criado/atualizado — os únicos que ainda mostram o seletor de **Fonte de
+  Dados**, escondido para as demais categorias já que não fazem sentido
+  para "Colaborador cadastrado" ou "Notícia publicada"), **Colaboradores**
+  (cadastrado, aniversário hoje, aniversário de casa hoje, status
+  alterado, evento adicionado à timeline), **Notícias** (publicada,
+  visualizada, reação adicionada/removida, comentário criado/removido,
+  tag recebida) e **Documentos (HyDrive)** (visualizado, baixado,
+  compartilhado, comentário adicionado). O antigo catálogo de 5 eventos
+  específicos de fonte de dados (Item criado/Campo Alterado/etc.) saiu —
+  os dois primeiros equivalem a `data.record.created`/`data.record.updated`
+  do PDF. `EVENTO_TYPES` (gatilhos de automação de **Processo** — Item
+  Criado, Entrou na etapa, Ação executada etc.) não mudou: são sobre o
+  ciclo de vida de uma solicitação, um domínio diferente do PDF.
+- **Step types (ações)** — os 9 tipos de passo do PDF (seção "Step
+  types") agora existem nos dois construtores: **Enviar mensagem**
+  (Destinatário, Canal — Feed/E-mail/Push —, Mensagem, Anexos/links,
+  Template com variáveis, Agendamento), **Criar, atualizar ou deletar
+  registro** (Entidade, Ação — Criar/Atualizar/Deletar, esconde Campo/
+  Novo valor quando é "Deletar" —, Condições, Origem), **Consultar
+  informação**, **Aguardar um tempo** (alterna entre Intervalo e Data/
+  hora exata, mais Jitter e cancelamento por condição), **Condição**
+  (já existia), **Interação humana** (quem responde, tipo de interação,
+  prazo/SLA, lembretes, rota de timeout, reatribuição), **Utilizar
+  agente** (era "Executar agente de IA"), **Adicionar evento à
+  timeline** e **Parar fluxo** — os últimos dois são novos. Os tipos
+  específicos de Processo que o PDF não cobre (Mudar etapa, Solicitar
+  preenchimento, Atualizar SLA, Definir responsável, Criar tarefa,
+  Webhook, Chamar API, Mensagem no Teams) continuam existindo ao lado
+  dos novos, sem conflito — automação de Processo é a união dos dois
+  catálogos, automação de Fonte de Dados usa só o do PDF.
+  Bloco `acao` ganhou um dicionário livre `campos:{chave:valor}`
+  (`makeDsBloco`/`makeAutomacaoBloco`) para guardar os campos extras de
+  cada step type sem precisar de uma propriedade nomeada por campo;
+  `campoVal(bloco, key)` lê, e um bind genérico `dsautomacao.acaoCampo`/
+  `automacao.acaoCampo` (com `data-key`) grava — registrado tanto no
+  listener de `change` (selects/checkboxes) quanto no de `input` (texto/
+  textarea). `acaoExtraFieldsHTMLGeneric(scope, auto, bloco, campos,
+  destinatarioOpts, entidadeOpts)` é a função compartilhada que desenha
+  os campos extras de cada tipo — os dois construtores chamam a mesma
+  função, só passando suas próprias listas de opções (Destinatário/
+  Entidade variam um pouco entre Processo e Fonte de Dados); os tipos
+  exclusivos de Processo continuam com painéis próprios, sem passar por
+  essa função. Ícones novos: `timeline`, `stop`, `download`.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

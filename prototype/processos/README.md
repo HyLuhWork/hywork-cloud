@@ -1013,6 +1013,12 @@ que não usava `.wf-panel-section`, passou a usar — e as linhas de ramo
 (`.galho-row`) ganharam `background:var(--surface)` explícito para não
 se misturar com o cinza do cartão que passou a envolvê-las.
 
+**v63** — pedido do usuário ("o background da parte do flow precisa ser mais
+clarinho, tá mt forte o azul"): `--canvas-bg` (fundo do canvas de automação,
+`.wf-canvas-wrap`) no tema claro foi clareado de `#F3F6FA` para `#F9FAFB` —
+o azulado ficava forte demais atrás dos nós do fluxo. O `--canvas-bg` do tema
+escuro (`#191E26`) não foi alterado.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

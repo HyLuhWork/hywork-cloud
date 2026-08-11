@@ -1044,6 +1044,20 @@ sincronizados ao vivo nos dois sentidos via `syncAutoTitleInputs(el, val)`
 — edita em um, o outro atualiza junto, sem perder o cursor de quem está
 digitando.
 
+**v66** — bug reportado pelo usuário ("quando tem um galho tá ficando
+quebrado", com print mostrando as colunas de um bloco Galhos sobrepostas):
+`.wf-branch-col` tinha `width:300px`, mas os nós renderizados dentro dela
+(`.auto-node`, incluindo o chip de condição e o cartão "Então...") usam
+`width:380px` — 80px mais largos que a coluna. Como o flex column só
+centraliza (`align-items:center`) em vez de conter o excesso, cada nó
+vazava 40px para cada lado da sua coluna lógica, e com `gap:36px` entre
+colunas os cartões de ramos vizinhos ficavam se sobrepondo (o da direita
+por cima do da esquerda). Corrigido igualando `.wf-branch-col` a
+`width:380px` (mesma largura de `.auto-node`, então chip/rótulo/cartões
+ficam exatamente do tamanho da coluna, sem vazar) e reduzindo o `gap` de
+36px para 28px. Testado com 2 e 3 ramos, textos longos de condição/ação e
+nos dois temas — sem sobreposição em nenhum caso.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

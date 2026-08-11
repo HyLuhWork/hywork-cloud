@@ -1032,6 +1032,18 @@ Ativo/Inativo (reaproveitando a ação `toggle-ds-automacao-ativo`/
 `toggle-automacao-ativo` que já existia na listagem) + "Salvar automação"
 à direita. Aplicado nos dois construtores (`ds` e `automacao`).
 
+**v65** — pedido do usuário ("incluir possibilidade de alterar o nome da
+automação", sobre o print da `.wf-topbar`): o nome da automação já podia ser
+editado pelo campo "Nome da automação" no painel lateral, mas agora também é
+editável direto no header — `.wf-topbar-title` deixou de ser um `<div>` e
+virou um `<input>` (`.wf-topbar-title-input`: transparente e sem borda em
+repouso, ganha fundo/borda no hover e no foco, "Clique para renomear" como
+`title`), com Enter chamando `.blur()`. Os dois campos (header e painel)
+compartilham o mesmo bind (`dsautomacao.nome`/`automacao.nome`) e ficam
+sincronizados ao vivo nos dois sentidos via `syncAutoTitleInputs(el, val)`
+— edita em um, o outro atualiza junto, sem perder o cursor de quem está
+digitando.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

@@ -361,6 +361,9 @@
   .wf-home-btn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-md);border:1px solid var(--border);color:var(--ink-muted);flex:none;transition:background .15s,color .15s}
   .wf-home-btn:hover{background:var(--muted);color:var(--ink)}
   .wf-topbar-title{font-size:14.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wf-topbar-title-input{font:inherit;font-size:14.5px;font-weight:700;color:var(--ink);background:transparent;border:1px solid transparent;border-radius:var(--radius-sm);padding:5px 8px;min-width:120px;max-width:360px;transition:background .15s,border-color .15s}
+  .wf-topbar-title-input:hover{background:var(--muted)}
+  .wf-topbar-title-input:focus{background:var(--surface);border-color:var(--border-strong);outline:none}
   .wf-topbar-right{display:flex;align-items:center;gap:16px;flex:none}
   .editor-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:14px}
   .editor-header-left{display:flex;gap:14px;align-items:flex-start}
@@ -2877,7 +2880,7 @@ function dsAutomacaoEditorHTML(auto){
   return '<div class="wf-topbar">'+
       '<div class="wf-topbar-left">'+
         '<a href="#" class="wf-home-btn" data-action="close-ds-automacao-editor" title="Voltar para Automações">'+ic('home',16)+'</a>'+
-        '<div class="wf-topbar-title" id="wf-topbar-title">'+esc(auto.nome)+'</div>'+
+        '<input class="wf-topbar-title-input" id="wf-topbar-title-input" data-bind="dsautomacao.nome" value="'+esc(auto.nome)+'" title="Clique para renomear"/>'+
       '</div>'+
       '<div class="wf-topbar-right">'+
         '<label class="switch" data-action="toggle-ds-automacao-ativo" data-id="'+auto.id+'"><input type="checkbox" '+(auto.ativo?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>'+
@@ -2914,7 +2917,7 @@ function dsAutomacaoTriggerPanelHTML(auto){
   '</select><div class="field-hint" style="margin-top:6px">'+esc(meta.desc)+'</div>';
 
   return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Nome da automação</div>'+
-    '<input class="input" style="margin-top:8px" data-bind="dsautomacao.nome" value="'+esc(auto.nome)+'"/></div>'+
+    '<input class="input" id="wf-panel-title-input" style="margin-top:8px" data-bind="dsautomacao.nome" value="'+esc(auto.nome)+'"/></div>'+
     '<div class="wf-panel-body">'+
       '<div class="wf-panel-section"><div class="wf-panel-section-label">Evento — quando dispara</div>'+eventSelect+'</div>'+
       (isDadosEvent ? '<div class="wf-panel-section"><div class="wf-panel-section-label">Fonte de Dados</div>'+fonteSelect+'</div>' : '')+
@@ -4767,7 +4770,7 @@ function automacaoEditorHTML(){
   return '<div class="wf-topbar">'+
       '<div class="wf-topbar-left">'+
         '<a href="#" class="wf-home-btn" data-action="close-automacao-editor" title="Voltar para Automações">'+ic('home',16)+'</a>'+
-        '<div class="wf-topbar-title" id="wf-topbar-title">'+esc(auto.nome)+'</div>'+
+        '<input class="wf-topbar-title-input" id="wf-topbar-title-input" data-bind="automacao.nome" data-autoid="'+auto.id+'" value="'+esc(auto.nome)+'" title="Clique para renomear"/>'+
       '</div>'+
       '<div class="wf-topbar-right">'+
         '<label class="switch" data-action="toggle-automacao-ativo" data-id="'+auto.id+'"><input type="checkbox" '+(auto.ativo?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>'+
@@ -4810,7 +4813,7 @@ function automacaoTriggerPanelHTML(auto){
   }
 
   return '<div class="wf-panel-head"><div class="wf-panel-title" style="font-weight:700;font-size:15px">Nome da automação</div>'+
-    '<input class="input" style="margin-top:8px" data-bind="automacao.nome" data-autoid="'+auto.id+'" value="'+esc(auto.nome)+'"/></div>'+
+    '<input class="input" id="wf-panel-title-input" style="margin-top:8px" data-bind="automacao.nome" data-autoid="'+auto.id+'" value="'+esc(auto.nome)+'"/></div>'+
     '<div class="wf-panel-body"><div class="wf-panel-section"><div class="wf-panel-section-label">Evento — quando dispara</div>'+eventSelect+'</div>'+extra+'</div>';
 }
 function automacaoGalhosPanelHTML(auto, bloco){
@@ -5973,7 +5976,7 @@ document.addEventListener('input', function(e){
     else if (bind==='step.sla_prazo'){ var s3=findStep(el.dataset.stepid); s3.sla.prazo=val; }
     else if (bind==='rule.label'){ var r=findRegra(el.dataset.stepid, el.dataset.regraid); r.label=val; }
     else if (bind==='rule.condVal'){ var r2=findRegra(el.dataset.stepid, el.dataset.regraid); r2.condicoes[0]=r2.condicoes[0]||{}; r2.condicoes[0].valor=val; }
-    else if (bind==='automacao.nome'){ var auN=findAutomacao(el.dataset.autoid); auN.nome=val; setText('#wf-topbar-title', val || 'Nova automação'); }
+    else if (bind==='automacao.nome'){ var auN=findAutomacao(el.dataset.autoid); auN.nome=val; syncAutoTitleInputs(el, val); }
     else if (bind==='automacao.condVal'){ var bV=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); var gV=bV.grupos.find(function(g){return g.id===el.dataset.groupid;}); gV.condicoes[+el.dataset.idx].valor=val; }
     else if (bind==='automacao.acaoExtra'){ var bE=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); bE.extra=val; }
     else if (bind==='automacao.acaoAlvo'){ var bA=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); if(bA) bA.alvo=val; }
@@ -5987,7 +5990,7 @@ document.addEventListener('input', function(e){
     else if (bind==='novasol.campo'){ state.novaSolicitacaoDraft.valores[el.dataset.fieldid]=val; }
     else if (bind==='novafonte.nome'){ state.novaFonteDraft.nome=val; }
     else if (bind==='fonterecord.campo'){ state.fonteRecordDraft.valores[el.dataset.fieldid]=val; }
-    else if (bind==='dsautomacao.nome'){ currentDsAuto().nome=val; setText('#wf-topbar-title', val || 'Nova automação'); }
+    else if (bind==='dsautomacao.nome'){ currentDsAuto().nome=val; syncAutoTitleInputs(el, val); }
     else if (bind==='dsautomacao.condVal'){ var dsaVB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); var dsaVG=dsaVB.grupos.find(function(g){return g.id===el.dataset.groupid;}); dsaVG.condicoes[+el.dataset.idx].valor=val; }
     else if (bind==='dsautomacao.acaoExtra'){ var dsaXB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsaXB.extra=val; }
     else if (bind==='dsautomacao.acaoCampo'){ var dsAcIB=findDsBlocoIn(currentDsAuto(), el.dataset.blockid); dsAcIB.campos=dsAcIB.campos||{}; dsAcIB.campos[el.dataset.key]=val; }
@@ -6004,6 +6007,10 @@ document.addEventListener('input', function(e){
   if (e.target.id==='tp-search-input'){ state.triggerPickerOpen.search = e.target.value; refreshTriggerPickerGrid(); }
 });
 function setText(sel, val){ var n = document.querySelector(sel); if (n) n.textContent = val; }
+function syncAutoTitleInputs(fromEl, val){
+  var ids = ['wf-topbar-title-input','wf-panel-title-input'];
+  ids.forEach(function(id){ if (id===fromEl.id) return; var n = document.getElementById(id); if (n) n.value = val; });
+}
 
 /* drag and drop: palette -> canvas */
 document.addEventListener('dragstart', function(e){
@@ -6055,6 +6062,10 @@ document.addEventListener('keydown', function(e){
     e.preventDefault();
     showToast('HyA Builder (IA) chega em breve — isso aqui é só uma prévia visual.');
     render();
+  }
+  if (e.target && e.target.id==='wf-topbar-title-input' && e.key==='Enter'){
+    e.preventDefault();
+    e.target.blur();
   }
 });
 

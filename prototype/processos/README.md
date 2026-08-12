@@ -1058,6 +1058,46 @@ ficam exatamente do tamanho da coluna, sem vazar) e reduzindo o `gap` de
 36px para 28px. Testado com 2 e 3 ramos, textos longos de condição/ação e
 nos dois temas — sem sobreposição em nenhum caso.
 
+**v67** — pedido do usuário ("na fonte de dados ao clicar em nova automação,
+eu não quero mais esse formato de workflow... eu quero ações simples dentro
+de uma fonte de dados", com prints de referência de um construtor no estilo
+Pipefy "Sempre que.../Faça isso..."): as automações de **Fontes de Dados**
+deixaram de usar o canvas/construtor visual em árvore (gatilho → condição →
+galhos → ações encadeadas) — isso continua existindo só para automações de
+**Processos**. No lugar, cada automação de fonte de dados agora tem no
+máximo **um gatilho e uma ação**, escolhidos numa tela de duas colunas
+("Sempre que..." / "Faça isso...") ligadas por um conector com dois pontos,
+igual ao print de referência:
+- **Gatilhos** (`DS_TRIGGERS`): Ao criar um novo item, Ao alterar algum
+  campo (pede o campo), Agendamento a partir de um campo (pede o campo de
+  data + "Antes/Depois" + valor + unidade).
+- **Ações** (`DS_ACOES_SIMPLES`): Envie uma notificação por email
+  (destinatário + assunto + mensagem), Envie um push (destinatário +
+  mensagem), Envie um post no feed (mensagem), Atualizar campo (campo +
+  novo valor).
+- Cada coluna mostra a lista de opções até algo ser escolhido; depois vira
+  um cartão com "Trocar" (reaproveita `.action-tpl`) + os campos daquele
+  tipo, dentro de um `.wf-panel-section` (mesmo cartão cinza usado em
+  outros lugares do app). O gatilho ganhou também um bloco opcional
+  "E também siga estas condições" (lista simples de campo/operador/valor,
+  sem os grupos E/OU da versão antiga) — reaproveita `.cond-row`.
+- O header do editor (ícone de casa, nome editável, toggle Ativo/Inativo,
+  "Salvar automação") continua o mesmo da v64/v65.
+
+Removido (só existia para o construtor antigo de Fontes de Dados, sem uso
+depois desta mudança): `DS_EVENTO_GROUPS`/`DS_EVENTO_TYPES`/`dsEventoMeta`
+(catálogo de ~28 eventos por entidade do PDF), `DS_ACOES` (10 tipos de
+ação com campos avançados), `DS_CHAIN_CTX`/`dsBlocoOptsFor`, o modal
+"Selecione um gatilho" e o modal "Selecione uma ação" deixaram de ser
+usados no escopo `ds` (continuam servindo só o construtor de Processos),
+e a árvore de blocos (`galhos`/`condicao` aninhados) some do lado das
+Fontes de Dados. Nada disso foi tocado no construtor de **Processos**, que
+continua idêntico (canvas, Galhos, condições em grupos E/OU, o catálogo
+completo de ações do PDF) — as duas automações eram construídas com o
+mesmo motor de blocos e passaram a divergir por pedido do usuário: Processo
+é workflow de verdade (várias etapas, aprovações), Fonte de Dados é regra
+simples de notificação/atualização.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

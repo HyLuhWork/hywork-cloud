@@ -1175,6 +1175,30 @@ tocado):
    cópia para edição), Copiar link (toast ilustrativo) e Excluir
    automação (reaproveita a ação `delete-ds-automacao` já existente).
 
+**v71** — três pedidos do usuário sobre a v70:
+1. *"O nome da fonte de dados não é um badge... deve parecer um título e
+   uma info em cima: Fonte de dados vinculado:"* — o badge
+   (`.badge.badge-info`) virou `.pf-fonte-linked`: um rótulo pequeno
+   maiúsculo "FONTE DE DADOS VINCULADA" (mesmo estilo de
+   `.wf-panel-section-label`) acima de um título de verdade — ícone de
+   banco de dados + nome da fonte em 18px/700, sem formato de pílula.
+2. *"Na etapa 'sempre que'... não deve ter a possibilidade de trocar de
+   fonte de dados, pq ele já está dentro da fonte"* — removido o select
+   "Fonte de dados" que aparecia dentro do cartão do gatilho
+   (`dsTriggerColHTML`); a fonte agora só é mostrada (e só pode ser
+   trocada) lá em cima, no `.pf-fonte-linked`. Como consequência o bind
+   `dsautomacao.fonte` também saiu (ficou morto).
+3. *"Na opção 'então faça', colocar uma ação de Criar novo item — aí
+   sim ele pode escolher a fonte de dados e os campos"* — novo tipo de
+   ação `criar_item` em `DS_ACOES_SIMPLES` ("Criar novo item"). Ao
+   contrário do gatilho, aqui a fonte É escolhível livremente (pode ser
+   a mesma ou outra) via um select "Fonte de dados"; ao escolher, a UI
+   renderiza um campo por campo da fonte alvo (`dsAcaoNovoItemFieldHTML`,
+   mesmo padrão de tipos usado no modal "Novo registro" — texto,
+   textarea pra long_text, select pra single_select, placeholder de data
+   pra date), guardados em `auto.acao.valores` (dicionário campo→valor,
+   reaproveitando o padrão `data-fieldid` de `fonterecord.campo`).
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

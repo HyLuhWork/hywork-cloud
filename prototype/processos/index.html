@@ -368,7 +368,10 @@
   .wf-topbar-dropdown button{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;font-size:12.5px;font-weight:600;color:var(--ink);text-align:left}
   .wf-topbar-dropdown button:hover{background:var(--muted)}
   .wf-topbar-dropdown button.danger{color:var(--error)}
-  .pf-fonte-badge{margin-bottom:10px}
+  .pf-fonte-linked{margin-bottom:18px}
+  .pf-fonte-linked-label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin-bottom:5px}
+  .pf-fonte-linked-title{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:700;color:var(--ink)}
+  .pf-fonte-linked-title svg{color:var(--navy-800);flex:none}
   .wf-topbar-title-input{font:inherit;font-size:14.5px;font-weight:700;color:var(--ink);background:transparent;border:1px solid transparent;border-radius:var(--radius-sm);padding:5px 8px;min-width:120px;max-width:360px;transition:background .15s,border-color .15s}
   .wf-topbar-title-input:hover{background:var(--muted)}
   .wf-topbar-title-input:focus{background:var(--surface);border-color:var(--border-strong);outline:none}
@@ -2775,6 +2778,7 @@ var DS_ACOES_SIMPLES = [
   {tipo:'push', label:'Envie um push', icon:'bell'},
   {tipo:'feed', label:'Envie um post no feed', icon:'forum'},
   {tipo:'atualizar_campo', label:'Atualizar campo', icon:'db'},
+  {tipo:'criar_item', label:'Criar novo item', icon:'plus'},
 ];
 function dsAcaoMeta(tipo){ return DS_ACOES_SIMPLES.find(function(a){return a.tipo===tipo;}) || null; }
 function makeDsAutomacao(o){
@@ -2887,7 +2891,8 @@ function dsAutomacaoEditorHTML(auto){
 function dsAutomacaoFormHTML(auto){
   var fonte = dataSourceById(auto.fonteId);
   return '<div class="pf-wrap">'+
-      '<div class="pf-fonte-badge"><span class="badge badge-info">'+ic('db',11)+esc(fonte ? fonte.name : 'Fonte não definida')+'</span></div>'+
+      '<div class="pf-fonte-linked"><div class="pf-fonte-linked-label">Fonte de dados vinculada</div>'+
+        '<div class="pf-fonte-linked-title">'+ic('db',18)+esc(fonte ? fonte.name : 'Fonte não definida')+'</div></div>'+
       '<p class="pf-sub">Escolha um gatilho desta fonte de dados e a ação que ele irá desencadear.</p>'+
       '<div class="pf-columns">'+
         '<div class="pf-col">'+dsTriggerColHTML(auto)+'</div>'+
@@ -2928,7 +2933,6 @@ function dsTriggerColHTML(auto){
   var meta = dsTriggerMeta(t.tipo);
   var fonte = dataSourceById(auto.fonteId);
   var campos = fonte ? fonte.fields : [];
-  var fonteSelect = '<select class="select" data-bind="dsautomacao.fonte">'+state.dataSources.map(function(f){return '<option value="'+f.id+'"'+(f.id===auto.fonteId?' selected':'')+'>'+esc(f.name)+'</option>';}).join('')+'</select>';
   var campoSelect = '<select class="select" data-bind="dsautomacao.trigger_campo"><option value="">Selecione…</option>'+
     campos.map(function(f){return '<option value="'+f.id+'"'+(f.id===t.campoId?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+'</select>';
   var extra = '';
@@ -2943,9 +2947,8 @@ function dsTriggerColHTML(auto){
       '</div></div>';
   }
   return '<button class="action-tpl selected" data-action="reset-ds-trigger"><div class="at-ic">'+ic(meta.icon,14)+'</div><div class="at-title">'+esc(meta.label)+'</div><span class="link-btn" style="margin-left:auto">Trocar</span></button>'+
-    '<div class="wf-panel-section" style="margin-top:14px"><div class="wf-panel-section-label">Fonte de dados</div>'+fonteSelect+'</div>'+
-    (extra ? '<div class="wf-panel-section">'+extra+'</div>' : '')+
-    dsCondicoesHTML(auto);
+    (extra ? '<div class="wf-panel-section" style="margin-top:14px">'+extra+'</div>' : '')+
+    '<div style="margin-top:'+(extra?'0':'14px')+'">'+dsCondicoesHTML(auto)+'</div>';
 }
 function dsCondicoesHTML(auto){
   var fonte = dataSourceById(auto.fonteId);
@@ -2994,9 +2997,33 @@ function dsAcaoColHTML(auto){
       campos.map(function(f){return '<option value="'+f.id+'"'+(f.id===a.campoId?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+
       '</select></div>'+
       '<div class="field-row" style="margin-bottom:0"><label class="field-label">Novo valor</label><input class="input" data-bind="dsautomacao.acao_valor" value="'+esc(a.valor||'')+'"/></div>';
+  } else if (a.tipo==='criar_item'){
+    var targetFonte = a.fonteId ? dataSourceById(a.fonteId) : null;
+    var novoItemFonteSelect = '<select class="select" data-bind="dsautomacao.acao_fonte"><option value="">Selecione…</option>'+
+      state.dataSources.map(function(f){return '<option value="'+f.id+'"'+(f.id===a.fonteId?' selected':'')+'>'+esc(f.name)+'</option>';}).join('')+
+      '</select>';
+    fields = '<div class="field-row"><label class="field-label">Fonte de dados</label>'+novoItemFonteSelect+'</div>'+
+      (targetFonte ?
+        (targetFonte.fields.length ? targetFonte.fields.map(function(f,i){ return dsAcaoNovoItemFieldHTML(f, a.valores, i===targetFonte.fields.length-1); }).join('') :
+          '<div class="field-hint">Esta fonte de dados ainda não tem campos configurados.</div>') :
+        '<div class="field-hint">Escolha a fonte de dados para configurar os campos do novo item.</div>');
   }
   return '<button class="action-tpl selected" data-action="reset-ds-acao"><div class="at-ic">'+ic(meta.icon,14)+'</div><div class="at-title">'+esc(meta.label)+'</div><span class="link-btn" style="margin-left:auto">Trocar</span></button>'+
     '<div class="wf-panel-section" style="margin-top:14px">'+fields+'</div>';
+}
+function dsAcaoNovoItemFieldHTML(f, valores, isLast){
+  var val = (valores||{})[f.id];
+  var label = esc(f.label)+(f.required?' <span style="color:var(--error)">*</span>':'');
+  var lastStyle = isLast ? ' style="margin-bottom:0"' : '';
+  if (f.type==='long_text'){
+    return '<div class="field-row"'+lastStyle+'><label class="field-label">'+label+'</label><textarea class="textarea" data-bind="dsautomacao.acao_novoitem_campo" data-fieldid="'+f.id+'">'+esc(val||'')+'</textarea></div>';
+  }
+  if (f.type==='single_select' && f.options){
+    var opts = f.options.map(function(o){return '<option value="'+esc(o)+'"'+(o===val?' selected':'')+'>'+esc(o)+'</option>';}).join('');
+    return '<div class="field-row"'+lastStyle+'><label class="field-label">'+label+'</label><select class="select" data-bind="dsautomacao.acao_novoitem_campo" data-fieldid="'+f.id+'"><option value="">Escolher…</option>'+opts+'</select></div>';
+  }
+  var placeholder = f.type==='attachment' ? ' placeholder="Anexar arquivo…"' : (f.type==='date' ? ' placeholder="dd/mm/aaaa"' : '');
+  return '<div class="field-row"'+lastStyle+'><label class="field-label">'+label+'</label><input class="input" data-bind="dsautomacao.acao_novoitem_campo" data-fieldid="'+f.id+'" value="'+esc(val||'')+'"'+placeholder+'/></div>';
 }
 /* Campos extras dos tipos de ação (blocos "acao"), compartilhados entre os dois construtores de automação —
    ver PDF de referência "Hywork microflows" (seção Step types) para o catálogo completo. */
@@ -5940,7 +5967,6 @@ document.addEventListener('change', function(e){
     state.dsLinkDraft.camposIds = dsFonteSel ? dsFonteSel.fields.map(function(f){return f.id;}) : [];
   }
   else if (bind==='fonterecord.campo') { state.fonteRecordDraft.valores[el.dataset.fieldid]=val; }
-  else if (bind==='dsautomacao.fonte') { currentDsAuto().fonteId=val; }
   else if (bind==='dsautomacao.trigger_campo') { currentDsAuto().trigger.campoId=val; }
   else if (bind==='dsautomacao.trigger_offset_direcao') { currentDsAuto().trigger.offset_direcao=val; }
   else if (bind==='dsautomacao.trigger_offset_unidade') { currentDsAuto().trigger.offset_unidade=val; }
@@ -5948,6 +5974,8 @@ document.addEventListener('change', function(e){
   else if (bind==='dsautomacao.cond_op') { currentDsAuto().condicoes[+el.dataset.idx].operador=val; }
   else if (bind==='dsautomacao.acao_destinatario') { currentDsAuto().acao.destinatario=val; }
   else if (bind==='dsautomacao.acao_campo') { currentDsAuto().acao.campoId=val; }
+  else if (bind==='dsautomacao.acao_fonte') { var afAuto=currentDsAuto(); afAuto.acao.fonteId=val; afAuto.acao.valores={}; }
+  else if (bind==='dsautomacao.acao_novoitem_campo') { currentDsAuto().acao.valores[el.dataset.fieldid]=val; }
   else if (bind==='automacao.acaoCampo') { var acB=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); acB.campos=acB.campos||{}; acB.campos[el.dataset.key]=val; }
   else matched = false;
   if (matched) render();
@@ -5999,6 +6027,7 @@ document.addEventListener('input', function(e){
     else if (bind==='dsautomacao.acao_assunto'){ currentDsAuto().acao.assunto=val; }
     else if (bind==='dsautomacao.acao_mensagem'){ currentDsAuto().acao.mensagem=val; }
     else if (bind==='dsautomacao.acao_valor'){ currentDsAuto().acao.valor=val; }
+    else if (bind==='dsautomacao.acao_novoitem_campo'){ currentDsAuto().acao.valores[el.dataset.fieldid]=val; }
     return;
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }

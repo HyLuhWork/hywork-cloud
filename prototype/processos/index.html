@@ -368,31 +368,54 @@
   .wf-topbar-dropdown button{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;font-size:12.5px;font-weight:600;color:var(--ink);text-align:left}
   .wf-topbar-dropdown button:hover{background:var(--muted)}
   .wf-topbar-dropdown button.danger{color:var(--error)}
-  .pf-fonte-linked{margin-bottom:18px}
-  .pf-fonte-linked-label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin-bottom:5px}
-  .pf-fonte-linked-title{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:700;color:var(--ink)}
-  .pf-fonte-linked-title svg{color:var(--navy-800);flex:none}
   .wf-topbar-title-input{font:inherit;font-size:14.5px;font-weight:700;color:var(--ink);background:transparent;border:1px solid transparent;border-radius:var(--radius-sm);padding:5px 8px;min-width:120px;max-width:360px;transition:background .15s,border-color .15s}
   .wf-topbar-title-input:hover{background:var(--muted)}
   .wf-topbar-title-input:focus{background:var(--surface);border-color:var(--border-strong);outline:none}
   .wf-topbar-right{display:flex;align-items:center;gap:16px;flex:none}
 
-  /* ---------- automações de fontes de dados (tela simples "Sempre que.../Faça isso...") ---------- */
-  .pf-wrap{max-width:1040px;margin:0 auto;padding:32px 28px 64px}
+  /* ---------- automações de fontes de dados ("Fluxo da automação") ---------- */
+  .wf-topbar-flow-ic{width:32px;height:32px;border-radius:var(--radius-md);background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+  .pf-wrap{max-width:1080px;margin:0 auto;padding:28px 28px 64px}
+  .pf-fonte-tag{font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--ink-faint);margin-bottom:10px}
+  .pf-flow-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .pf-flow-title{font-size:21px;font-weight:700;color:var(--ink)}
+  .pf-flow-actions{display:flex;align-items:center;gap:10px;flex:none}
+  .pf-flow-status{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--success);background:var(--success-50);padding:5px 11px;border-radius:var(--radius-full);white-space:nowrap}
   .pf-sub{font-size:13px;color:var(--ink-muted);margin-bottom:22px}
   .pf-columns{display:flex;align-items:flex-start;gap:0}
   .pf-col{flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px}
-  .pf-col-title{font-size:15px;font-weight:700;color:var(--ink)}
+  .pf-col-trigger{flex:0 0 380px;padding:0;overflow:hidden;align-self:flex-start}
+  .pf-col-acoes{flex:1;min-width:0;background:none;border:none;padding:0}
   .pf-list{margin-top:10px}
   .pf-row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 6px;border-radius:var(--radius-md);text-align:left}
   .pf-row:hover{background:var(--muted)}
   .pf-row-ic{width:32px;height:32px;border-radius:8px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;flex:none}
   .pf-row-label{font-size:13px;font-weight:600;color:var(--ink)}
-  .pf-connector{width:44px;flex:none;align-self:flex-start;margin-top:34px;height:2px;position:relative}
-  .pf-connector::before{content:'';position:absolute;left:0;right:0;top:0;height:1.5px;background:var(--border-strong)}
-  .pf-connector .dot{position:absolute;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%}
-  .pf-connector .dot.filled{left:-3px;background:var(--primary)}
-  .pf-connector .dot.hollow{right:-3px;background:var(--surface);border:2px solid var(--border-strong)}
+  .pf-flow-connector{width:44px;flex:none;align-self:flex-start;margin-top:24px;display:flex;align-items:center;justify-content:center;color:var(--primary)}
+  .pf-gatilho-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+  .pf-gatilho-head{display:flex;align-items:center;gap:9px;padding:13px 16px;background:var(--navy-900);color:#fff;font-size:13px;font-weight:700}
+  .pf-gatilho-body{padding:12px}
+  .pf-trigger-row{display:flex;align-items:center;gap:11px;width:100%;padding:11px 12px;border-radius:var(--radius-md);text-align:left;margin-bottom:4px}
+  .pf-trigger-row:last-child{margin-bottom:0}
+  .pf-trigger-row:hover{background:var(--muted)}
+  .pf-trigger-row.selected{background:var(--primary-50)}
+  .pf-trigger-dot{width:9px;height:9px;border-radius:50%;background:var(--border-strong);flex:none}
+  .pf-trigger-row.selected .pf-trigger-dot{background:var(--primary)}
+  .pf-trigger-row-label{font-size:12.5px;font-weight:600;color:var(--ink-muted)}
+  .pf-trigger-row.selected .pf-trigger-row-label{color:var(--primary-dark);font-weight:700}
+  .pf-steps-list{display:flex;flex-direction:column;gap:10px}
+  .pf-step-card{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden}
+  .pf-step-summary{display:flex;align-items:center;gap:12px;padding:13px 15px}
+  .pf-step-num{width:25px;height:25px;border-radius:7px;background:var(--primary-50);color:var(--primary-dark);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;flex:none}
+  .pf-step-text{flex:1;min-width:0}
+  .pf-step-title{font-size:13.5px;font-weight:700;color:var(--ink)}
+  .pf-step-sub{font-size:11.5px;color:var(--ink-faint);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pf-step-actions{display:flex;align-items:center;gap:12px;flex:none}
+  .pf-step-edit{font-size:12px;font-weight:700;color:var(--primary)}
+  .pf-step-body{padding:0 15px 16px}
+  .pf-step-add{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:1.5px dashed var(--border-strong);border-radius:var(--radius-lg);color:var(--primary);font-size:12.5px;font-weight:700;background:none}
+  .pf-step-add:hover{background:var(--primary-50);border-color:var(--primary)}
+  .pf-step-picker{border:1px solid var(--border);border-radius:var(--radius-lg);padding:6px 10px;background:var(--surface)}
 
   .editor-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:14px}
   .editor-header-left{display:flex;gap:14px;align-items:flex-start}
@@ -2157,6 +2180,8 @@ var state = {
   dsAutomacaoEditorId:null, // id da automação de fonte de dados em edição | null
   dsAutomacaoSubTab:'automacao', // 'automacao' | 'logs'
   dsAutomacaoMenuOpen:false, // menu "..." (duplicar/copiar link/excluir) no editor de automação de fonte de dados
+  dsAcaoPickerOpen:false, // seletor "+ Adicionar próxima ação" aberto no editor de automação de fonte de dados
+  dsAcaoExpandedId:null, // id da ação (auto.acoes[i].id) expandida ("editar") no editor de automação de fonte de dados
   actionPickerOpen:null, // {scope:'automacao', ramoId, replaceBlockId, search, cat} | null — modal "Selecione uma ação" (construtor de Processos)
   triggerPickerOpen:null, // {scope:'automacao', search} | null — modal "Selecione um gatilho" (construtor de Processos)
   wizardOpen:false,
@@ -2782,17 +2807,28 @@ var DS_ACOES_SIMPLES = [
 ];
 function dsAcaoMeta(tipo){ return DS_ACOES_SIMPLES.find(function(a){return a.tipo===tipo;}) || null; }
 function makeDsAutomacao(o){
-  return Object.assign({id:uid(), nome:'Nova automação', ativo:true, fonteId:null, trigger:{tipo:null}, condicoes:[], acao:{tipo:null}}, o);
+  return Object.assign({id:uid(), nome:'Nova automação', ativo:true, fonteId:null, trigger:{tipo:null}, condicoes:[], acoes:[]}, o);
 }
+function makeDsAcaoItem(tipo){ return {id:uid(), tipo:tipo}; }
+function findDsAcaoItem(auto, id){ return (auto.acoes||[]).find(function(a){return a.id===id;}); }
 function findDsAuto(id){ return state.dsAutomacoes.find(function(a){return a.id===id;}); }
 function currentDsAuto(){ return findDsAuto(state.dsAutomacaoEditorId); }
 function automacoesForFonte(fonteId){ return state.dsAutomacoes.filter(function(a){return a.fonteId===fonteId;}); }
+function dsAcaoItemSummaryText(a){
+  if (a.tipo==='email') return (a.destinatario||'Destinatário não definido')+(a.assunto ? ' · '+a.assunto : '');
+  if (a.tipo==='push') return a.destinatario||'Destinatário não definido';
+  if (a.tipo==='feed') return a.mensagem ? (a.mensagem.length>50 ? a.mensagem.slice(0,47)+'…' : a.mensagem) : 'Mensagem não definida';
+  if (a.tipo==='atualizar_campo') return a.campoId ? 'Atualiza 1 campo' : 'Campo não definido';
+  if (a.tipo==='criar_item') { var f=a.fonteId?dataSourceById(a.fonteId):null; return f ? 'Cria item em '+f.name : 'Fonte não definida'; }
+  return '';
+}
 function dsAutomacaoSummary(a){
   var tMeta = dsTriggerMeta(a.trigger.tipo);
-  var aMeta = dsAcaoMeta(a.acao.tipo);
   if (!tMeta) return 'Gatilho não definido ainda.';
-  if (!aMeta) return tMeta.label+' — ação não definida ainda.';
-  return tMeta.label+' → '+aMeta.label.toLowerCase();
+  var acoes = a.acoes||[];
+  if (!acoes.length) return tMeta.label+' — nenhuma ação definida ainda.';
+  var labels = acoes.map(function(x){ var m=dsAcaoMeta(x.tipo); return m ? m.label.toLowerCase() : ''; }).filter(Boolean);
+  return tMeta.label+' → '+labels.join(' → ');
 }
 function dsAutomacaoCardHTML(a){
   var fonte = dataSourceById(a.fonteId);
@@ -2866,7 +2902,7 @@ function dsAutomacaoEditorHTML(auto){
   '</div>';
   return '<div class="wf-topbar">'+
       '<div class="wf-topbar-left">'+
-        '<a href="#" class="wf-home-btn" data-action="close-ds-automacao-editor" title="Voltar para Automações">'+ic('home',16)+'</a>'+
+        '<a href="#" class="wf-topbar-flow-ic" data-action="close-ds-automacao-editor" title="Voltar para Automações">'+ic('bolt',16)+'</a>'+
         '<input class="wf-topbar-title-input" id="wf-topbar-title-input" data-bind="dsautomacao.nome" value="'+esc(auto.nome)+'" title="Clique para renomear"/>'+
       '</div>'+
       '<div class="wf-topbar-right">'+
@@ -2891,46 +2927,52 @@ function dsAutomacaoEditorHTML(auto){
 function dsAutomacaoFormHTML(auto){
   var fonte = dataSourceById(auto.fonteId);
   return '<div class="pf-wrap">'+
-      '<div class="pf-fonte-linked"><div class="pf-fonte-linked-label">Fonte de dados vinculada</div>'+
-        '<div class="pf-fonte-linked-title">'+ic('db',18)+esc(fonte ? fonte.name : 'Fonte não definida')+'</div></div>'+
-      '<p class="pf-sub">Escolha um gatilho desta fonte de dados e a ação que ele irá desencadear.</p>'+
+      '<div class="pf-fonte-tag">FONTE: '+esc(fonte ? fonte.name.toUpperCase() : 'NÃO DEFINIDA')+'</div>'+
+      '<div class="pf-flow-head">'+
+        '<div class="pf-flow-title">Fluxo da automação</div>'+
+        '<div class="pf-flow-actions">'+
+          '<span class="pf-flow-status">'+ic('check',11)+'Rascunho salvo</span>'+
+          '<button class="btn btn-outline btn-sm" data-action="test-ds-automacao">Testar</button>'+
+        '</div>'+
+      '</div>'+
       '<div class="pf-columns">'+
-        '<div class="pf-col">'+dsTriggerColHTML(auto)+'</div>'+
-        '<div class="pf-connector"><span class="dot filled"></span><span class="dot hollow"></span></div>'+
-        '<div class="pf-col">'+dsAcaoColHTML(auto)+'</div>'+
+        '<div class="pf-col pf-col-trigger">'+dsTriggerColHTML(auto)+'</div>'+
+        '<div class="pf-flow-connector">'+ic('flow',18)+'</div>'+
+        '<div class="pf-col pf-col-acoes">'+dsAcoesColHTML(auto)+'</div>'+
       '</div>'+
     '</div>';
 }
 function dsAutomacaoLogsHTML(auto){
   var tMeta = dsTriggerMeta(auto.trigger.tipo);
-  var aMeta = dsAcaoMeta(auto.acao.tipo);
-  var rows = (tMeta && aMeta) ? [
+  var acoes = auto.acoes||[];
+  var acoesLabel = acoes.map(function(a){ var m=dsAcaoMeta(a.tipo); return m?m.label:''; }).filter(Boolean).join(' → ');
+  var rows = (tMeta && acoes.length) ? [
     {data:'26/07/2026 14:32', resultado:'Executada'},
     {data:'25/07/2026 09:10', resultado:'Ignorada — condição não atendida'},
     {data:'23/07/2026 17:48', resultado:'Executada'},
   ] : [];
   var tableRows = rows.map(function(r){
     var ok = r.resultado==='Executada';
-    return '<tr><td style="text-align:left;padding-left:16px">'+r.data+'</td><td style="text-align:left">'+esc(tMeta.label)+'</td><td style="text-align:left">'+esc(aMeta.label)+'</td><td style="text-align:left"><span class="badge '+(ok?'badge-success':'badge-muted')+'">'+esc(r.resultado)+'</span></td></tr>';
+    return '<tr><td style="text-align:left;padding-left:16px">'+r.data+'</td><td style="text-align:left">'+esc(tMeta.label)+'</td><td style="text-align:left">'+esc(acoesLabel)+'</td><td style="text-align:left"><span class="badge '+(ok?'badge-success':'badge-muted')+'">'+esc(r.resultado)+'</span></td></tr>';
   }).join('');
   return '<div class="screen-inner" style="padding:26px 0 0">'+
     '<div class="section-head"><div><h3>Logs de auditoria</h3><p>Histórico de disparos desta automação.</p></div></div>'+
-    (rows.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Data/Hora</th><th style="text-align:left">Gatilho</th><th style="text-align:left">Ação</th><th style="text-align:left">Resultado</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>'+
+    (rows.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Data/Hora</th><th style="text-align:left">Gatilho</th><th style="text-align:left">Ações</th><th style="text-align:left">Resultado</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>'+
       '<div class="field-hint" style="margin-top:14px">Prévia ilustrativa — o log real seria alimentado pelas execuções desta automação em produção.</div>' :
-      '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nenhum log ainda</div><div class="es-sub">Defina o gatilho e a ação na aba "Automação" para começar a ver o histórico de disparos aqui.</div></div>')+
+      '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nenhum log ainda</div><div class="es-sub">Defina o gatilho e ao menos uma ação na aba "Automação" para começar a ver o histórico de disparos aqui.</div></div>')+
   '</div>';
 }
 function dsTriggerColHTML(auto){
   var t = auto.trigger;
-  if (!t.tipo){
-    return '<div class="pf-col-title">Sempre que...</div>'+
-      '<div class="pf-list">'+DS_TRIGGERS.map(function(it){
-        return '<button class="pf-row" data-action="pick-ds-trigger" data-tipo="'+it.tipo+'">'+
-          '<div class="pf-row-ic">'+ic(it.icon,16)+'</div><div class="pf-row-label">'+esc(it.label)+'</div>'+
-        '</button>';
-      }).join('')+'</div>';
-  }
-  var meta = dsTriggerMeta(t.tipo);
+  var rows = DS_TRIGGERS.map(function(it){
+    var sel = t.tipo===it.tipo;
+    return '<button class="pf-trigger-row'+(sel?' selected':'')+'" data-action="pick-ds-trigger" data-tipo="'+it.tipo+'">'+
+      '<span class="pf-trigger-dot"></span><span class="pf-trigger-row-label">'+esc(it.label)+'</span>'+
+    '</button>';
+  }).join('');
+  var card = '<div class="pf-gatilho-card"><div class="pf-gatilho-head">'+ic('flow',14)+'Gatilho</div>'+
+    '<div class="pf-gatilho-body">'+rows+'</div></div>';
+  if (!t.tipo) return card;
   var fonte = dataSourceById(auto.fonteId);
   var campos = fonte ? fonte.fields : [];
   var campoSelect = '<select class="select" data-bind="dsautomacao.trigger_campo"><option value="">Selecione…</option>'+
@@ -2946,7 +2988,7 @@ function dsTriggerColHTML(auto){
         '<select class="select" data-bind="dsautomacao.trigger_offset_unidade">'+['dias','horas'].map(function(o){return '<option'+(o===t.offset_unidade?' selected':'')+'>'+o+'</option>';}).join('')+'</select>'+
       '</div></div>';
   }
-  return '<button class="action-tpl selected" data-action="reset-ds-trigger"><div class="at-ic">'+ic(meta.icon,14)+'</div><div class="at-title">'+esc(meta.label)+'</div><span class="link-btn" style="margin-left:auto">Trocar</span></button>'+
+  return card+
     (extra ? '<div class="wf-panel-section" style="margin-top:14px">'+extra+'</div>' : '')+
     '<div style="margin-top:'+(extra?'0':'14px')+'">'+dsCondicoesHTML(auto)+'</div>';
 }
@@ -2967,63 +3009,80 @@ function dsCondicoesHTML(auto){
     '<button class="link-btn" style="margin-top:'+(auto.condicoes.length?'8px':'0')+'" data-action="add-ds-cond2">'+ic('plus',12)+'Adicionar condição</button>'+
   '</div>';
 }
-function dsAcaoColHTML(auto){
-  var a = auto.acao;
-  if (!a.tipo){
-    return '<div class="pf-col-title">Faça isso...</div>'+
-      '<div class="pf-list">'+DS_ACOES_SIMPLES.map(function(it){
-        return '<button class="pf-row" data-action="pick-ds-acao" data-tipo="'+it.tipo+'">'+
-          '<div class="pf-row-ic">'+ic(it.icon,16)+'</div><div class="pf-row-label">'+esc(it.label)+'</div>'+
-        '</button>';
-      }).join('')+'</div>';
-  }
-  var meta = dsAcaoMeta(a.tipo);
+function dsAcoesColHTML(auto){
+  var acoes = auto.acoes || [];
+  var stepsHTML = acoes.map(function(a, i){
+    var meta = dsAcaoMeta(a.tipo);
+    var expanded = state.dsAcaoExpandedId===a.id;
+    return '<div class="pf-step-card">'+
+      '<div class="pf-step-summary">'+
+        '<div class="pf-step-num">'+(i+1)+'</div>'+
+        '<div class="pf-step-text"><div class="pf-step-title">'+esc(meta?meta.label:'')+'</div><div class="pf-step-sub">'+esc(dsAcaoItemSummaryText(a))+'</div></div>'+
+        '<div class="pf-step-actions">'+
+          '<button class="pf-step-edit" data-action="toggle-ds-acao-expand" data-id="'+a.id+'">'+(expanded?'recolher':'editar')+'</button>'+
+          '<button class="icon-btn" data-action="remove-ds-acao-item" data-id="'+a.id+'" title="Remover">'+ic('trash',13)+'</button>'+
+        '</div>'+
+      '</div>'+
+      (expanded ? '<div class="pf-step-body">'+dsAcaoItemFieldsHTML(auto, a)+'</div>' : '')+
+    '</div>';
+  }).join('');
+  var picker = state.dsAcaoPickerOpen ?
+    '<div class="pf-step-picker"><div class="pf-list">'+DS_ACOES_SIMPLES.map(function(it){
+      return '<button class="pf-row" data-action="add-ds-acao-item" data-tipo="'+it.tipo+'">'+
+        '<div class="pf-row-ic">'+ic(it.icon,16)+'</div><div class="pf-row-label">'+esc(it.label)+'</div>'+
+      '</button>';
+    }).join('')+'</div></div>' :
+    '<button class="pf-step-add" data-action="open-ds-acao-picker">'+ic('plus',14)+'Adicionar próxima ação</button>';
+  return '<div class="pf-steps-list">'+stepsHTML+'</div>'+
+    '<div style="margin-top:'+(acoes.length?'10px':'0')+'">'+picker+'</div>';
+}
+function dsAcaoItemFieldsHTML(auto, a){
   var fonte = dataSourceById(auto.fonteId);
   var campos = fonte ? fonte.fields : [];
   var destinatarioOpts = ['Todos os usuários','Gestor da área','Equipe de Service Desk','Financeiro','Recursos Humanos'];
-  var destSelect = '<select class="select" data-bind="dsautomacao.acao_destinatario">'+destinatarioOpts.map(function(o){return '<option'+(o===a.destinatario?' selected':'')+'>'+o+'</option>';}).join('')+'</select>';
+  var destSelect = '<select class="select" data-bind="dsautomacao.acao_destinatario" data-id="'+a.id+'">'+destinatarioOpts.map(function(o){return '<option'+(o===a.destinatario?' selected':'')+'>'+o+'</option>';}).join('')+'</select>';
   var fields = '';
   if (a.tipo==='email'){
     fields = '<div class="field-row"><label class="field-label">Destinatário</label>'+destSelect+'</div>'+
-      '<div class="field-row"><label class="field-label">Assunto</label><input class="input" data-bind="dsautomacao.acao_assunto" value="'+esc(a.assunto||'')+'"/></div>'+
-      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acao_mensagem">'+esc(a.mensagem||'')+'</textarea></div>';
+      '<div class="field-row"><label class="field-label">Assunto</label><input class="input" data-bind="dsautomacao.acao_assunto" data-id="'+a.id+'" value="'+esc(a.assunto||'')+'"/></div>'+
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acao_mensagem" data-id="'+a.id+'">'+esc(a.mensagem||'')+'</textarea></div>';
   } else if (a.tipo==='push'){
     fields = '<div class="field-row"><label class="field-label">Destinatário</label>'+destSelect+'</div>'+
-      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acao_mensagem">'+esc(a.mensagem||'')+'</textarea></div>';
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acao_mensagem" data-id="'+a.id+'">'+esc(a.mensagem||'')+'</textarea></div>';
   } else if (a.tipo==='feed'){
-    fields = '<div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acao_mensagem">'+esc(a.mensagem||'')+'</textarea></div>';
+    fields = '<div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acao_mensagem" data-id="'+a.id+'">'+esc(a.mensagem||'')+'</textarea></div>';
   } else if (a.tipo==='atualizar_campo'){
-    fields = '<div class="field-row"><label class="field-label">Campo</label><select class="select" data-bind="dsautomacao.acao_campo"><option value="">Selecione…</option>'+
+    fields = '<div class="field-row"><label class="field-label">Campo</label><select class="select" data-bind="dsautomacao.acao_campo" data-id="'+a.id+'"><option value="">Selecione…</option>'+
       campos.map(function(f){return '<option value="'+f.id+'"'+(f.id===a.campoId?' selected':'')+'>'+esc(f.label)+'</option>';}).join('')+
       '</select></div>'+
-      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Novo valor</label><input class="input" data-bind="dsautomacao.acao_valor" value="'+esc(a.valor||'')+'"/></div>';
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Novo valor</label><input class="input" data-bind="dsautomacao.acao_valor" data-id="'+a.id+'" value="'+esc(a.valor||'')+'"/></div>';
   } else if (a.tipo==='criar_item'){
     var targetFonte = a.fonteId ? dataSourceById(a.fonteId) : null;
-    var novoItemFonteSelect = '<select class="select" data-bind="dsautomacao.acao_fonte"><option value="">Selecione…</option>'+
+    var novoItemFonteSelect = '<select class="select" data-bind="dsautomacao.acao_fonte" data-id="'+a.id+'"><option value="">Selecione…</option>'+
       state.dataSources.map(function(f){return '<option value="'+f.id+'"'+(f.id===a.fonteId?' selected':'')+'>'+esc(f.name)+'</option>';}).join('')+
       '</select>';
     fields = '<div class="field-row"><label class="field-label">Fonte de dados</label>'+novoItemFonteSelect+'</div>'+
       (targetFonte ?
-        (targetFonte.fields.length ? targetFonte.fields.map(function(f,i){ return dsAcaoNovoItemFieldHTML(f, a.valores, i===targetFonte.fields.length-1); }).join('') :
+        (targetFonte.fields.length ? targetFonte.fields.map(function(f,i){ return dsAcaoNovoItemFieldHTML(f, a.valores, i===targetFonte.fields.length-1, a.id); }).join('') :
           '<div class="field-hint">Esta fonte de dados ainda não tem campos configurados.</div>') :
         '<div class="field-hint">Escolha a fonte de dados para configurar os campos do novo item.</div>');
   }
-  return '<button class="action-tpl selected" data-action="reset-ds-acao"><div class="at-ic">'+ic(meta.icon,14)+'</div><div class="at-title">'+esc(meta.label)+'</div><span class="link-btn" style="margin-left:auto">Trocar</span></button>'+
-    '<div class="wf-panel-section" style="margin-top:14px">'+fields+'</div>';
+  return fields;
 }
-function dsAcaoNovoItemFieldHTML(f, valores, isLast){
+function dsAcaoNovoItemFieldHTML(f, valores, isLast, acaoId){
   var val = (valores||{})[f.id];
   var label = esc(f.label)+(f.required?' <span style="color:var(--error)">*</span>':'');
   var lastStyle = isLast ? ' style="margin-bottom:0"' : '';
+  var idAttr = ' data-id="'+acaoId+'"';
   if (f.type==='long_text'){
-    return '<div class="field-row"'+lastStyle+'><label class="field-label">'+label+'</label><textarea class="textarea" data-bind="dsautomacao.acao_novoitem_campo" data-fieldid="'+f.id+'">'+esc(val||'')+'</textarea></div>';
+    return '<div class="field-row"'+lastStyle+'><label class="field-label">'+label+'</label><textarea class="textarea" data-bind="dsautomacao.acao_novoitem_campo" data-fieldid="'+f.id+'"'+idAttr+'>'+esc(val||'')+'</textarea></div>';
   }
   if (f.type==='single_select' && f.options){
     var opts = f.options.map(function(o){return '<option value="'+esc(o)+'"'+(o===val?' selected':'')+'>'+esc(o)+'</option>';}).join('');
-    return '<div class="field-row"'+lastStyle+'><label class="field-label">'+label+'</label><select class="select" data-bind="dsautomacao.acao_novoitem_campo" data-fieldid="'+f.id+'"><option value="">Escolher…</option>'+opts+'</select></div>';
+    return '<div class="field-row"'+lastStyle+'><label class="field-label">'+label+'</label><select class="select" data-bind="dsautomacao.acao_novoitem_campo" data-fieldid="'+f.id+'"'+idAttr+'><option value="">Escolher…</option>'+opts+'</select></div>';
   }
   var placeholder = f.type==='attachment' ? ' placeholder="Anexar arquivo…"' : (f.type==='date' ? ' placeholder="dd/mm/aaaa"' : '');
-  return '<div class="field-row"'+lastStyle+'><label class="field-label">'+label+'</label><input class="input" data-bind="dsautomacao.acao_novoitem_campo" data-fieldid="'+f.id+'" value="'+esc(val||'')+'"'+placeholder+'/></div>';
+  return '<div class="field-row"'+lastStyle+'><label class="field-label">'+label+'</label><input class="input" data-bind="dsautomacao.acao_novoitem_campo" data-fieldid="'+f.id+'"'+idAttr+' value="'+esc(val||'')+'"'+placeholder+'/></div>';
 }
 /* Campos extras dos tipos de ação (blocos "acao"), compartilhados entre os dois construtores de automação —
    ver PDF de referência "Hywork microflows" (seção Step types) para o catálogo completo. */
@@ -5301,10 +5360,12 @@ document.addEventListener('click', function(e){
       state.dsAutomacaoSubTab = 'automacao';
       state.dsAutomacaoMenuOpen = false;
       state.dsAutomatePopoverOpen = false;
+      state.dsAcaoPickerOpen = false;
+      state.dsAcaoExpandedId = null;
       break;
     }
-    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSubTab = 'automacao'; state.dsAutomatePopoverOpen = false; break;
-    case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; break;
+    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSubTab = 'automacao'; state.dsAutomatePopoverOpen = false; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; break;
+    case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; break;
     case 'set-ds-automacao-subtab': state.dsAutomacaoSubTab = t.dataset.tab; break;
     case 'save-ds-automacao': state.dsAutomacaoEditorId = null; showToast('Automação salva.'); break;
     case 'toggle-ds-automacao-ativo': { var taAuto = findDsAuto(t.dataset.id); taAuto.ativo = !taAuto.ativo; break; }
@@ -5335,9 +5396,23 @@ document.addEventListener('click', function(e){
       if (pdtTipo==='agendamento_campo'){ pdtAuto.trigger.offset_direcao='Antes'; pdtAuto.trigger.offset_unidade='dias'; }
       break;
     }
-    case 'reset-ds-trigger': { currentDsAuto().trigger = {tipo:null}; break; }
-    case 'pick-ds-acao': { currentDsAuto().acao = {tipo:t.dataset.tipo}; break; }
-    case 'reset-ds-acao': { currentDsAuto().acao = {tipo:null}; break; }
+    case 'test-ds-automacao': showToast('Automação testada — confira os logs para ver o resultado.'); break;
+    case 'open-ds-acao-picker': state.dsAcaoPickerOpen = true; break;
+    case 'add-ds-acao-item': {
+      var aaiAuto = currentDsAuto();
+      var aaiItem = makeDsAcaoItem(t.dataset.tipo);
+      aaiAuto.acoes.push(aaiItem);
+      state.dsAcaoPickerOpen = false;
+      state.dsAcaoExpandedId = aaiItem.id;
+      break;
+    }
+    case 'toggle-ds-acao-expand': state.dsAcaoExpandedId = (state.dsAcaoExpandedId===t.dataset.id) ? null : t.dataset.id; break;
+    case 'remove-ds-acao-item': {
+      var raiAuto = currentDsAuto();
+      raiAuto.acoes = raiAuto.acoes.filter(function(a){return a.id!==t.dataset.id;});
+      if (state.dsAcaoExpandedId===t.dataset.id) state.dsAcaoExpandedId = null;
+      break;
+    }
     case 'add-ds-cond2': { currentDsAuto().condicoes.push({campo:'', operador:'igual a', valor:''}); break; }
     case 'remove-ds-cond2': { currentDsAuto().condicoes.splice(+t.dataset.idx,1); break; }
 
@@ -5972,10 +6047,10 @@ document.addEventListener('change', function(e){
   else if (bind==='dsautomacao.trigger_offset_unidade') { currentDsAuto().trigger.offset_unidade=val; }
   else if (bind==='dsautomacao.cond_campo') { currentDsAuto().condicoes[+el.dataset.idx].campo=val; }
   else if (bind==='dsautomacao.cond_op') { currentDsAuto().condicoes[+el.dataset.idx].operador=val; }
-  else if (bind==='dsautomacao.acao_destinatario') { currentDsAuto().acao.destinatario=val; }
-  else if (bind==='dsautomacao.acao_campo') { currentDsAuto().acao.campoId=val; }
-  else if (bind==='dsautomacao.acao_fonte') { var afAuto=currentDsAuto(); afAuto.acao.fonteId=val; afAuto.acao.valores={}; }
-  else if (bind==='dsautomacao.acao_novoitem_campo') { currentDsAuto().acao.valores[el.dataset.fieldid]=val; }
+  else if (bind==='dsautomacao.acao_destinatario') { findDsAcaoItem(currentDsAuto(), el.dataset.id).destinatario=val; }
+  else if (bind==='dsautomacao.acao_campo') { findDsAcaoItem(currentDsAuto(), el.dataset.id).campoId=val; }
+  else if (bind==='dsautomacao.acao_fonte') { var afItem=findDsAcaoItem(currentDsAuto(), el.dataset.id); afItem.fonteId=val; afItem.valores={}; }
+  else if (bind==='dsautomacao.acao_novoitem_campo') { var anicItem=findDsAcaoItem(currentDsAuto(), el.dataset.id); anicItem.valores=anicItem.valores||{}; anicItem.valores[el.dataset.fieldid]=val; }
   else if (bind==='automacao.acaoCampo') { var acB=findAutomacaoBloco(el.dataset.autoid, el.dataset.blockid); acB.campos=acB.campos||{}; acB.campos[el.dataset.key]=val; }
   else matched = false;
   if (matched) render();
@@ -6024,10 +6099,10 @@ document.addEventListener('input', function(e){
     else if (bind==='dsautomacao.nome'){ currentDsAuto().nome=val; syncAutoTitleInputs(el, val); }
     else if (bind==='dsautomacao.trigger_offset_valor'){ currentDsAuto().trigger.offset_valor=val; }
     else if (bind==='dsautomacao.cond_val'){ currentDsAuto().condicoes[+el.dataset.idx].valor=val; }
-    else if (bind==='dsautomacao.acao_assunto'){ currentDsAuto().acao.assunto=val; }
-    else if (bind==='dsautomacao.acao_mensagem'){ currentDsAuto().acao.mensagem=val; }
-    else if (bind==='dsautomacao.acao_valor'){ currentDsAuto().acao.valor=val; }
-    else if (bind==='dsautomacao.acao_novoitem_campo'){ currentDsAuto().acao.valores[el.dataset.fieldid]=val; }
+    else if (bind==='dsautomacao.acao_assunto'){ findDsAcaoItem(currentDsAuto(), el.dataset.id).assunto=val; }
+    else if (bind==='dsautomacao.acao_mensagem'){ findDsAcaoItem(currentDsAuto(), el.dataset.id).mensagem=val; }
+    else if (bind==='dsautomacao.acao_valor'){ findDsAcaoItem(currentDsAuto(), el.dataset.id).valor=val; }
+    else if (bind==='dsautomacao.acao_novoitem_campo'){ var anic2Item=findDsAcaoItem(currentDsAuto(), el.dataset.id); anic2Item.valores=anic2Item.valores||{}; anic2Item.valores[el.dataset.fieldid]=val; }
     return;
   }
   if (e.target.id==='home-search'){ state.search = e.target.value; refreshHomeGridArea(); }

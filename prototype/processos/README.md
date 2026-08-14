@@ -1199,6 +1199,42 @@ tocado):
    pra date), guardados em `auto.acao.valores` (dicionário campo→valor,
    reaproveitando o padrão `data-fieldid` de `fonterecord.campo`).
 
+**v72** — pedido do usuário: *"Copie o layout da automação dentro de fonte de
+dados"*, a partir de um mock de referência com um visual bem mais elaborado que
+o da v71. O editor de automações de **Fonte de Dados** ganhou um redesign completo
+(o construtor de Processos não foi tocado):
+- Topbar: o ícone à esquerda virou um quadrado navy arredondado
+  (`.wf-topbar-flow-ic`) com o ícone de raio, no lugar do antigo botão "casa".
+- Corpo: `.pf-fonte-tag` (rótulo pequeno "FONTE: NOME DA FONTE" maiúsculo) acima
+  de um heading grande "Fluxo da automação" (`.pf-flow-title`), com uma pílula
+  verde "Rascunho salvo" e um botão outline "Testar" alinhados à direita
+  (`.pf-flow-head`/`.pf-flow-actions`/`.pf-flow-status`) — "Testar" é decorativo,
+  só mostra um toast.
+- Coluna do Gatilho (`dsTriggerColHTML`) virou um cartão fixo
+  (`.pf-gatilho-card`) com header navy escuro ("Gatilho") e as três opções de
+  gatilho sempre visíveis como uma lista de rádio (`.pf-trigger-row`, ponto colorido
+  `.pf-trigger-dot`): a opção selecionada ganha fundo pêssego e o ponto/rótulo em
+  laranja. Escolher outra opção simplesmente troca a seleção — não existe mais o
+  padrão antigo "escolher → substitui por chip com link Trocar".
+- Coluna de Ações passou de **uma ação única** (`auto.acao`, objeto singular) para
+  uma **sequência numerada de ações** (`auto.acoes`, array — reintroduzindo o
+  encadeamento que a v67 tinha simplificado para "só uma ação"): cada passo é um
+  `.pf-step-card` com número, título/resumo de uma linha
+  (`dsAcaoItemSummaryText`), um link "editar" que expande/recolhe os campos de
+  configuração daquele passo (`state.dsAcaoExpandedId`) e um botão de lixeira para
+  removê-lo (com renumeração automática). Um botão tracejado "+ Adicionar próxima
+  ação" abre o seletor de tipo (`state.dsAcaoPickerOpen`) com o mesmo catálogo
+  `DS_ACOES_SIMPLES` de antes (incluindo "Criar novo item" da v71, que continua
+  deixando escolher livremente a fonte de dados alvo e preenchendo um campo por
+  campo dela). `dsAcaoColHTML` foi substituída por `dsAcoesColHTML` +
+  `dsAcaoItemFieldsHTML`, e todo bind de campo de ação (`dsautomacao.acao_*`) passou
+  a carregar um `data-id` do passo específico (via `findDsAcaoItem`) em vez de
+  gravar direto num único `auto.acao`.
+- O resumo da automação (card da listagem, popover "Automações desta fonte" e a
+  aba Logs) agora encadeia os rótulos de todas as ações com "→"
+  (ex.: "Ao criar um novo item → envie um push → criar novo item"), em vez de citar
+  só uma.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

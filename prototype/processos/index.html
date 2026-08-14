@@ -360,8 +360,15 @@
   .wf-topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
   .wf-home-btn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-md);border:1px solid var(--border);color:var(--ink-muted);flex:none;transition:background .15s,color .15s}
   .wf-home-btn:hover{background:var(--muted);color:var(--ink)}
-  .wf-topbar-fonte-ic{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-md);background:var(--info-50);color:var(--navy-800);flex:none}
   .wf-topbar-title{font-size:14.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wf-topbar-status{font-size:11.5px;font-weight:700;color:var(--success)}
+  .wf-topbar-status.off{color:var(--ink-faint)}
+  .wf-topbar-menu-wrap{position:relative}
+  .wf-topbar-dropdown{position:absolute;top:38px;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);min-width:170px;overflow:hidden;z-index:20}
+  .wf-topbar-dropdown button{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;font-size:12.5px;font-weight:600;color:var(--ink);text-align:left}
+  .wf-topbar-dropdown button:hover{background:var(--muted)}
+  .wf-topbar-dropdown button.danger{color:var(--error)}
+  .pf-fonte-badge{margin-bottom:10px}
   .wf-topbar-title-input{font:inherit;font-size:14.5px;font-weight:700;color:var(--ink);background:transparent;border:1px solid transparent;border-radius:var(--radius-sm);padding:5px 8px;min-width:120px;max-width:360px;transition:background .15s,border-color .15s}
   .wf-topbar-title-input:hover{background:var(--muted)}
   .wf-topbar-title-input:focus{background:var(--surface);border-color:var(--border-strong);outline:none}
@@ -783,8 +790,9 @@
   .ds-automate-trigger{position:relative;background:var(--primary-50);color:var(--primary-dark);border:1px solid var(--info-100)}
   .ds-automate-trigger:hover{background:var(--info-100)}
   .ds-automate-popover{position:absolute;top:calc(100% + 10px);right:0;width:480px;max-width:calc(100vw - 40px);display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden;z-index:20;animation:dsPopIn .15s ease}
-  .ds-automate-popover-list{width:640px}
-  .ds-automate-popover-list .ds-automate-pop-illust{flex:0 0 240px}
+  .ds-automate-popover-list{width:740px}
+  .ds-automate-popover-list .ds-automate-pop-illust{flex:0 0 260px}
+  .ds-automate-popover-list .ds-automate-pop-body{gap:12px;padding:26px 26px 24px}
   @keyframes dsPopIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
   .ds-automate-pop-illust{flex:0 0 42%;position:relative;overflow:hidden;background:linear-gradient(155deg,#ffe2c2,#ffd0a3);display:flex;align-items:center;justify-content:center;padding:18px}
   .ds-automate-nodes{display:flex;flex-direction:column;gap:13px;z-index:1;position:relative}
@@ -2145,6 +2153,7 @@ var state = {
   dsAutomacoes: [], // automações de fontes de dados (lista global, cada uma com fonteId)
   dsAutomacaoEditorId:null, // id da automação de fonte de dados em edição | null
   dsAutomacaoSubTab:'automacao', // 'automacao' | 'logs'
+  dsAutomacaoMenuOpen:false, // menu "..." (duplicar/copiar link/excluir) no editor de automação de fonte de dados
   actionPickerOpen:null, // {scope:'automacao', ramoId, replaceBlockId, search, cat} | null — modal "Selecione uma ação" (construtor de Processos)
   triggerPickerOpen:null, // {scope:'automacao', search} | null — modal "Selecione um gatilho" (construtor de Processos)
   wizardOpen:false,
@@ -2640,7 +2649,6 @@ function fonteDetailHTML(fonte){
     state.dsAutomacaoEditorId = null;
   }
   var records = filteredFonteRecords(fonte);
-  var autos = automacoesForFonte(fonte.id);
 
   return '<div class="screen-inner">'+
     '<a href="#" class="back-link" data-action="close-fonte-detail">'+ic('arrowLeft',14)+'Bases de Dados</a>'+
@@ -2658,7 +2666,6 @@ function fonteDetailHTML(fonte){
     '<div class="dados-stats-row"><div><b>'+fonte.records.length+'</b> Registros</div><div><b>'+fonte.fields.length+'</b> Campos</div></div>'+
     '<div class="topbar-search" style="max-width:320px;margin-bottom:16px">'+ic('search',14)+'<input id="dados-record-search" type="text" placeholder="Buscar registros..." value="'+esc(state.dadosRecordSearch)+'"/></div>'+
     '<div id="fonte-records-area">'+fonteRecordsAreaHTML(fonte, records)+'</div>'+
-    fonteAutomacaoSectionHTML(fonte)+
   '</div>';
 }
 function refreshFonteRecordsArea(){
@@ -2828,17 +2835,11 @@ function dsAutomatePopoverHTML(fonte){
     dsAutomatePopoverIllustHTML()+
     '<div class="ds-automate-pop-body">'+
       '<h3>Automações desta fonte</h3>'+
+      '<p>Crie sistemas inteligentes com notificações em tempo real e ganhe agilidade na gestão de tarefas, projetos e muito mais.</p>'+
       '<div class="dap-list">'+rows+'</div>'+
       '<button class="btn btn-dark btn-block" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Nova Automação</button>'+
     '</div>'+
   '</div>';
-}
-function fonteAutomacaoSectionHTML(fonte){
-  var autos = automacoesForFonte(fonte.id);
-  if (!autos.length) return '';
-  return '<div class="section-divider"></div>'+
-    '<div class="section-head"><h3>Automações desta fonte</h3><button class="btn btn-outline btn-sm" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Nova Automação</button></div>'+
-    '<div class="automacao-list">'+autos.map(dsAutomacaoCardHTML).join('')+'</div>';
 }
 function automacoesAdminHTML(){
   if (state.dsAutomacaoEditorId){
@@ -2862,11 +2863,21 @@ function dsAutomacaoEditorHTML(auto){
   return '<div class="wf-topbar">'+
       '<div class="wf-topbar-left">'+
         '<a href="#" class="wf-home-btn" data-action="close-ds-automacao-editor" title="Voltar para Automações">'+ic('home',16)+'</a>'+
-        '<div class="wf-topbar-fonte-ic" title="Fonte de dados desta automação">'+ic('db',15)+'</div>'+
         '<input class="wf-topbar-title-input" id="wf-topbar-title-input" data-bind="dsautomacao.nome" value="'+esc(auto.nome)+'" title="Clique para renomear"/>'+
       '</div>'+
       '<div class="wf-topbar-right">'+
-        '<label class="switch" data-action="toggle-ds-automacao-ativo" data-id="'+auto.id+'"><input type="checkbox" '+(auto.ativo?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>'+
+        '<div style="display:flex;align-items:center;gap:8px">'+
+          '<span class="wf-topbar-status'+(auto.ativo?'':' off')+'">'+(auto.ativo?'Ativo':'Inativo')+'</span>'+
+          '<label class="switch" data-action="toggle-ds-automacao-ativo" data-id="'+auto.id+'"><input type="checkbox" '+(auto.ativo?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>'+
+        '</div>'+
+        '<div class="wf-topbar-menu-wrap">'+
+          '<button class="icon-btn" data-action="toggle-ds-automacao-menu" title="Mais opções">'+ic('more',16)+'</button>'+
+          (state.dsAutomacaoMenuOpen ? '<div class="wf-topbar-dropdown">'+
+            '<button data-action="duplicate-ds-automacao" data-id="'+auto.id+'">'+ic('layers',13)+'Duplicar</button>'+
+            '<button data-action="copy-link-ds-automacao" data-id="'+auto.id+'">'+ic('link',13)+'Copiar link</button>'+
+            '<button class="danger" data-action="delete-ds-automacao" data-id="'+auto.id+'">'+ic('trash',13)+'Excluir automação</button>'+
+          '</div>' : '')+
+        '</div>'+
         '<button class="btn btn-primary btn-sm" data-action="save-ds-automacao">'+ic('check',14)+'Salvar automação</button>'+
       '</div>'+
     '</div>'+
@@ -2874,7 +2885,9 @@ function dsAutomacaoEditorHTML(auto){
     (state.dsAutomacaoSubTab==='logs' ? dsAutomacaoLogsHTML(auto) : dsAutomacaoFormHTML(auto));
 }
 function dsAutomacaoFormHTML(auto){
+  var fonte = dataSourceById(auto.fonteId);
   return '<div class="pf-wrap">'+
+      '<div class="pf-fonte-badge"><span class="badge badge-info">'+ic('db',11)+esc(fonte ? fonte.name : 'Fonte não definida')+'</span></div>'+
       '<p class="pf-sub">Escolha um gatilho desta fonte de dados e a ação que ele irá desencadear.</p>'+
       '<div class="pf-columns">'+
         '<div class="pf-col">'+dsTriggerColHTML(auto)+'</div>'+
@@ -5168,6 +5181,7 @@ document.addEventListener('click', function(e){
   if (state.intranetToolbarMenu && !/^(toggle-intranet-menu|intranet-toggle-filter-proc|intranet-clear-filter|intranet-set-sort)$/.test(action)) state.intranetToolbarMenu = null;
   if (state.pvColMenuFor && action!=='toggle-pv-col-menu') state.pvColMenuFor = null;
   if (state.dsAutomatePopoverOpen && !/^(toggle-ds-automate-popover|new-ds-automacao)$/.test(action)) state.dsAutomatePopoverOpen = false;
+  if (state.dsAutomacaoMenuOpen && action!=='toggle-ds-automacao-menu') state.dsAutomacaoMenuOpen = false;
   if (state.appNavOpen && !/^(toggle-app-nav|open-app)$/.test(action)) state.appNavOpen = false;
   var handled = true;
   switch(action){
@@ -5254,11 +5268,11 @@ document.addEventListener('click', function(e){
     }
     case 'new-ds-automacao': {
       var naFonteId = t.dataset.fonteid || (state.dataSources[0] && state.dataSources[0].id);
-      var naFonte = dataSourceById(naFonteId);
-      var naAuto = makeDsAutomacao({fonteId:naFonteId, nome: naFonte ? naFonte.name : 'Nova automação'});
+      var naAuto = makeDsAutomacao({fonteId:naFonteId});
       state.dsAutomacoes.push(naAuto);
       state.dsAutomacaoEditorId = naAuto.id;
       state.dsAutomacaoSubTab = 'automacao';
+      state.dsAutomacaoMenuOpen = false;
       state.dsAutomatePopoverOpen = false;
       break;
     }
@@ -5272,6 +5286,21 @@ document.addEventListener('click', function(e){
       if (state.dsAutomacaoEditorId===t.dataset.id){ state.dsAutomacaoEditorId=null; }
       break;
     }
+    case 'toggle-ds-automacao-menu': state.dsAutomacaoMenuOpen = !state.dsAutomacaoMenuOpen; break;
+    case 'duplicate-ds-automacao': {
+      var srcAuto = findDsAuto(t.dataset.id);
+      if (srcAuto){
+        var dupAuto = JSON.parse(JSON.stringify(srcAuto));
+        dupAuto.id = uid();
+        dupAuto.nome = srcAuto.nome+' (cópia)';
+        state.dsAutomacoes.push(dupAuto);
+        state.dsAutomacaoEditorId = dupAuto.id;
+        state.dsAutomacaoSubTab = 'automacao';
+        showToast('Automação duplicada.');
+      }
+      break;
+    }
+    case 'copy-link-ds-automacao': showToast('Link copiado para a área de transferência.'); break;
     case 'pick-ds-trigger': {
       var pdtAuto = currentDsAuto();
       var pdtTipo = t.dataset.tipo;

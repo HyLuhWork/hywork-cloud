@@ -1143,6 +1143,38 @@ Dados (v67):
    de largura, ilustração fixada em 240px) para caber a lista
    confortavelmente ao lado da arte.
 
+**v70** — cinco pedidos do usuário revendo a v69, todos escopados às
+automações de **Fonte de Dados** (o construtor de Processos não foi
+tocado):
+1. *"O nome da fonte de dados precisa estar acima desse subtítulo"* —
+   o badge da fonte (`.badge.badge-info`, ícone de banco de dados)
+   saiu do header e virou a primeira linha do corpo (`.pf-fonte-badge`),
+   logo acima de "Escolha um gatilho desta fonte de dados...".
+2. *"O header continuará igual para ele renomear o nome daquela
+   automação"* — desfeita a fusão ícone+título da v69: o topbar volta a
+   mostrar só o campo de nome da automação (editável), sem o ícone da
+   fonte embutido; o nome padrão de uma automação nova voltou a ser
+   genérico ("Nova automação") em vez do nome da fonte.
+3. *"Queria manter a descrição da modal... rever o layout para não
+   deixar nada apertado, mas mantendo essa arte"* — o popover
+   "Automações desta fonte" (variante com lista) passou a incluir de
+   novo o parágrafo descritivo ("Crie sistemas inteligentes...", igual
+   ao estado vazio) acima da lista, e ficou bem mais largo
+   (640px → 740px, ilustração 240px → 260px, mais respiro no padding)
+   para caber tudo confortavelmente.
+4. *"Remover essa parte do footer da fonte de dados"* — a seção
+   "Automações desta fonte" que ficava fixa no rodapé da página da
+   fonte (`fonteAutomacaoSectionHTML`) foi removida; o popover do ícone
+   de raio já cobre esse caso (mostra a lista quando existem automações).
+5. *"Ativar/desativar o fluxo, 3 pontinhos com duplicar, copiar link,
+   excluir"* — o toggle Ativo/Inativo ganhou um rótulo de texto ao lado
+   (`.wf-topbar-status`, verde quando ativo/cinza quando inativo); e um
+   botão "···" (mesmo padrão visual do `.step-menu-dropdown` das
+   Etapas) abre um menu com Duplicar (clona a automação inteira com
+   `JSON.parse(JSON.stringify(...))`, nome + " (cópia)", e já abre a
+   cópia para edição), Copiar link (toast ilustrativo) e Excluir
+   automação (reaproveita a ação `delete-ds-automacao` já existente).
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

@@ -1098,6 +1098,32 @@ mesmo motor de blocos e passaram a divergir por pedido do usuário: Processo
 é workflow de verdade (várias etapas, aprovações), Fonte de Dados é regra
 simples de notificação/atualização.
 
+**v68** — três pedidos do usuário sobre a tela de automação de Fonte de
+Dados (v67):
+1. *"Preciso que deixe claro nessa tela de qual fonte de dados que está
+   sendo a automação"* — o header (`.wf-topbar`) ganhou um badge
+   (`.badge.badge-info`, ícone de banco de dados) com o nome da fonte,
+   ao lado do nome editável da automação. Atualiza sozinho quando o
+   select "Fonte de dados" muda (já disparava `render()` completo).
+2. *"Dentro da fonte de dados, ao clicar no ícone e abrir a modal de nova
+   automação, precisa trazer nessa modal todas as automações vinculadas
+   a fonte de dados"* — o ícone de raio (`.ds-automate-trigger`) no
+   cabeçalho da página da fonte só aparecia quando ela ainda não tinha
+   nenhuma automação (`autos.length ? '' : …`); a partir de agora ele
+   fica sempre visível. `dsAutomatePopoverHTML(fonte)` passou a checar
+   `automacoesForFonte(fonte.id)`: sem automações, mantém a ilustração +
+   "Criar nova automação" de sempre; com automações, mostra a lista
+   (`.dap-list`/`.dap-row`, nome + resumo, clicável) mais um botão
+   "+ Nova Automação" no rodapé.
+3. *"Ao clicar numa automação já feita dentro dela, mostrar uma tab com
+   Automação e Logs"* — `dsAutomacaoEditorHTML` ganhou as sub-abas
+   `.mtabs` "Automação"/"Logs" (`state.dsAutomacaoSubTab`, mesmo padrão
+   já usado em `automacoesTabHTML` para Processos). "Logs" mostra
+   `dsAutomacaoLogsHTML(auto)` — uma tabela ilustrativa de execuções
+   (data/hora, gatilho, ação, resultado) escopada a esta automação
+   específica (diferente do log de Processos, que é por processo
+   inteiro); fica vazia até o gatilho e a ação estarem definidos.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

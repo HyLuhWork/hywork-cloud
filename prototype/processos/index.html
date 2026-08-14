@@ -796,6 +796,13 @@
   .ds-automate-pop-body h3{font-size:15px}
   .ds-automate-pop-body p{font-size:12.5px;color:var(--ink-muted);line-height:1.5}
   .ds-automate-pop-body .btn{align-self:flex-start;margin-top:2px}
+  .dap-list{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto}
+  .dap-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-md);text-align:left;width:100%}
+  .dap-row:hover{border-color:var(--navy-400);background:var(--muted)}
+  .dap-row .dap-ic{width:28px;height:28px;border-radius:7px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;flex:none}
+  .dap-row-text{flex:1;min-width:0}
+  .dap-row-name{font-size:12.5px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dap-row-summary{font-size:11px;color:var(--ink-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .pv-table-resp{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink)}
   .pv-table-resp-avatar{width:22px;height:22px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;flex:none}
   .pv-progress-cell{display:flex;align-items:center;gap:8px}
@@ -2134,6 +2141,7 @@ var state = {
   fonteRecordDraft:null, // {valores:{}}
   dsAutomacoes: [], // automações de fontes de dados (lista global, cada uma com fonteId)
   dsAutomacaoEditorId:null, // id da automação de fonte de dados em edição | null
+  dsAutomacaoSubTab:'automacao', // 'automacao' | 'logs'
   actionPickerOpen:null, // {scope:'automacao', ramoId, replaceBlockId, search, cat} | null — modal "Selecione uma ação" (construtor de Processos)
   triggerPickerOpen:null, // {scope:'automacao', search} | null — modal "Selecione um gatilho" (construtor de Processos)
   wizardOpen:false,
@@ -2636,10 +2644,10 @@ function fonteDetailHTML(fonte){
     '<div class="page-head" style="margin-top:6px">'+
       '<div><h1>'+esc(fonte.name)+'</h1><p class="page-sub">Coleção de dados '+esc(fonte.name)+'</p></div>'+
       '<div style="display:flex;gap:8px;flex:none">'+
-        (autos.length ? '' : '<div class="pv-toolbar-menu-wrap">'+
-          '<button class="icon-btn ds-automate-trigger" data-action="toggle-ds-automate-popover" data-fonteid="'+fonte.id+'" title="Automatizar fonte de dados">'+ic('bolt',16)+'</button>'+
+        '<div class="pv-toolbar-menu-wrap">'+
+          '<button class="icon-btn ds-automate-trigger" data-action="toggle-ds-automate-popover" data-fonteid="'+fonte.id+'" title="Automações desta fonte">'+ic('bolt',16)+'</button>'+
           (state.dsAutomatePopoverOpen ? dsAutomatePopoverHTML(fonte) : '')+
-        '</div>')+
+        '</div>'+
         '<button class="btn btn-outline" data-action="open-fonte-fields" data-id="'+fonte.id+'">'+ic('gear',14)+'Campos</button>'+
         '<button class="btn btn-dark" data-action="open-fonte-record" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Adicionar</button>'+
       '</div>'+
@@ -2783,20 +2791,38 @@ function dsAutomacaoCardHTML(a){
   '</div>';
 }
 function dsAutomatePopoverHTML(fonte){
+  var autos = automacoesForFonte(fonte.id);
+  if (!autos.length){
+    return '<div class="ds-automate-popover">'+
+      '<button class="icon-btn ds-automate-pop-close" data-action="toggle-ds-automate-popover" data-fonteid="'+fonte.id+'" title="Fechar">'+ic('x',13)+'</button>'+
+      '<div class="ds-automate-pop-illust">'+
+        '<div class="ds-automate-nodes">'+
+          '<div class="ds-automate-node"><span class="dot"></span><span class="bar"></span></div>'+
+          '<div class="ds-automate-node"><span class="dot dot2"></span><span class="bar"></span></div>'+
+          '<div class="ds-automate-node"><span class="dot dot3"></span><span class="bar"></span></div>'+
+        '</div>'+
+        '<div class="ds-automate-ring"></div>'+
+      '</div>'+
+      '<div class="ds-automate-pop-body">'+
+        '<h3>Automatize sua fonte de dados</h3>'+
+        '<p>Crie sistemas inteligentes com notificações em tempo real e ganhe agilidade na gestão de tarefas, projetos e muito mais.</p>'+
+        '<button class="btn btn-dark" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Criar nova automação</button>'+
+      '</div>'+
+    '</div>';
+  }
+  var rows = autos.map(function(a){
+    return '<button class="dap-row" data-action="open-ds-automacao-editor" data-id="'+a.id+'">'+
+      '<div class="dap-ic">'+ic('bolt',14)+'</div>'+
+      '<div class="dap-row-text"><div class="dap-row-name">'+esc(a.nome)+'</div><div class="dap-row-summary">'+esc(dsAutomacaoSummary(a))+'</div></div>'+
+      (a.ativo ? '' : '<span class="badge badge-muted">Inativa</span>')+
+    '</button>';
+  }).join('');
   return '<div class="ds-automate-popover">'+
     '<button class="icon-btn ds-automate-pop-close" data-action="toggle-ds-automate-popover" data-fonteid="'+fonte.id+'" title="Fechar">'+ic('x',13)+'</button>'+
-    '<div class="ds-automate-pop-illust">'+
-      '<div class="ds-automate-nodes">'+
-        '<div class="ds-automate-node"><span class="dot"></span><span class="bar"></span></div>'+
-        '<div class="ds-automate-node"><span class="dot dot2"></span><span class="bar"></span></div>'+
-        '<div class="ds-automate-node"><span class="dot dot3"></span><span class="bar"></span></div>'+
-      '</div>'+
-      '<div class="ds-automate-ring"></div>'+
-    '</div>'+
     '<div class="ds-automate-pop-body">'+
-      '<h3>Automatize sua fonte de dados</h3>'+
-      '<p>Crie sistemas inteligentes com notificações em tempo real e ganhe agilidade na gestão de tarefas, projetos e muito mais.</p>'+
-      '<button class="btn btn-dark" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Criar nova automação</button>'+
+      '<h3>Automações desta fonte</h3>'+
+      '<div class="dap-list">'+rows+'</div>'+
+      '<button class="btn btn-dark btn-block" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Nova Automação</button>'+
     '</div>'+
   '</div>';
 }
@@ -2822,17 +2848,27 @@ function automacoesAdminHTML(){
   '</div>';
 }
 function dsAutomacaoEditorHTML(auto){
+  var fonte = dataSourceById(auto.fonteId);
+  var subtabs = '<div class="mtabs" style="padding:0 28px">'+
+    '<button class="mtab'+(state.dsAutomacaoSubTab==='automacao'?' active':'')+'" data-action="set-ds-automacao-subtab" data-tab="automacao">Automação</button>'+
+    '<button class="mtab'+(state.dsAutomacaoSubTab==='logs'?' active':'')+'" data-action="set-ds-automacao-subtab" data-tab="logs">Logs</button>'+
+  '</div>';
   return '<div class="wf-topbar">'+
       '<div class="wf-topbar-left">'+
         '<a href="#" class="wf-home-btn" data-action="close-ds-automacao-editor" title="Voltar para Automações">'+ic('home',16)+'</a>'+
         '<input class="wf-topbar-title-input" id="wf-topbar-title-input" data-bind="dsautomacao.nome" value="'+esc(auto.nome)+'" title="Clique para renomear"/>'+
+        '<span class="badge badge-info" title="Fonte de dados desta automação">'+ic('db',11)+esc(fonte ? fonte.name : 'Fonte não definida')+'</span>'+
       '</div>'+
       '<div class="wf-topbar-right">'+
         '<label class="switch" data-action="toggle-ds-automacao-ativo" data-id="'+auto.id+'"><input type="checkbox" '+(auto.ativo?'checked':'')+' tabindex="-1"/><span class="track"><span class="thumb"></span></span></label>'+
         '<button class="btn btn-primary btn-sm" data-action="save-ds-automacao">'+ic('check',14)+'Salvar automação</button>'+
       '</div>'+
     '</div>'+
-    '<div class="pf-wrap">'+
+    subtabs+
+    (state.dsAutomacaoSubTab==='logs' ? dsAutomacaoLogsHTML(auto) : dsAutomacaoFormHTML(auto));
+}
+function dsAutomacaoFormHTML(auto){
+  return '<div class="pf-wrap">'+
       '<p class="pf-sub">Escolha um gatilho desta fonte de dados e a ação que ele irá desencadear.</p>'+
       '<div class="pf-columns">'+
         '<div class="pf-col">'+dsTriggerColHTML(auto)+'</div>'+
@@ -2840,6 +2876,25 @@ function dsAutomacaoEditorHTML(auto){
         '<div class="pf-col">'+dsAcaoColHTML(auto)+'</div>'+
       '</div>'+
     '</div>';
+}
+function dsAutomacaoLogsHTML(auto){
+  var tMeta = dsTriggerMeta(auto.trigger.tipo);
+  var aMeta = dsAcaoMeta(auto.acao.tipo);
+  var rows = (tMeta && aMeta) ? [
+    {data:'26/07/2026 14:32', resultado:'Executada'},
+    {data:'25/07/2026 09:10', resultado:'Ignorada — condição não atendida'},
+    {data:'23/07/2026 17:48', resultado:'Executada'},
+  ] : [];
+  var tableRows = rows.map(function(r){
+    var ok = r.resultado==='Executada';
+    return '<tr><td style="text-align:left;padding-left:16px">'+r.data+'</td><td style="text-align:left">'+esc(tMeta.label)+'</td><td style="text-align:left">'+esc(aMeta.label)+'</td><td style="text-align:left"><span class="badge '+(ok?'badge-success':'badge-muted')+'">'+esc(r.resultado)+'</span></td></tr>';
+  }).join('');
+  return '<div class="screen-inner" style="padding:26px 0 0">'+
+    '<div class="section-head"><div><h3>Logs de auditoria</h3><p>Histórico de disparos desta automação.</p></div></div>'+
+    (rows.length ? '<div class="table-wrap"><table class="perm-table"><thead><tr><th style="text-align:left;padding-left:16px">Data/Hora</th><th style="text-align:left">Gatilho</th><th style="text-align:left">Ação</th><th style="text-align:left">Resultado</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>'+
+      '<div class="field-hint" style="margin-top:14px">Prévia ilustrativa — o log real seria alimentado pelas execuções desta automação em produção.</div>' :
+      '<div class="empty-state"><div class="es-ic">'+ic('doc',22)+'</div><div class="es-title">Nenhum log ainda</div><div class="es-sub">Defina o gatilho e a ação na aba "Automação" para começar a ver o histórico de disparos aqui.</div></div>')+
+  '</div>';
 }
 function dsTriggerColHTML(auto){
   var t = auto.trigger;
@@ -5196,11 +5251,13 @@ document.addEventListener('click', function(e){
       var naAuto = makeDsAutomacao({fonteId:naFonteId});
       state.dsAutomacoes.push(naAuto);
       state.dsAutomacaoEditorId = naAuto.id;
+      state.dsAutomacaoSubTab = 'automacao';
       state.dsAutomatePopoverOpen = false;
       break;
     }
-    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; break;
+    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSubTab = 'automacao'; state.dsAutomatePopoverOpen = false; break;
     case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; break;
+    case 'set-ds-automacao-subtab': state.dsAutomacaoSubTab = t.dataset.tab; break;
     case 'save-ds-automacao': state.dsAutomacaoEditorId = null; showToast('Automação salva.'); break;
     case 'toggle-ds-automacao-ativo': { var taAuto = findDsAuto(t.dataset.id); taAuto.ativo = !taAuto.ativo; break; }
     case 'delete-ds-automacao': {

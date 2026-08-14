@@ -1124,6 +1124,25 @@ Dados (v67):
    específica (diferente do log de Processos, que é por processo
    inteiro); fica vazia até o gatilho e a ação estarem definidos.
 
+**v69** — dois ajustes finos sobre a v68, a pedido do usuário:
+1. *"Deixaria como título o nome da fonte de dados dentro da automação,
+   com o ícone de badge"* — o badge separado (`.badge.badge-info`) ao
+   lado do título saiu; no lugar, o ícone de banco de dados virou um
+   pequeno quadrado (`.wf-topbar-fonte-ic`, mesmo tamanho do botão de
+   casa) logo antes do campo de nome, formando um único bloco
+   ícone+título. E o **nome padrão de uma automação nova passou a ser o
+   nome da própria fonte de dados** (`case 'new-ds-automacao'`: busca a
+   fonte antes de chamar `makeDsAutomacao`, passando `nome: fonte.name`)
+   em vez do genérico "Nova automação" — continua editável normalmente.
+2. *"Nossa, mas precisa estar na modal com a arte de automação. Talvez
+   aumentar bem a modal"* — a ilustração laranja com os nós/anel
+   animados (que só aparecia no popover vazio) virou uma função
+   compartilhada `dsAutomatePopoverIllustHTML()` e agora aparece
+   também na variante com a lista de automações existentes. Essa
+   variante ganhou a classe `.ds-automate-popover-list` (480px → 640px
+   de largura, ilustração fixada em 240px) para caber a lista
+   confortavelmente ao lado da arte.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

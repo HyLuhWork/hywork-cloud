@@ -840,6 +840,39 @@
   .dap-row-text{flex:1;min-width:0}
   .dap-row-name{font-size:12.5px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dap-row-summary{font-size:11px;color:var(--ink-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* modal de modelos "O que você quer que aconteça sozinho?" (Nova automação a partir de uma fonte) —
+     sempre escura, igual ao header do cartão "Gatilho" do editor, independente do tema claro/escuro do app. */
+  .tplpicker-modal{max-width:1040px;background:var(--navy-900);color:#fff;padding:0}
+  .tplpicker-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:26px 32px 0}
+  .tplpicker-eyebrow{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--primary-light)}
+  .tplpicker-close{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+  .tplpicker-close:hover{background:rgba(255,255,255,.16)}
+  .tplpicker-body{padding:14px 32px 26px;overflow-y:auto}
+  .tplpicker-title{font-size:27px;font-weight:800;letter-spacing:-.01em;margin:0 0 6px;text-wrap:balance}
+  .tplpicker-sub{font-size:14px;color:rgba(255,255,255,.62);margin:0 0 22px}
+  .tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .tpl-card{text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:4px}
+  .tpl-card:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.24)}
+  .tpl-ic{width:42px;height:42px;border-radius:11px;margin-bottom:10px;flex:none}
+  .tpl-ic-a{background:linear-gradient(135deg,var(--primary-light),var(--primary));border-radius:11px 11px 11px 0}
+  .tpl-ic-b{background:var(--primary);border-radius:11px 0 11px 11px}
+  .tpl-ic-c{background:linear-gradient(315deg,var(--primary-light),var(--primary));border-radius:0 11px 11px 11px}
+  .tpl-ic-d{background:linear-gradient(135deg,var(--primary) 50%,var(--navy-600) 50%);border-radius:50%}
+  .tpl-ic-e{background:var(--primary);border-radius:11px 11px 0 11px}
+  .tpl-ic-f{position:relative;background:none}
+  .tpl-ic-f::before,.tpl-ic-f::after{content:"";position:absolute;width:25px;height:25px;border-radius:7px}
+  .tpl-ic-f::before{top:0;left:0;background:var(--primary)}
+  .tpl-ic-f::after{bottom:0;right:0;background:var(--navy-400)}
+  .tpl-title{font-size:14.5px;font-weight:700;color:#fff}
+  .tpl-desc{font-size:12.5px;line-height:1.5;color:rgba(255,255,255,.6);flex:1;margin-bottom:10px}
+  .tpl-use{font-size:12px;font-weight:700;color:var(--primary-light)}
+  .tplpicker-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:18px 32px;border-top:1px solid rgba(255,255,255,.12)}
+  .tplpicker-foot p{margin:0;font-size:13px;color:rgba(255,255,255,.6)}
+  .tplpicker-blank-btn{background:#fff;color:var(--navy-900);flex:none}
+  .tplpicker-blank-btn:hover{background:rgba(255,255,255,.88)}
+  @media (max-width:760px){ .tpl-grid{grid-template-columns:1fr} }
+
   .pv-table-resp{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink)}
   .pv-table-resp-avatar{width:22px;height:22px;border-radius:50%;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;flex:none}
   .pv-progress-cell{display:flex;align-items:center;gap:8px}
@@ -2182,6 +2215,7 @@ var state = {
   dsAutomacaoMenuOpen:false, // menu "..." (duplicar/copiar link/excluir) no editor de automação de fonte de dados
   dsAcaoPickerOpen:false, // seletor "+ Adicionar próxima ação" aberto no editor de automação de fonte de dados
   dsAcaoExpandedId:null, // id da ação (auto.acoes[i].id) expandida ("editar") no editor de automação de fonte de dados
+  dsAutomacaoTemplatePickerFonteId:null, // fonteId com a modal "O que você quer que aconteça sozinho?" (modelos) aberta | null
   actionPickerOpen:null, // {scope:'automacao', ramoId, replaceBlockId, search, cat} | null — modal "Selecione uma ação" (construtor de Processos)
   triggerPickerOpen:null, // {scope:'automacao', search} | null — modal "Selecione um gatilho" (construtor de Processos)
   wizardOpen:false,
@@ -2811,8 +2845,67 @@ function makeDsAutomacao(o){
 }
 function makeDsAcaoItem(tipo){ return {id:uid(), tipo:tipo}; }
 function findDsAcaoItem(auto, id){ return (auto.acoes||[]).find(function(a){return a.id===id;}); }
+function findDsFieldByType(fonte, type){ return (fonte && fonte.fields || []).find(function(f){return f.type===type;}) || null; }
+function findDsFieldByKeyword(fonte, re){ return (fonte && fonte.fields || []).find(function(f){return re.test(f.label);}) || null; }
+/* Modelos prontos oferecidos ao criar uma automação a partir de uma fonte de dados
+   ("O que você quer que aconteça sozinho?"). build(fonte) tenta casar campos reais
+   da fonte (por tipo/palavra-chave) com o gatilho/ação do modelo; quando a fonte não
+   tem um campo compatível, deixa o respectivo seletor em branco para o admin escolher
+   na hora — nunca inventa um campo que não existe. */
+var DS_AUTOMACAO_TEMPLATES = [
+  {id:'tpl_aviso_criacao', titulo:'Nada passa batido', desc:'Avise o responsável no push assim que um item entrar na fonte.', icClass:'tpl-ic-a',
+    build:function(fonte){
+      return {trigger:{tipo:'item_criado'}, condicoes:[],
+        acoes:[Object.assign(makeDsAcaoItem('push'), {destinatario:'Gestor da área', mensagem:'Um novo item foi criado em '+fonte.name+'.'})]};
+    }},
+  {id:'tpl_prazo', titulo:'Prazo sob controle', desc:'Lembrete 2 dias antes da data de um campo vencer.', icClass:'tpl-ic-b',
+    build:function(fonte){
+      var dateField = findDsFieldByType(fonte, 'date');
+      return {trigger:{tipo:'agendamento_campo', campoId:dateField?dateField.id:null, offset_direcao:'Antes', offset_unidade:'dias', offset_valor:'2'}, condicoes:[],
+        acoes:[Object.assign(makeDsAcaoItem('email'), {destinatario:'Gestor da área', assunto:'Prazo próximo em '+fonte.name, mensagem:'Um item está próximo do prazo. Confira antes que vença.'})]};
+    }},
+  {id:'tpl_feed_conclusao', titulo:'Feed sempre vivo', desc:'Cada item concluído vira um post automático no feed.', icClass:'tpl-ic-c',
+    build:function(fonte){
+      var statusField = findDsFieldByKeyword(fonte, /status|situa|etapa/i) || findDsFieldByType(fonte, 'single_select');
+      var condicoes = [];
+      if (statusField && statusField.options && statusField.options.length){
+        var opt = statusField.options.find(function(o){return /conclu|aprov|final|resolv|fech/i.test(o);}) || statusField.options[statusField.options.length-1];
+        condicoes.push({campo:statusField.label, operador:'igual a', valor:opt});
+      }
+      return {trigger:{tipo:'campo_alterado', campoId:statusField?statusField.id:null}, condicoes:condicoes,
+        acoes:[Object.assign(makeDsAcaoItem('feed'), {mensagem:'Um item de '+fonte.name+' foi concluído.'})]};
+    }},
+  {id:'tpl_campo_auto', titulo:'Campo que se preenche', desc:'Mudou de etapa? O status é atualizado sozinho.', icClass:'tpl-ic-d',
+    build:function(fonte){
+      var watch = findDsFieldByKeyword(fonte, /etapa|categoria|fase/i) || findDsFieldByType(fonte, 'single_select');
+      var statusField = findDsFieldByKeyword(fonte, /status/i) || watch;
+      var val = (statusField && statusField.options && statusField.options[0]) || 'Em andamento';
+      return {trigger:{tipo:'campo_alterado', campoId:watch?watch.id:null}, condicoes:[],
+        acoes:[Object.assign(makeDsAcaoItem('atualizar_campo'), {campoId:statusField?statusField.id:null, valor:val})]};
+    }},
+  {id:'tpl_resumo', titulo:'Resumo da semana', desc:'Toda sexta, um email com o que mudou na fonte.', icClass:'tpl-ic-e',
+    build:function(fonte){
+      return {trigger:{tipo:null}, condicoes:[],
+        acoes:[Object.assign(makeDsAcaoItem('email'), {destinatario:'Todos os usuários', assunto:'Resumo semanal — '+fonte.name, mensagem:'Confira o que mudou em '+fonte.name+' esta semana.'})]};
+    }},
+  {id:'tpl_item_gera_item', titulo:'Item gera item', desc:'Um registro aqui cria a tarefa correspondente lá.', icClass:'tpl-ic-f',
+    build:function(fonte){
+      return {trigger:{tipo:'item_criado'}, condicoes:[], acoes:[makeDsAcaoItem('criar_item')]};
+    }},
+];
 function findDsAuto(id){ return state.dsAutomacoes.find(function(a){return a.id===id;}); }
 function currentDsAuto(){ return findDsAuto(state.dsAutomacaoEditorId); }
+function createBlankDsAutomacao(fonteId){
+  var naFonteId = fonteId || (state.dataSources[0] && state.dataSources[0].id);
+  var naAuto = makeDsAutomacao({fonteId:naFonteId});
+  state.dsAutomacoes.push(naAuto);
+  state.dsAutomacaoEditorId = naAuto.id;
+  state.dsAutomacaoSubTab = 'automacao';
+  state.dsAutomacaoMenuOpen = false;
+  state.dsAutomatePopoverOpen = false;
+  state.dsAcaoPickerOpen = false;
+  state.dsAcaoExpandedId = null;
+}
 function automacoesForFonte(fonteId){ return state.dsAutomacoes.filter(function(a){return a.fonteId===fonteId;}); }
 function dsAcaoItemSummaryText(a){
   if (a.tipo==='email') return (a.destinatario||'Destinatário não definido')+(a.assunto ? ' · '+a.assunto : '');
@@ -5042,7 +5135,35 @@ function renderModal(){
   if (state.fonteRecordOpen){ root.innerHTML = fonteRecordModalHTML(); return; }
   if (state.actionPickerOpen){ root.innerHTML = actionPickerModalHTML(); return; }
   if (state.triggerPickerOpen){ root.innerHTML = triggerPickerModalHTML(); return; }
+  if (state.dsAutomacaoTemplatePickerFonteId){ root.innerHTML = dsAutomacaoTemplatePickerHTML(); return; }
   root.innerHTML='';
+}
+function dsAutomacaoTemplatePickerHTML(){
+  var fonte = dataSourceById(state.dsAutomacaoTemplatePickerFonteId);
+  if (!fonte) return '';
+  var cards = DS_AUTOMACAO_TEMPLATES.map(function(tpl){
+    return '<button class="tpl-card" data-action="use-ds-automacao-template" data-tplid="'+tpl.id+'">'+
+      '<div class="tpl-ic '+tpl.icClass+'"></div>'+
+      '<div class="tpl-title">'+esc(tpl.titulo)+'</div>'+
+      '<div class="tpl-desc">'+esc(tpl.desc)+'</div>'+
+      '<span class="tpl-use">Usar modelo</span>'+
+    '</button>';
+  }).join('');
+  return '<div class="overlay" data-action="close-ds-automacao-template-picker-overlay"><div class="modal tplpicker-modal">'+
+    '<div class="tplpicker-top">'+
+      '<div class="tplpicker-eyebrow">'+ic('bolt',15)+'<span>Automatizar · '+esc(fonte.name.toUpperCase())+'</span></div>'+
+      '<button class="tplpicker-close" data-action="close-ds-automacao-template-picker" title="Fechar">'+ic('x',16)+'</button>'+
+    '</div>'+
+    '<div class="tplpicker-body">'+
+      '<h2 class="tplpicker-title">O que você quer que aconteça sozinho?</h2>'+
+      '<p class="tplpicker-sub">Modelos gerados a partir dos '+fonte.fields.length+' campos desta fonte de dados.</p>'+
+      '<div class="tpl-grid">'+cards+'</div>'+
+    '</div>'+
+    '<div class="tplpicker-foot">'+
+      '<p>Não achou? Comece de uma folha em branco e monte o gatilho você mesmo.</p>'+
+      '<button class="btn tplpicker-blank-btn" data-action="new-ds-automacao-blank">'+ic('plus',13)+'Montar do zero</button>'+
+    '</div>'+
+  '</div></div>';
 }
 function wizardModalHTML(){
   var w = state.wizardDraft;
@@ -5353,17 +5474,34 @@ document.addEventListener('click', function(e){
       break;
     }
     case 'new-ds-automacao': {
-      var naFonteId = t.dataset.fonteid || (state.dataSources[0] && state.dataSources[0].id);
-      var naAuto = makeDsAutomacao({fonteId:naFonteId});
-      state.dsAutomacoes.push(naAuto);
-      state.dsAutomacaoEditorId = naAuto.id;
-      state.dsAutomacaoSubTab = 'automacao';
-      state.dsAutomacaoMenuOpen = false;
-      state.dsAutomatePopoverOpen = false;
+      if (t.dataset.fonteid){
+        state.dsAutomacaoTemplatePickerFonteId = t.dataset.fonteid;
+        state.dsAutomatePopoverOpen = false;
+      } else {
+        createBlankDsAutomacao(null);
+      }
+      break;
+    }
+    case 'new-ds-automacao-blank': {
+      createBlankDsAutomacao(t.dataset.fonteid || state.dsAutomacaoTemplatePickerFonteId);
+      state.dsAutomacaoTemplatePickerFonteId = null;
+      break;
+    }
+    case 'use-ds-automacao-template': {
+      var utFonte = dataSourceById(state.dsAutomacaoTemplatePickerFonteId);
+      var utTpl = DS_AUTOMACAO_TEMPLATES.find(function(x){return x.id===t.dataset.tplid;});
+      if (utFonte && utTpl){
+        var utAuto = makeDsAutomacao(Object.assign({fonteId:utFonte.id, nome:utTpl.titulo}, utTpl.build(utFonte)));
+        state.dsAutomacoes.push(utAuto);
+        state.dsAutomacaoEditorId = utAuto.id;
+        state.dsAutomacaoSubTab = 'automacao';
+      }
+      state.dsAutomacaoTemplatePickerFonteId = null;
       state.dsAcaoPickerOpen = false;
       state.dsAcaoExpandedId = null;
       break;
     }
+    case 'close-ds-automacao-template-picker': case 'close-ds-automacao-template-picker-overlay': state.dsAutomacaoTemplatePickerFonteId = null; break;
     case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSubTab = 'automacao'; state.dsAutomatePopoverOpen = false; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; break;
     case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; break;
     case 'set-ds-automacao-subtab': state.dsAutomacaoSubTab = t.dataset.tab; break;

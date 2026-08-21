@@ -1235,6 +1235,39 @@ o da v71. O editor de automações de **Fonte de Dados** ganhou um redesign comp
   (ex.: "Ao criar um novo item → envie um push → criar novo item"), em vez de citar
   só uma.
 
+**v73** — pedido do usuário: ao clicar em "Nova automação"/"Criar nova automação"
+**a partir de uma fonte de dados** (popover do ícone de raio na página da fonte),
+abrir antes uma modal de modelos ("O que você quer que aconteça sozinho?"), a
+partir de um mock de referência. `new-ds-automacao` agora se comporta diferente
+conforme o contexto:
+- Com `data-fonteid` (entradas de dentro de uma fonte): abre
+  `dsAutomacaoTemplatePickerHTML` — uma modal sempre escura (`.tplpicker-modal`,
+  fundo `--navy-900` fixo, independente do tema claro/escuro do app), com o rótulo
+  "AUTOMATIZAR · NOME DA FONTE", heading "O que você quer que aconteça sozinho?" e
+  o subtítulo "Modelos gerados a partir dos N campos desta fonte de dados." (N real,
+  contado a partir de `fonte.fields`).
+- Sem `data-fonteid` (botão "Nova Automação" da listagem geral "Automações", sem
+  fonte pré-escolhida): continua criando uma automação em branco na hora, sem
+  passar pela modal — comportamento de antes preservado.
+- 6 cartões de modelo (`DS_AUTOMACAO_TEMPLATES`), cada um com ícone, título,
+  descrição e "Usar modelo": *Nada passa batido* (push ao criar item), *Prazo sob
+  controle* (agendamento 2 dias antes de um campo de data), *Feed sempre vivo*
+  (post no feed quando um campo de status muda para um valor "concluído"-like,
+  com condição pré-preenchida), *Campo que se preenche* (atualizar campo quando
+  outro campo de etapa/categoria muda), *Resumo da semana* (email — só a ação vem
+  pronta, o gatilho fica em aberto porque o motor atual não tem agendamento
+  recorrente por dia da semana, só relativo a um campo de data de um registro) e
+  *Item gera item* (ao criar item, ação "Criar novo item" com a fonte de destino
+  em aberto). Cada `build(fonte)` tenta casar campos reais da fonte por tipo/
+  palavra-chave (`findDsFieldByType`/`findDsFieldByKeyword`); quando não encontra
+  um campo compatível, deixa o seletor em branco em vez de inventar um campo que
+  não existe — o admin sempre cai no editor já aberto para revisar/completar.
+- Rodapé da modal: "Não achou? Comece de uma folha em branco..." + botão "Montar
+  do zero" (`new-ds-automacao-blank`), que cria a automação em branco de sempre
+  (fatorado no helper `createBlankDsAutomacao(fonteId)`, reaproveitado pelos dois
+  fluxos). Fechar pelo X ou clicando fora (`close-ds-automacao-template-picker` /
+  `-overlay`) descarta a escolha sem criar nada.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

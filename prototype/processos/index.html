@@ -821,14 +821,9 @@
   .dados-record-actions{width:1%;white-space:nowrap}
   .dados-stats-row{display:flex;gap:24px;margin-bottom:16px;font-size:12.5px;color:var(--ink-muted)}
   .dados-stats-row b{color:var(--ink);font-size:15px;margin-right:4px}
-  .ds-automate-trigger{position:relative;background:var(--primary-50);color:var(--primary-dark);border:1px solid var(--info-100)}
+  .ds-automate-trigger{background:var(--primary-50);color:var(--primary-dark);border:1px solid var(--info-100)}
   .ds-automate-trigger:hover{background:var(--info-100)}
-  .ds-automate-popover{position:absolute;top:calc(100% + 10px);right:0;width:480px;max-width:calc(100vw - 40px);display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden;z-index:20;animation:dsPopIn .15s ease}
-  .ds-automate-popover-list{width:740px}
-  .ds-automate-popover-list .ds-automate-pop-illust{flex:0 0 260px}
-  .ds-automate-popover-list .ds-automate-pop-body{gap:12px;padding:26px 26px 24px}
-  @keyframes dsPopIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-  .ds-automate-pop-illust{flex:0 0 42%;position:relative;overflow:hidden;background:linear-gradient(155deg,#ffe2c2,#ffd0a3);display:flex;align-items:center;justify-content:center;padding:18px}
+  .ds-automate-drawer-illust{margin:-20px -22px 18px;width:calc(100% + 44px);height:128px;position:relative;overflow:hidden;background:linear-gradient(155deg,#ffe2c2,#ffd0a3);display:flex;align-items:center;justify-content:center;flex:none}
   .ds-automate-nodes{display:flex;flex-direction:column;gap:13px;z-index:1;position:relative}
   .ds-automate-node{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.55);border-radius:var(--radius-full);padding:6px 12px 6px 6px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
   .ds-automate-node .dot{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--navy-800),#2563eb);flex:none}
@@ -836,12 +831,9 @@
   .ds-automate-node .dot3{background:linear-gradient(135deg,#f97316,#fb923c)}
   .ds-automate-node .bar{width:64px;height:7px;border-radius:4px;background:rgba(255,255,255,.85)}
   .ds-automate-ring{position:absolute;right:-24px;width:96px;height:96px;border-radius:50%;background:conic-gradient(from 200deg,#1d4ed8,#0ea5e9,#f97316,#fb923c,#1d4ed8);box-shadow:0 0 0 9px rgba(255,255,255,.55) inset,0 4px 14px rgba(0,0,0,.12)}
-  .ds-automate-pop-body{flex:1;padding:22px 22px 20px;position:relative;display:flex;flex-direction:column;gap:10px}
-  .ds-automate-pop-close{position:absolute;top:8px;right:8px}
-  .ds-automate-pop-body h3{font-size:15px}
-  .ds-automate-pop-body p{font-size:12.5px;color:var(--ink-muted);line-height:1.5}
-  .ds-automate-pop-body .btn{align-self:flex-start;margin-top:2px}
-  .dap-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+  .ds-automate-drawer-copy h3{font-size:15px;margin:0 0 6px;color:var(--ink)}
+  .ds-automate-drawer-copy p{font-size:12.5px;color:var(--ink-muted);line-height:1.55;margin:0 0 16px}
+  .dap-list{display:flex;flex-direction:column;gap:6px}
   .dap-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-md);text-align:left;width:100%}
   .dap-row:hover{border-color:var(--navy-400);background:var(--muted)}
   .dap-row .dap-ic{width:28px;height:28px;border-radius:7px;background:var(--info-50);color:var(--navy-800);display:flex;align-items:center;justify-content:center;flex:none}
@@ -2211,7 +2203,7 @@ var state = {
   dadosOpenFonteId:null, // id da fonte de dados aberta na página Dados | null = lista
   dadosSearch:'',
   dadosRecordSearch:'',
-  dsAutomatePopoverOpen:false, // popover "Automatize sua fonte de dados" (fonte atualmente aberta)
+  dsAutomateDrawerFonteId:null, // fonteId com a sidebar "Automações desta fonte" aberta | null
   novaFonteOpen:false,
   novaFonteDraft:null, // {nome, campos:[{label,type}]}
   fonteFieldsOpen:null, // fonteId
@@ -2727,10 +2719,7 @@ function fonteDetailHTML(fonte){
     '<div class="page-head" style="margin-top:6px">'+
       '<div><h1>'+esc(fonte.name)+'</h1><p class="page-sub">Coleção de dados '+esc(fonte.name)+'</p></div>'+
       '<div style="display:flex;gap:8px;flex:none">'+
-        '<div class="pv-toolbar-menu-wrap">'+
-          '<button class="icon-btn ds-automate-trigger" data-action="toggle-ds-automate-popover" data-fonteid="'+fonte.id+'" title="Automações desta fonte">'+ic('bolt',16)+'</button>'+
-          (state.dsAutomatePopoverOpen ? dsAutomatePopoverHTML(fonte) : '')+
-        '</div>'+
+        '<button class="icon-btn ds-automate-trigger" data-action="open-ds-automate-drawer" data-fonteid="'+fonte.id+'" title="Automações desta fonte">'+ic('bolt',16)+'</button>'+
         '<button class="btn btn-outline" data-action="open-fonte-fields" data-id="'+fonte.id+'">'+ic('gear',14)+'Campos</button>'+
         '<button class="btn btn-dark" data-action="open-fonte-record" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Adicionar</button>'+
       '</div>'+
@@ -2913,7 +2902,7 @@ function createBlankDsAutomacao(fonteId){
   state.dsAutomacaoEditorId = naAuto.id;
   state.dsAutomacaoSubTab = 'automacao';
   state.dsAutomacaoMenuOpen = false;
-  state.dsAutomatePopoverOpen = false;
+  state.dsAutomateDrawerFonteId = null;
   state.dsAcaoPickerOpen = false;
   state.dsAcaoExpandedId = null;
   state.dsAcaoVarMenuOpen = null;
@@ -2945,8 +2934,8 @@ function dsAutomacaoCardHTML(a){
     '<button class="icon-btn ac-delete2" data-action="delete-ds-automacao" data-id="'+a.id+'" title="Excluir">'+ic('trash',13)+'</button>'+
   '</div>';
 }
-function dsAutomatePopoverIllustHTML(){
-  return '<div class="ds-automate-pop-illust">'+
+function dsAutomateDrawerIllustHTML(){
+  return '<div class="ds-automate-drawer-illust">'+
       '<div class="ds-automate-nodes">'+
         '<div class="ds-automate-node"><span class="dot"></span><span class="bar"></span></div>'+
         '<div class="ds-automate-node"><span class="dot dot2"></span><span class="bar"></span></div>'+
@@ -2955,36 +2944,35 @@ function dsAutomatePopoverIllustHTML(){
       '<div class="ds-automate-ring"></div>'+
     '</div>';
 }
-function dsAutomatePopoverHTML(fonte){
+function dsAutomateDrawerHTML(){
+  var fonte = dataSourceById(state.dsAutomateDrawerFonteId);
+  if (!fonte) return '';
   var autos = automacoesForFonte(fonte.id);
+  var body;
   if (!autos.length){
-    return '<div class="ds-automate-popover">'+
-      '<button class="icon-btn ds-automate-pop-close" data-action="toggle-ds-automate-popover" data-fonteid="'+fonte.id+'" title="Fechar">'+ic('x',13)+'</button>'+
-      dsAutomatePopoverIllustHTML()+
-      '<div class="ds-automate-pop-body">'+
+    body = dsAutomateDrawerIllustHTML()+
+      '<div class="ds-automate-drawer-copy">'+
         '<h3>Automatize sua fonte de dados</h3>'+
         '<p>Crie sistemas inteligentes com notificações em tempo real e ganhe agilidade na gestão de tarefas, projetos e muito mais.</p>'+
-        '<button class="btn btn-dark" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Criar nova automação</button>'+
-      '</div>'+
-    '</div>';
+        '<button class="btn btn-dark btn-block" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Criar nova automação</button>'+
+      '</div>';
+  } else {
+    var rows = autos.map(function(a){
+      return '<button class="dap-row" data-action="open-ds-automacao-editor" data-id="'+a.id+'">'+
+        '<div class="dap-ic">'+ic('bolt',14)+'</div>'+
+        '<div class="dap-row-text"><div class="dap-row-name">'+esc(a.nome)+'</div><div class="dap-row-summary">'+esc(dsAutomacaoSummary(a))+'</div></div>'+
+        (a.ativo ? '' : '<span class="badge badge-muted">Inativa</span>')+
+      '</button>';
+    }).join('');
+    body = dsAutomateDrawerIllustHTML()+
+      '<div class="ds-automate-drawer-copy"><p>'+autos.length+' automação'+(autos.length===1?'':'ões')+' configurada'+(autos.length===1?'':'s')+' para esta fonte de dados.</p></div>'+
+      '<div class="dap-list">'+rows+'</div>';
   }
-  var rows = autos.map(function(a){
-    return '<button class="dap-row" data-action="open-ds-automacao-editor" data-id="'+a.id+'">'+
-      '<div class="dap-ic">'+ic('bolt',14)+'</div>'+
-      '<div class="dap-row-text"><div class="dap-row-name">'+esc(a.nome)+'</div><div class="dap-row-summary">'+esc(dsAutomacaoSummary(a))+'</div></div>'+
-      (a.ativo ? '' : '<span class="badge badge-muted">Inativa</span>')+
-    '</button>';
-  }).join('');
-  return '<div class="ds-automate-popover ds-automate-popover-list">'+
-    '<button class="icon-btn ds-automate-pop-close" data-action="toggle-ds-automate-popover" data-fonteid="'+fonte.id+'" title="Fechar">'+ic('x',13)+'</button>'+
-    dsAutomatePopoverIllustHTML()+
-    '<div class="ds-automate-pop-body">'+
-      '<h3>Automações desta fonte</h3>'+
-      '<p>Crie sistemas inteligentes com notificações em tempo real e ganhe agilidade na gestão de tarefas, projetos e muito mais.</p>'+
-      '<div class="dap-list">'+rows+'</div>'+
-      '<button class="btn btn-dark btn-block" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Nova Automação</button>'+
-    '</div>'+
-  '</div>';
+  return '<div class="drawer-overlay" data-action="close-ds-automate-drawer-overlay"><div class="drawer">'+
+    '<div class="drawer-head"><div class="dh-eyebrow">'+esc(fonte.name)+'</div><h3>Automações desta fonte</h3><button class="icon-btn drawer-close" data-action="close-ds-automate-drawer">'+ic('x',16)+'</button></div>'+
+    '<div class="drawer-body">'+body+'</div>'+
+    (autos.length ? '<div class="drawer-foot"><button class="btn btn-dark btn-block" data-action="new-ds-automacao" data-fonteid="'+fonte.id+'">'+ic('plus',14)+'Nova Automação</button></div>' : '')+
+  '</div></div>';
 }
 function automacoesAdminHTML(){
   if (state.dsAutomacaoEditorId){
@@ -5265,6 +5253,7 @@ function renderDrawer(){
   var root = qs('#drawer-root');
   if (state.publishOpen){ root.innerHTML = publishDrawerHTML(); return; }
   if (state.testFlowOpen){ root.innerHTML = testFlowDrawerHTML(); return; }
+  if (state.dsAutomateDrawerFonteId){ root.innerHTML = dsAutomateDrawerHTML(); return; }
   root.innerHTML='';
 }
 function publishDrawerHTML(){
@@ -5425,7 +5414,6 @@ document.addEventListener('click', function(e){
   if (state.pvToolbarMenu && !/^(toggle-pv-menu|pv-toggle-filter-step|pv-clear-filter|pv-set-group|pv-set-sort|pv-mock-export)$/.test(action)) state.pvToolbarMenu = null;
   if (state.intranetToolbarMenu && !/^(toggle-intranet-menu|intranet-toggle-filter-proc|intranet-clear-filter|intranet-set-sort)$/.test(action)) state.intranetToolbarMenu = null;
   if (state.pvColMenuFor && action!=='toggle-pv-col-menu') state.pvColMenuFor = null;
-  if (state.dsAutomatePopoverOpen && !/^(toggle-ds-automate-popover|new-ds-automacao)$/.test(action)) state.dsAutomatePopoverOpen = false;
   if (state.dsAutomacaoMenuOpen && action!=='toggle-ds-automacao-menu') state.dsAutomacaoMenuOpen = false;
   if (state.dsAcaoVarMenuOpen && !/^(toggle-ds-acao-var-menu|insert-ds-acao-var)$/.test(action)) state.dsAcaoVarMenuOpen = null;
   if (state.appNavOpen && !/^(toggle-app-nav|open-app)$/.test(action)) state.appNavOpen = false;
@@ -5454,9 +5442,10 @@ document.addEventListener('click', function(e){
     case 'apps-set-category': state.appsCategory = t.dataset.cat; break;
     case 'open-dados': state.screen = 'dados'; state.dadosOpenFonteId = null; state.dsAutomacaoEditorId = null; break;
     case 'open-automacoes-admin': state.screen = 'automacoes-admin'; state.dsAutomacaoEditorId = null; break;
-    case 'open-fonte-detail': state.dadosOpenFonteId = t.dataset.id; state.dadosRecordSearch = ''; state.dsAutomatePopoverOpen = false; break;
-    case 'close-fonte-detail': state.dadosOpenFonteId = null; state.dsAutomatePopoverOpen = false; break;
-    case 'toggle-ds-automate-popover': state.dsAutomatePopoverOpen = !state.dsAutomatePopoverOpen; break;
+    case 'open-fonte-detail': state.dadosOpenFonteId = t.dataset.id; state.dadosRecordSearch = ''; state.dsAutomateDrawerFonteId = null; break;
+    case 'close-fonte-detail': state.dadosOpenFonteId = null; state.dsAutomateDrawerFonteId = null; break;
+    case 'open-ds-automate-drawer': state.dsAutomateDrawerFonteId = t.dataset.fonteid; break;
+    case 'close-ds-automate-drawer': case 'close-ds-automate-drawer-overlay': state.dsAutomateDrawerFonteId = null; break;
     case 'toggle-nav-desafios': state.navDesafiosOpen = !state.navDesafiosOpen; break;
     case 'open-nova-fonte': state.novaFonteOpen = true; state.novaFonteDraft = {nome:'', campos:[]}; break;
     case 'close-nova-fonte': case 'close-nova-fonte-overlay': state.novaFonteOpen = false; break;
@@ -5515,7 +5504,7 @@ document.addEventListener('click', function(e){
     case 'new-ds-automacao': {
       if (t.dataset.fonteid){
         state.dsAutomacaoTemplatePickerFonteId = t.dataset.fonteid;
-        state.dsAutomatePopoverOpen = false;
+        state.dsAutomateDrawerFonteId = null;
       } else {
         createBlankDsAutomacao(null);
       }
@@ -5541,7 +5530,7 @@ document.addEventListener('click', function(e){
       break;
     }
     case 'close-ds-automacao-template-picker': case 'close-ds-automacao-template-picker-overlay': state.dsAutomacaoTemplatePickerFonteId = null; break;
-    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSubTab = 'automacao'; state.dsAutomatePopoverOpen = false; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; state.dsAcaoVarMenuOpen = null; break;
+    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSubTab = 'automacao'; state.dsAutomateDrawerFonteId = null; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; state.dsAcaoVarMenuOpen = null; break;
     case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; state.dsAcaoVarMenuOpen = null; break;
     case 'set-ds-automacao-subtab': state.dsAutomacaoSubTab = t.dataset.tab; break;
     case 'save-ds-automacao': state.dsAutomacaoEditorId = null; showToast('Automação salva.'); break;

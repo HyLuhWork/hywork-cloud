@@ -1293,6 +1293,35 @@ reorganizada em duas seções:
   (`"acaoId|assunto"` ou `"acaoId|mensagem"`) controla qual menu está aberto,
   seguindo o mesmo padrão de auto-fechamento dos outros menus da tela.
 
+**v75** — pedido do usuário sobre o popover "Automações desta fonte" (ícone de
+raio na página da fonte): *"essa modal com todas as automações de uma fonte de
+dados pode ser uma sidebar ao clicar, visto que está sem espaço"*. O popover
+pequeno ancorado no botão virou uma **sidebar/drawer** lateral, reaproveitando o
+mesmo padrão já usado por "Publicar processo" e "Testar fluxo"
+(`.drawer-overlay`/`.drawer`/`drawer-head`/`drawer-body`/`drawer-foot`,
+renderizado via `renderDrawer()`/`#drawer-root` em vez de inline na página da
+fonte). Mudanças:
+- Estado `dsAutomatePopoverOpen` (boolean) virou `dsAutomateDrawerFonteId`
+  (fonteId | null) — o drawer já sabe de qual fonte é sem depender do contexto
+  de qual página está aberta, mesmo padrão usado pelo template picker da v73.
+- Botão do raio: `toggle-ds-automate-popover` → `open-ds-automate-drawer`; novo
+  `close-ds-automate-drawer` / `close-ds-automate-drawer-overlay` (clique fora
+  fecha, como qualquer drawer da tela).
+- `dsAutomatePopoverHTML` → `dsAutomateDrawerHTML`, com a mesma ilustração
+  (`ds-automate-nodes`/`ds-automate-ring`) agora como um banner de topo
+  (`ds-automate-drawer-illust`, com margens negativas para ocupar a largura
+  total do drawer) em vez de um painel lateral dentro do popover — a lista de
+  automações (`.dap-list`) ganhou a largura toda do drawer para respirar, sem
+  o `max-height`/scroll interno que tinha no popover (o scroll agora é do
+  `.drawer-body` inteiro).
+- Como o drawer tem seu próprio overlay full-screen bloqueando cliques no
+  fundo, o guard de auto-fechamento "fecha se clicar em qualquer outra coisa"
+  que o popover precisava (linha do `render()`) foi removido — não faz mais
+  sentido com um overlay dedicado.
+- Abrir uma automação (linha da lista) ou criar uma nova a partir do drawer
+  fecham o drawer antes de abrir o editor/modal de modelos, para não empilhar
+  camadas.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em

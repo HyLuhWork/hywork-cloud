@@ -216,6 +216,14 @@
   .select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2363636b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:30px}
   .field-row{margin-bottom:16px}
   .field-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  .field-label-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+  .field-label-row .field-label{margin-bottom:0}
+  .var-insert-btn{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;color:var(--primary);flex:none;background:none;border:none;padding:0}
+  .var-insert-btn:hover{color:var(--primary-dark)}
+  .var-insert-menu{display:flex;flex-wrap:wrap;gap:6px;background:var(--muted);border:1px solid var(--border);border-radius:var(--radius-md);padding:8px;margin-bottom:8px}
+  .var-insert-menu button{font-family:'SFMono-Regular',Consolas,monospace;font-size:11px;font-weight:600;color:var(--navy-800);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px 8px}
+  .var-insert-menu button:hover{border-color:var(--primary);color:var(--primary-dark)}
+  .var-insert-empty{font-size:11.5px;color:var(--ink-faint);padding:2px 4px}
 
   .switch{position:relative;display:inline-block;width:36px;height:21px;flex:none}
   .switch input{opacity:0;width:0;height:0}
@@ -1127,6 +1135,7 @@ function ic(name, size){
     trophy:'<path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4.5A2.5 2.5 0 0 0 7 9"/><path d="M17 5h2.5A2.5 2.5 0 0 1 17 9"/><path d="M12 13v3"/><path d="M8.5 20h7"/><path d="M9.5 20a2.5 2.5 0 0 1 5 0"/>',
     medal:'<circle cx="12" cy="14.5" r="5.2"/><path d="M9 4 7 9.5M15 4l2 5.5"/><path d="m9.6 14.6 1.6 1.6 3-3.4"/>',
     star:'<path d="m12 3 2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.8 6.4 20l1.4-6.2L3 9.5l6.4-.6L12 3Z"/>',
+    braces:'<path d="M8 4.5a2.3 2.3 0 0 0-2.3 2.3v2A1.8 1.8 0 0 1 4 10.5a1.8 1.8 0 0 1 1.7 1.8v2A2.3 2.3 0 0 0 8 16.5"/><path d="M16 4.5a2.3 2.3 0 0 1 2.3 2.3v2A1.8 1.8 0 0 0 20 10.5a1.8 1.8 0 0 0-1.7 1.8v2a2.3 2.3 0 0 1-2.3 2.2"/>',
   };
   var body = p[name] || p.info;
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+body+'</svg>';
@@ -2216,6 +2225,7 @@ var state = {
   dsAcaoPickerOpen:false, // seletor "+ Adicionar próxima ação" aberto no editor de automação de fonte de dados
   dsAcaoExpandedId:null, // id da ação (auto.acoes[i].id) expandida ("editar") no editor de automação de fonte de dados
   dsAutomacaoTemplatePickerFonteId:null, // fonteId com a modal "O que você quer que aconteça sozinho?" (modelos) aberta | null
+  dsAcaoVarMenuOpen:null, // "acaoId|assunto" ou "acaoId|mensagem" — menu "Inserir variável" aberto | null
   actionPickerOpen:null, // {scope:'automacao', ramoId, replaceBlockId, search, cat} | null — modal "Selecione uma ação" (construtor de Processos)
   triggerPickerOpen:null, // {scope:'automacao', search} | null — modal "Selecione um gatilho" (construtor de Processos)
   wizardOpen:false,
@@ -2840,6 +2850,7 @@ var DS_ACOES_SIMPLES = [
   {tipo:'criar_item', label:'Criar novo item', icon:'plus'},
 ];
 function dsAcaoMeta(tipo){ return DS_ACOES_SIMPLES.find(function(a){return a.tipo===tipo;}) || null; }
+var DS_EMAIL_REMETENTES = ['nao-responda@hwprod.com.br', 'automacoes@hwprod.com.br', 'suporte@hwprod.com.br'];
 function makeDsAutomacao(o){
   return Object.assign({id:uid(), nome:'Nova automação', ativo:true, fonteId:null, trigger:{tipo:null}, condicoes:[], acoes:[]}, o);
 }
@@ -2905,6 +2916,7 @@ function createBlankDsAutomacao(fonteId){
   state.dsAutomatePopoverOpen = false;
   state.dsAcaoPickerOpen = false;
   state.dsAcaoExpandedId = null;
+  state.dsAcaoVarMenuOpen = null;
 }
 function automacoesForFonte(fonteId){ return state.dsAutomacoes.filter(function(a){return a.fonteId===fonteId;}); }
 function dsAcaoItemSummaryText(a){
@@ -3129,6 +3141,25 @@ function dsAcoesColHTML(auto){
   return '<div class="pf-steps-list">'+stepsHTML+'</div>'+
     '<div style="margin-top:'+(acoes.length?'10px':'0')+'">'+picker+'</div>';
 }
+/* Campo de Assunto/Mensagem com botão "Inserir variável" — insere {{Nome do Campo}} a
+   partir dos campos reais da fonte de dados desta automação (US do usuário: "na parte
+   de conteúdo, preciso adicionar variáveis relacionado a campos da fonte de dados"). */
+function dsAcaoVarFieldHTML(label, targetKey, a, fonte, isTextarea){
+  var val = a[targetKey] || '';
+  var menuKey = a.id+'|'+targetKey;
+  var open = state.dsAcaoVarMenuOpen===menuKey;
+  var campos = fonte ? fonte.fields : [];
+  var trigger = '<button type="button" class="var-insert-btn" data-action="toggle-ds-acao-var-menu" data-id="'+a.id+'" data-target="'+targetKey+'">'+ic('braces',12)+'Inserir variável</button>';
+  var menu = !open ? '' : '<div class="var-insert-menu">'+
+    (campos.length ? campos.map(function(f){
+      return '<button type="button" data-action="insert-ds-acao-var" data-id="'+a.id+'" data-target="'+targetKey+'" data-fieldlabel="'+esc(f.label)+'">{{'+esc(f.label)+'}}</button>';
+    }).join('') : '<span class="var-insert-empty">Esta fonte não tem campos.</span>')+
+  '</div>';
+  var control = isTextarea
+    ? '<textarea class="textarea" data-bind="dsautomacao.acao_'+targetKey+'" data-id="'+a.id+'">'+esc(val)+'</textarea>'
+    : '<input class="input" data-bind="dsautomacao.acao_'+targetKey+'" data-id="'+a.id+'" value="'+esc(val)+'"/>';
+  return '<div class="field-label-row"><label class="field-label">'+label+'</label>'+trigger+'</div>'+menu+control;
+}
 function dsAcaoItemFieldsHTML(auto, a){
   var fonte = dataSourceById(auto.fonteId);
   var campos = fonte ? fonte.fields : [];
@@ -3136,9 +3167,16 @@ function dsAcaoItemFieldsHTML(auto, a){
   var destSelect = '<select class="select" data-bind="dsautomacao.acao_destinatario" data-id="'+a.id+'">'+destinatarioOpts.map(function(o){return '<option'+(o===a.destinatario?' selected':'')+'>'+o+'</option>';}).join('')+'</select>';
   var fields = '';
   if (a.tipo==='email'){
-    fields = '<div class="field-row"><label class="field-label">Destinatário</label>'+destSelect+'</div>'+
-      '<div class="field-row"><label class="field-label">Assunto</label><input class="input" data-bind="dsautomacao.acao_assunto" data-id="'+a.id+'" value="'+esc(a.assunto||'')+'"/></div>'+
-      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acao_mensagem" data-id="'+a.id+'">'+esc(a.mensagem||'')+'</textarea></div>';
+    fields = '<div class="wf-panel-section-label">Configuração de envio</div>'+
+      '<div class="field-row"><label class="field-label">Nome do remetente</label><input class="input" placeholder="Ex: Equipe de TI" data-bind="dsautomacao.acao_remetente_nome" data-id="'+a.id+'" value="'+esc(a.remetenteNome||'')+'"/></div>'+
+      '<div class="field-row"><label class="field-label">E-mail do remetente</label><select class="select" data-bind="dsautomacao.acao_remetente_email" data-id="'+a.id+'">'+
+        DS_EMAIL_REMETENTES.map(function(o){return '<option'+(o===a.remetenteEmail?' selected':'')+'>'+o+'</option>';}).join('')+
+      '</select></div>'+
+      '<div class="field-row" style="margin-bottom:0"><label class="field-label">Responder para (opcional)</label><input class="input" placeholder="Ex: suporte@hwprod.com.br" data-bind="dsautomacao.acao_responder_para" data-id="'+a.id+'" value="'+esc(a.responderPara||'')+'"/></div>'+
+      '<div class="wf-panel-section-label" style="margin-top:18px">Conteúdo do e-mail</div>'+
+      '<div class="field-row"><label class="field-label">Destinatário</label>'+destSelect+'</div>'+
+      '<div class="field-row">'+dsAcaoVarFieldHTML('Assunto', 'assunto', a, fonte, false)+'</div>'+
+      '<div class="field-row" style="margin-bottom:0">'+dsAcaoVarFieldHTML('Mensagem', 'mensagem', a, fonte, true)+'</div>';
   } else if (a.tipo==='push'){
     fields = '<div class="field-row"><label class="field-label">Destinatário</label>'+destSelect+'</div>'+
       '<div class="field-row" style="margin-bottom:0"><label class="field-label">Mensagem</label><textarea class="textarea" data-bind="dsautomacao.acao_mensagem" data-id="'+a.id+'">'+esc(a.mensagem||'')+'</textarea></div>';
@@ -5389,6 +5427,7 @@ document.addEventListener('click', function(e){
   if (state.pvColMenuFor && action!=='toggle-pv-col-menu') state.pvColMenuFor = null;
   if (state.dsAutomatePopoverOpen && !/^(toggle-ds-automate-popover|new-ds-automacao)$/.test(action)) state.dsAutomatePopoverOpen = false;
   if (state.dsAutomacaoMenuOpen && action!=='toggle-ds-automacao-menu') state.dsAutomacaoMenuOpen = false;
+  if (state.dsAcaoVarMenuOpen && !/^(toggle-ds-acao-var-menu|insert-ds-acao-var)$/.test(action)) state.dsAcaoVarMenuOpen = null;
   if (state.appNavOpen && !/^(toggle-app-nav|open-app)$/.test(action)) state.appNavOpen = false;
   var handled = true;
   switch(action){
@@ -5502,8 +5541,8 @@ document.addEventListener('click', function(e){
       break;
     }
     case 'close-ds-automacao-template-picker': case 'close-ds-automacao-template-picker-overlay': state.dsAutomacaoTemplatePickerFonteId = null; break;
-    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSubTab = 'automacao'; state.dsAutomatePopoverOpen = false; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; break;
-    case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; break;
+    case 'open-ds-automacao-editor': state.dsAutomacaoEditorId = t.dataset.id; state.dsAutomacaoSubTab = 'automacao'; state.dsAutomatePopoverOpen = false; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; state.dsAcaoVarMenuOpen = null; break;
+    case 'close-ds-automacao-editor': state.dsAutomacaoEditorId = null; state.dsAcaoPickerOpen = false; state.dsAcaoExpandedId = null; state.dsAcaoVarMenuOpen = null; break;
     case 'set-ds-automacao-subtab': state.dsAutomacaoSubTab = t.dataset.tab; break;
     case 'save-ds-automacao': state.dsAutomacaoEditorId = null; showToast('Automação salva.'); break;
     case 'toggle-ds-automacao-ativo': { var taAuto = findDsAuto(t.dataset.id); taAuto.ativo = !taAuto.ativo; break; }
@@ -5544,11 +5583,24 @@ document.addEventListener('click', function(e){
       state.dsAcaoExpandedId = aaiItem.id;
       break;
     }
-    case 'toggle-ds-acao-expand': state.dsAcaoExpandedId = (state.dsAcaoExpandedId===t.dataset.id) ? null : t.dataset.id; break;
+    case 'toggle-ds-acao-expand': state.dsAcaoExpandedId = (state.dsAcaoExpandedId===t.dataset.id) ? null : t.dataset.id; state.dsAcaoVarMenuOpen = null; break;
     case 'remove-ds-acao-item': {
       var raiAuto = currentDsAuto();
       raiAuto.acoes = raiAuto.acoes.filter(function(a){return a.id!==t.dataset.id;});
       if (state.dsAcaoExpandedId===t.dataset.id) state.dsAcaoExpandedId = null;
+      state.dsAcaoVarMenuOpen = null;
+      break;
+    }
+    case 'toggle-ds-acao-var-menu': {
+      var tvKey = t.dataset.id+'|'+t.dataset.target;
+      state.dsAcaoVarMenuOpen = (state.dsAcaoVarMenuOpen===tvKey) ? null : tvKey;
+      break;
+    }
+    case 'insert-ds-acao-var': {
+      var ivItem = findDsAcaoItem(currentDsAuto(), t.dataset.id);
+      var ivKey = t.dataset.target;
+      ivItem[ivKey] = (ivItem[ivKey] || '') + '{{'+t.dataset.fieldlabel+'}}';
+      state.dsAcaoVarMenuOpen = null;
       break;
     }
     case 'add-ds-cond2': { currentDsAuto().condicoes.push({campo:'', operador:'igual a', valor:''}); break; }
@@ -6186,6 +6238,7 @@ document.addEventListener('change', function(e){
   else if (bind==='dsautomacao.cond_campo') { currentDsAuto().condicoes[+el.dataset.idx].campo=val; }
   else if (bind==='dsautomacao.cond_op') { currentDsAuto().condicoes[+el.dataset.idx].operador=val; }
   else if (bind==='dsautomacao.acao_destinatario') { findDsAcaoItem(currentDsAuto(), el.dataset.id).destinatario=val; }
+  else if (bind==='dsautomacao.acao_remetente_email') { findDsAcaoItem(currentDsAuto(), el.dataset.id).remetenteEmail=val; }
   else if (bind==='dsautomacao.acao_campo') { findDsAcaoItem(currentDsAuto(), el.dataset.id).campoId=val; }
   else if (bind==='dsautomacao.acao_fonte') { var afItem=findDsAcaoItem(currentDsAuto(), el.dataset.id); afItem.fonteId=val; afItem.valores={}; }
   else if (bind==='dsautomacao.acao_novoitem_campo') { var anicItem=findDsAcaoItem(currentDsAuto(), el.dataset.id); anicItem.valores=anicItem.valores||{}; anicItem.valores[el.dataset.fieldid]=val; }
@@ -6237,6 +6290,8 @@ document.addEventListener('input', function(e){
     else if (bind==='dsautomacao.nome'){ currentDsAuto().nome=val; syncAutoTitleInputs(el, val); }
     else if (bind==='dsautomacao.trigger_offset_valor'){ currentDsAuto().trigger.offset_valor=val; }
     else if (bind==='dsautomacao.cond_val'){ currentDsAuto().condicoes[+el.dataset.idx].valor=val; }
+    else if (bind==='dsautomacao.acao_remetente_nome'){ findDsAcaoItem(currentDsAuto(), el.dataset.id).remetenteNome=val; }
+    else if (bind==='dsautomacao.acao_responder_para'){ findDsAcaoItem(currentDsAuto(), el.dataset.id).responderPara=val; }
     else if (bind==='dsautomacao.acao_assunto'){ findDsAcaoItem(currentDsAuto(), el.dataset.id).assunto=val; }
     else if (bind==='dsautomacao.acao_mensagem'){ findDsAcaoItem(currentDsAuto(), el.dataset.id).mensagem=val; }
     else if (bind==='dsautomacao.acao_valor'){ findDsAcaoItem(currentDsAuto(), el.dataset.id).valor=val; }

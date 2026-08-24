@@ -1268,6 +1268,31 @@ conforme o contexto:
   fluxos). Fechar pelo X ou clicando fora (`close-ds-automacao-template-picker` /
   `-overlay`) descarta a escolha sem criar nada.
 
+**v74** — pedido do usuário, a partir de um print da tela de automação de e-mail
+do Jira: *"No evento de envio por email, eu preciso configurar o envio do email.
+remetente, email, nome que aparece e tals, e só depois o conteúdo. Na parte de
+conteúdo, preciso adicionar variáveis relacionado a campos da fonte de dados."*
+A ação **"Envie uma notificação por email"** (`dsAcaoItemFieldsHTML`) foi
+reorganizada em duas seções:
+- **Configuração de envio** (antes do conteúdo): "Nome do remetente" (texto
+  livre, ex. "Equipe de TI"), "E-mail do remetente" (select com 3 endereços fixos
+  em `DS_EMAIL_REMETENTES`, já que remetente de e-mail real exigiria domínio
+  verificado) e "Responder para (opcional)". Guardados em `remetenteNome` /
+  `remetenteEmail` / `responderPara` no item de ação.
+- **Conteúdo do e-mail**: Destinatário (como antes), Assunto e Mensagem — agora
+  cada um com um link "Inserir variável" (ícone `{}`, novo em `ic()`) ao lado do
+  rótulo. Clicar abre `.var-insert-menu` listando **os campos reais da fonte de
+  dados** desta automação (`fonte.fields`, o mesmo objeto usado em toda a
+  automação — não uma lista inventada); escolher um campo insere
+  `{{Nome do Campo}}` no fim do Assunto/Mensagem correspondente. Segue o mesmo
+  padrão `{{variável}}` que a automação de Processo já usava (campo "Template
+  com variáveis" da ação de notificação), só que agora com um picker em vez de
+  só um placeholder de exemplo. Novo helper reaproveitável
+  `dsAcaoVarFieldHTML(label, targetKey, a, fonte, isTextarea)` monta o rótulo +
+  botão + menu + input/textarea juntos; novo estado `dsAcaoVarMenuOpen`
+  (`"acaoId|assunto"` ou `"acaoId|mensagem"`) controla qual menu está aberto,
+  seguindo o mesmo padrão de auto-fechamento dos outros menus da tela.
+
 `index.html` é um arquivo único e autocontido (HTML + CSS + JS, fonte Montserrat
 embutida via `@font-face`/base64, sem build, sem dependências externas) — dá para
 abrir direto no navegador ou hospedar em qualquer lugar estático. Estado é mantido em
